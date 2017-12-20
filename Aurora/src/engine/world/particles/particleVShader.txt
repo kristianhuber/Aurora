@@ -1,0 +1,34 @@
+#version 140
+
+// Inputs from the VAOs
+in vec2 position;
+in mat4 modelViewMatrix;
+in vec4 texOffsets;
+in float blendFactor;
+
+// Outputs to the fragment shader
+out vec2 textureCoords1;
+out vec2 textureCoords2;
+out float blend;
+
+// Uniform variables from Java
+uniform mat4 projectionMatrix;
+uniform float numberOfRows;
+
+void main(void){
+	
+	// Texture coordinates relative to the current stage
+	vec2 textureCoords = position + vec2(0.5, 0.5);
+	textureCoords.y = 1.0 - textureCoords.y;
+	textureCoords /= numberOfRows;
+	
+	// Texture coordinates relative to the whole image
+	textureCoords1 = textureCoords + texOffsets.xy;
+	textureCoords2 = textureCoords + texOffsets.zw;
+	
+	// Passes the blend variable
+	blend = blendFactor;
+	
+	// Sets the position
+	gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 0.0, 1.0);
+}

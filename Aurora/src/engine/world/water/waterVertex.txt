@@ -1,0 +1,39 @@
+#version 400 core
+
+// Input VAOs
+in vec2 position;
+
+// Outputs to the fragment shader
+out vec4 clipSpace;
+out vec2 textureCoords;
+out vec3 toCameraVector;
+out vec3 fromLightVector;
+out float visibility;
+
+// Uniform variables from Java
+uniform mat4 projectionMatrix;
+uniform mat4 viewMatrix;
+uniform mat4 modelMatrix;
+uniform vec3 cameraPosition;
+uniform vec3 lightPosition;
+uniform float density;
+uniform float gradient;
+uniform float divider;
+
+const float tiling = 8.0;
+
+void main(void) {
+
+	vec4 worldPosition = modelMatrix * vec4(position.x, 0.0, position.y, 1.0);
+	clipSpace = projectionMatrix * viewMatrix * worldPosition;
+	gl_Position = clipSpace;
+	textureCoords = vec2(position.x/2.0 + 0.5, position.y/2.0 + 0.5) * tiling;
+	toCameraVector = cameraPosition - worldPosition.xyz;
+	fromLightVector = worldPosition.xyz - lightPosition;
+	
+	vec4 positionRelativeToCam = viewMatrix * worldPosition;
+	
+	float distance = length(positionRelativeToCam.xyz) / divider;
+	visibility = exp(-pow((distance*density), gradient));
+	visibility = clamp(visibility, 0.0, 1.0);
+}

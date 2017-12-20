@@ -1,0 +1,18 @@
+#version 400
+
+// Inputs from the VAOs
+in vec3 position;
+
+// Outputs to the fragment shader
+out vec3 textureCoords;
+
+// Uniform variables from Java
+uniform mat4 projectionMatrix;
+uniform mat4 viewMatrix;
+
+void main(void){
+	
+	// Calculates the texture coordinates
+	gl_Position = projectionMatrix * viewMatrix * vec4(position, 1.0); 
+	textureCoords = position;
+}

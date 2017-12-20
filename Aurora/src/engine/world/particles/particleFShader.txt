@@ -1,0 +1,22 @@
+#version 140
+
+// Output to the computer
+out vec4 out_color;
+
+// Inputs from the vertex shader
+in vec2 textureCoords1;
+in vec2 textureCoords2;
+in float blend;
+
+// Uniform variable from Java
+uniform sampler2D particleTexture;
+
+void main(void){
+
+	// Colors from each of the textures	
+	vec4 color1 = texture(particleTexture, textureCoords1);
+	vec4 color2 = texture(particleTexture, textureCoords2);
+
+	// Mixes the colors
+	out_color = mix(color1, color2, blend);
+}
