@@ -15,6 +15,7 @@ import org.lwjgl.opengl.PixelFormat;
 import engine.guis.GuiRenderer;
 import engine.guis.font.FontManager;
 import engine.rendering.MasterRenderer;
+import engine.rendering.RenderMode;
 import engine.rendering.models.ModelManager;
 import engine.rendering.textures.TextureManager;
 import engine.world.RenderWorld;

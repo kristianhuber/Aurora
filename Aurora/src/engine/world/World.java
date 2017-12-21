@@ -56,6 +56,8 @@ public class World {
 	}
 
 	public void update() {
+		Engine.getCamera().move();
+		
 		time += 0.001f;
 		if (time >= 24) {
 			time = 0;

@@ -3,8 +3,7 @@ package engine.world;
 import engine.guis.GuiRenderer;
 import engine.guis.font.FontManager;
 import engine.rendering.MasterRenderer;
-import engine.util.Engine;
-import engine.util.RenderMode;
+import engine.rendering.RenderMode;
 
 public class RenderWorld extends RenderMode{
 
@@ -16,8 +15,6 @@ public class RenderWorld extends RenderMode{
 
 	@Override
 	public void render() {
-		Engine.getCamera().move();
-		
 		world.update();
 
 		MasterRenderer.renderWorld(world);

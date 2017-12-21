@@ -2,7 +2,7 @@ package aurora.mainmenu;
 
 import engine.guis.GuiRenderer;
 import engine.guis.font.FontManager;
-import engine.util.RenderMode;
+import engine.rendering.RenderMode;
 
 public class RenderMainMenu extends RenderMode{
 
