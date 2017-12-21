@@ -1,18 +1,19 @@
 package aurora.main;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector3f;
 
+import aurora.mainmenu.RenderMainMenu;
 import engine.guis.font.FontManager;
 import engine.guis.font.mesh.GUIText;
 import engine.rendering.models.ModelManager;
 import engine.rendering.textures.TextureManager;
 import engine.util.Engine;
-import engine.util.MousePicker;
 
 public class Aurora extends Engine {
-
-	private MousePicker picker;
+	
 	private GUIText positonVec;
+	private GUIText message;
 	private GUIText time;
 	
 	public Aurora() {
@@ -26,7 +27,6 @@ public class Aurora extends Engine {
 		TextureManager.loadTexture("dudvMap", "extras");
 		TextureManager.loadTexture("normalMap", "extras");
 
-		TextureManager.loadTexture("papyrus", "extras");
 		TextureManager.loadTexture("TestGui", "gui");
 
 		// Terrain Textures
@@ -60,10 +60,11 @@ public class Aurora extends Engine {
 		ModelManager.loadModel("pine");
 
 		FontManager.addFont("papyrus");
+		FontManager.addFont("tempus");
 	}
 
 	@Override
-	protected void preRender() {		
+	protected void preRender() {
 		positonVec = new GUIText("Position", 2.5f, FontManager.font("papyrus"), 0, 0);
 		positonVec.setColour(1, 0.45f, 0);
 		FontManager.loadText(positonVec);
@@ -72,18 +73,27 @@ public class Aurora extends Engine {
 		time.setColour(1, 0.45f, 0);
 		FontManager.loadText(time);
 		
-		picker = new MousePicker(this.world, Engine.getCamera());
+		message = new GUIText("Press Tab to Load World", 5f, FontManager.font("tempus"), 250, 150);
+		message.setColour(1, 0, 0);
+		FontManager.loadText(message);
+		
+		mode = new RenderMainMenu();
 	}
 
 	@Override
 	protected void loop() {
-		Vector3f pos = Engine.camera.getPosition();
-		positonVec.setText((int)pos.x + ", " + (int)pos.y + ", " + (int)pos.z);
+		if(this.isWorldCreated()) {
+			Vector3f pos = Engine.getCamera().getPosition();
+			positonVec.setText((int)pos.x + ", " + (int)pos.y + ", " + (int)pos.z);
+			
+			float theTime = world.getWorldTime();
+			time.setText((int)(theTime) + ":" + (int)(theTime % 1 * 100));
+		}
 		
-		picker.update();
-		
-		float theTime = world.getWorldTime();
-		time.setText((int)(theTime) + ":" + (int)(theTime % 1 * 100));
+		if(Keyboard.isKeyDown(Keyboard.KEY_TAB)) {
+			FontManager.removeText(message);
+			this.renderWorld();
+		}
 	}
 	
 	public static void main(String[] args) {

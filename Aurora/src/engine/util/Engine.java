@@ -17,6 +17,7 @@ import engine.guis.font.FontManager;
 import engine.rendering.MasterRenderer;
 import engine.rendering.models.ModelManager;
 import engine.rendering.textures.TextureManager;
+import engine.world.RenderWorld;
 import engine.world.World;
 import engine.world.entities.Camera;
 
@@ -33,15 +34,13 @@ public abstract class Engine {
 	
 	public static int WIDTH, HEIGHT;
 
-	protected static Camera camera;
+	private static Camera camera;
 	
 	protected boolean testWorld;
 	protected World world;
 	
-	public abstract class RenderMode {
-		
-		public abstract void render();
-	}
+	private RenderMode renderWorld;
+	protected RenderMode mode;
 	
 	/* Constructor Method */
 	public Engine() {
@@ -87,11 +86,7 @@ public abstract class Engine {
 	}
 
 	/* Start Rendering */
-	private void startRendering() {
-		world = new World(testWorld);
-		
-		camera = new Camera(world);
-
+	private void startRendering() {		
 		MasterRenderer.initialize();
 		FontManager.initialize();
 		GuiRenderer.initalize();
@@ -100,22 +95,17 @@ public abstract class Engine {
 		
 		this.preRender();
 		
+		if(mode == null) {
+			this.renderWorld();
+		}
+		
 		// Main Loop
 		while (!Display.isCloseRequested()) {
 			this.loop();
 			
-			camera.move();
+			this.mode.render();
 			
-			world.update();
-
-			MasterRenderer.renderWorld(world);
-			
-			GuiRenderer.render();
-			FontManager.render();
-			
-			this.loop();
-			
-			updateDisplay();
+			this.updateDisplay();
 		}
 	}
 	
@@ -137,6 +127,19 @@ public abstract class Engine {
 		GuiRenderer.cleanUp();
 		FontManager.cleanUp();
 		Display.destroy();
+	}
+	
+	public boolean isWorldCreated() {
+		return (world != null);
+	}
+	
+	protected void renderWorld() {
+		if(renderWorld == null) {
+			world = new World(testWorld);
+			camera = new Camera(world);	
+			renderWorld = new RenderWorld(world);
+		}
+		this.mode = renderWorld;
 	}
 		
 	/* Do stuff after rendering */

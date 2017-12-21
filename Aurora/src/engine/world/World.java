@@ -56,12 +56,11 @@ public class World {
 	}
 
 	public void update() {
-		time += 0.05f;
+		time += 0.001f;
 		if (time >= 24) {
 			time = 0;
 		}
 
-		System.out.println(time / 24);
 		sun.setPosition(0, (float) (SUN_DISTANCE * Math.sin(2 * Math.PI * (time / 24))),
 				(float) (SUN_DISTANCE * Math.cos(2 * Math.PI * (time / 24))));
 	}

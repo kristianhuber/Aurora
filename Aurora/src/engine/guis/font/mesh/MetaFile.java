@@ -136,7 +136,7 @@ public class MetaFile {
 	private void openFile(String file) {
 		try {
 			reader = new BufferedReader(new InputStreamReader(
-					MetaFile.class.getResourceAsStream("/aurora/assets/extras/" + file + ".fnt")));
+					MetaFile.class.getResourceAsStream("/aurora/assets/fonts/" + file + ".fnt")));
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.err.println("Couldn't read font meta file!");
