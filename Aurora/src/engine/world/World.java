@@ -21,9 +21,9 @@ import engine.world.water.WaterTile;
 public class World {
 
 	public static final float SUN_DISTANCE = 10000;
-	public static final int WORLD_SIZE = 16;
+	public static final int WORLD_SIZE = 32;
 
-	public static final int RENDER_DISTANCE = 4;
+	public static final int RENDER_DISTANCE = 5;
 
 	private Map<TexturedModel, List<Entity>> entities = new HashMap<TexturedModel, List<Entity>>();
 	private Map<Integer, Chunk> terrainMap = new HashMap<Integer, Chunk>();
@@ -37,9 +37,10 @@ public class World {
 	public World() {
 
 		seed = new Random().nextInt(10000000);
-
-		seaLevel = 125;
-		time = 4;
+		
+		time = 6;
+		
+		seaLevel = 155;
 
 		sun = new Light(new Vector3f(0, World.SUN_DISTANCE, 0), new Vector3f(1.15F, 1.15F, 1.15F));
 		this.addLight(sun);
@@ -50,7 +51,7 @@ public class World {
 	}
 
 	public void update() {
-		time += 0.05f;
+		time += 0.005f;
 		if (time >= 24) {
 			time = 0;
 		}
@@ -61,7 +62,7 @@ public class World {
 
 	public float getTerrainHeightAt(float x, float z) {
 		Vector2f calc = Calculator.terrainCoords(x, z);
-		Chunk c = this.terrainMap.get((int)(calc.x) * 1000 + (int)(calc.y));
+		Chunk c = this.terrainMap.get((int) (calc.x) * 1000 + (int) (calc.y));
 		if (c == null) {
 			return 0;
 		}
@@ -147,11 +148,11 @@ public class World {
 			int x = (int) (Math.random() * Terrain.SIZE + chunkX * Terrain.SIZE);
 			int z = (int) (Math.random() * Terrain.SIZE + chunkZ * Terrain.SIZE);
 			float y = this.getTerrainHeightAt(x, z);
-			if(y > seaLevel + 5) {
+			if (y > seaLevel + 5) {
 				Entity e = new Entity(this, "betterpine", new Vector3f(x, y, z));
 				e.setScale(7.5f);
 				e.setSelection(false);
-				this.addEntity(e);	
+				this.addEntity(e);
 			}
 		}
 	}

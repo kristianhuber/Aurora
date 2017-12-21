@@ -11,12 +11,12 @@ import engine.world.World;
 
 public class HeightsGenerator {
 	// Octaves is how many passes to go through
-	private int OCTAVES = 7;
+	private int OCTAVES = 8;
 	// Roughness is how bumpy the terrain should be. Lower values are smoother
 	private float ROUGHNESS = 0.25f;
 
 	// We change this anyway
-	private float AMPLITUDE = 500f;
+	private float AMPLITUDE;
 
 	private Random random = new Random();
 	private int seed;
@@ -34,7 +34,7 @@ public class HeightsGenerator {
 	// only works with POSITIVE gridX and gridZ values!
 	public HeightsGenerator(int gridX, int gridZ, int vertexCount, int seed, float amplitude) {
 		this.seed = seed;
-		this.AMPLITUDE = amplitude;
+		this.AMPLITUDE = 500;
 		xOffset = gridX * (vertexCount - 1);
 		zOffset = gridZ * (vertexCount - 1);
 		this.MAP_SIZE = World.WORLD_SIZE * vertexCount;
@@ -57,13 +57,24 @@ public class HeightsGenerator {
 
 		float xDist = (Math.abs((xOffset + x) - CENTER_OF_MAP) / CENTER_OF_MAP);
 		float zDist = (Math.abs((zOffset + z) - CENTER_OF_MAP) / CENTER_OF_MAP);
-		float distance = (float) (1 - Math.sqrt(xDist * xDist + zDist * zDist));
-		total += 100 * distance;
-
+		float distance = (float) Math.sqrt(xDist * xDist + zDist * zDist);
+		float addition = (float) (1 - 0.9f * Math.pow(distance, 2));
+		if(distance < 0 && addition > 0) addition *= -1;
+		total *= addition;
+		
+		/*float borderPercent = 0.25f;
+		float xPos = xOffset + x;
+		if (xPos < MAP_SIZE * borderPercent) {
+			total *= (xPos / (MAP_SIZE * borderPercent));
+		}
+		if (xPos > MAP_SIZE * (1 - borderPercent)) {
+			total *= ((MAP_SIZE - xPos) / (MAP_SIZE * borderPercent));
+		}*/
+		
 		// Beach Stuff
 		int tolerance = 5;
 		if (total < seaLevel + tolerance && total > seaLevel - tolerance) {
-			total = (total + seaLevel) / 2;
+			total = (total + seaLevel)/2;
 		}
 
 		return total;

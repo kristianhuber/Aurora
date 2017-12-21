@@ -27,7 +27,7 @@ import engine.world.water.WaterRenderer;
 
 public class MasterRenderer {
 
-	public static final float FOG_DENSITY = 0.0035F;
+	public static final float FOG_DENSITY = 0.000F;
 	public static final float FOG_GRADIENT = 8F;
 	public static final float FOG_DIVIDER = 2.5F;
 	

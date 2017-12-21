@@ -12,7 +12,7 @@ import engine.util.Calculator;
 public class Terrain {
 
 	public static final float SIZE = 128;
-	public static final int AMPLITUDE = 155;
+	public static final int AMPLITUDE = 255;
 
 	private TerrainTexturePack texturePack;
 	private RawModel model;

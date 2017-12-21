@@ -13,7 +13,7 @@ public class Aurora extends Engine {
 
 	private MousePicker picker;
 	private GUIText positonVec;
-	private GUIText mouseVec;
+	private GUIText time;
 	
 	public Aurora() {
 		super("Aurora", true);
@@ -66,9 +66,9 @@ public class Aurora extends Engine {
 		positonVec.setColour(1, 0.45f, 0);
 		FontManager.loadText(positonVec);
 		
-		mouseVec = new GUIText("Mouse", 2.5f, FontManager.font("papyrus"), 700, 0);
-		mouseVec.setColour(1, 0.45f, 0);
-		FontManager.loadText(mouseVec);
+		time = new GUIText("Time", 2.5f, FontManager.font("papyrus"), 700, 0);
+		time.setColour(1, 0.45f, 0);
+		FontManager.loadText(time);
 		
 		picker = new MousePicker(this.world, Engine.getCamera());
 	}
@@ -80,9 +80,8 @@ public class Aurora extends Engine {
 		
 		picker.update();
 		
-		Vector3f pos2 = picker.getCurrentTerrainPoint();
-		pos2.y = world.getTerrainHeightAt(pos2);
-		mouseVec.setText((int)pos2.x + ", " + (int)pos2.y + ", " + (int)pos2.z);
+		float theTime = world.getWorldTime();
+		time.setText((int)(theTime) + ":" + (int)(theTime % 1 * 100));
 	}
 	
 	public static void main(String[] args) {

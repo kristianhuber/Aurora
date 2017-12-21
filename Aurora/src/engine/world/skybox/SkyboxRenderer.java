@@ -10,6 +10,8 @@ import engine.rendering.MasterRenderer;
 import engine.rendering.models.ModelManager;
 import engine.rendering.models.RawModel;
 import engine.rendering.textures.TextureManager;
+import engine.world.World;
+import engine.world.terrain.Terrain;
 
 /**
  * @Description: Draws the skybox in the world
@@ -18,7 +20,7 @@ import engine.rendering.textures.TextureManager;
 
 public class SkyboxRenderer {
 
-	private static final float SIZE = 900f;
+	private static final float SIZE = 900F;
 	private static final float[] VERTICES = { -SIZE, SIZE, -SIZE, -SIZE, -SIZE, -SIZE, SIZE, -SIZE, -SIZE, SIZE, -SIZE,
 			-SIZE, SIZE, SIZE, -SIZE, -SIZE, SIZE, -SIZE,
 
