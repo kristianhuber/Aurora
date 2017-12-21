@@ -33,15 +33,20 @@ public class World {
 	private Light sun;
 	private int seed;
 	private Vector3f skyColor = new Vector3f(154 / 255F, 160 / 255F, 181 / 255F);
+	private boolean testWorld;
 
-	public World() {
+	public World(boolean testWorld) {
+
+		this.testWorld = testWorld;
 
 		seed = new Random().nextInt(10000000);
-		
-		time = 6;
-		
-		seaLevel = 155;
 
+		time = 6;
+
+		seaLevel = 155;
+		if(testWorld)
+			seaLevel = -999;
+		
 		sun = new Light(new Vector3f(0, World.SUN_DISTANCE, 0), new Vector3f(1.15F, 1.15F, 1.15F));
 		this.addLight(sun);
 	}
@@ -51,11 +56,12 @@ public class World {
 	}
 
 	public void update() {
-		time += 0.005f;
+		time += 0.05f;
 		if (time >= 24) {
 			time = 0;
 		}
 
+		System.out.println(time / 24);
 		sun.setPosition(0, (float) (SUN_DISTANCE * Math.sin(2 * Math.PI * (time / 24))),
 				(float) (SUN_DISTANCE * Math.cos(2 * Math.PI * (time / 24))));
 	}
@@ -90,7 +96,11 @@ public class World {
 					if (x2 >= 0 && y2 >= 0 && x2 < WORLD_SIZE && y2 < WORLD_SIZE) {
 						Chunk c = this.terrainMap.get(x2 * 1000 + y2);
 						if (c == null) {
-							c = new Chunk(seed, x2, y2, seaLevel);
+							if (testWorld) {
+								c = new Chunk(x2, y2);
+							} else {
+								c = new Chunk(seed, x2, y2, seaLevel);
+							}
 							this.addChunk(c);
 						}
 						Terrain t = c.getTerrain();
@@ -106,6 +116,9 @@ public class World {
 
 	public List<WaterTile> getRenderedWaters() {
 		List<WaterTile> toRender = new ArrayList<WaterTile>();
+
+		if (testWorld)
+			return toRender;
 
 		Camera cam = Engine.getCamera();
 		Vector2f pos = Calculator.terrainCoords(cam.getPosition().x, cam.getPosition().z);
@@ -161,7 +174,8 @@ public class World {
 		int x = c.getX();
 		int z = c.getZ();
 		terrainMap.put(x * 1000 + z, c);
-		this.decorate(x, z);
+		if (!testWorld)
+			this.decorate(x, z);
 	}
 
 	public void addLight(Light light) {

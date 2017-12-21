@@ -166,4 +166,13 @@ public class Camera {
 	public Vector3f getPosition() {
 		return position;
 	}
+	
+	public void setFlying(boolean flying) {
+		this.flying = flying;
+		if(flying) {
+			SPEED = 50;
+		}else {
+			SPEED = 15;
+		}
+	}
 }

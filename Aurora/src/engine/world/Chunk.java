@@ -17,6 +17,13 @@ public class Chunk {
 		this.z = z;
 	}
 	
+	public Chunk(int x, int z) {
+		terrain = new Terrain(x, 0, z, "default");
+		
+		this.x = x;
+		this.z = z;
+	}
+	
 	public WaterTile getWater() {
 		return water;
 	}

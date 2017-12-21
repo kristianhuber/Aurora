@@ -39,6 +39,15 @@ public class Terrain {
 		this.seaLevel = seaLevel;
 		this.model = generateTerrain(seed);
 	}
+	
+	public Terrain(int gridX, float y, int gridZ, String texturePack) {
+		this.texturePack = TextureManager.getTerrainTexturePack(texturePack);
+		this.x = gridX * SIZE;
+		this.y = y;
+		this.z = gridZ * SIZE;
+		this.seaLevel = -1;
+		this.model = generateTerrain();
+	}
 
 	private RawModel generateTerrain() {
 		int VERTEX_COUNT = 4;

@@ -16,7 +16,9 @@ public class Aurora extends Engine {
 	private GUIText time;
 	
 	public Aurora() {
-		super("Aurora", true);
+		this.testWorld = true;
+		
+		this.start("Aurora", true);
 	}
 
 	@Override

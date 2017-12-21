@@ -35,6 +35,7 @@ public abstract class Engine {
 
 	protected static Camera camera;
 	
+	protected boolean testWorld;
 	protected World world;
 	
 	public abstract class RenderMode {
@@ -43,13 +44,17 @@ public abstract class Engine {
 	}
 	
 	/* Constructor Method */
-	public Engine(String title, boolean fullScreen) {
+	public Engine() {
 		Engine.HEIGHT = (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight();
 		Engine.WIDTH = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth();
 
 		Engine.lastFrameTime = 0;
 		Engine.delta = 0;
 
+		this.testWorld = false;
+	}
+	
+	protected void start(String title, boolean fullScreen) {
 		this.createDisplay(title, fullScreen);
 		this.loadResources();
 		this.startRendering();
@@ -83,7 +88,7 @@ public abstract class Engine {
 
 	/* Start Rendering */
 	private void startRendering() {
-		world = new World();
+		world = new World(testWorld);
 		
 		camera = new Camera(world);
 
