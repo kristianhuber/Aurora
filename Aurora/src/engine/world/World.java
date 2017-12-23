@@ -20,7 +20,7 @@ import engine.world.water.WaterTile;
 
 public class World {
 
-	public static final float SUN_DISTANCE = 10000;
+	public static final float SUN_DISTANCE = 5000;
 	public static final int WORLD_SIZE = 32;
 
 	public static final int RENDER_DISTANCE = 5;
@@ -41,7 +41,7 @@ public class World {
 
 		seed = new Random().nextInt(10000000);
 
-		time = 6;
+		time = 18;
 
 		seaLevel = 155;
 		if(testWorld)
@@ -58,13 +58,14 @@ public class World {
 	public void update() {
 		Engine.getCamera().move();
 		
-		time += 0.001f;
+		time += Engine.getDelta()/10;
 		if (time >= 24) {
 			time = 0;
 		}
 
-		sun.setPosition(0, (float) (SUN_DISTANCE * Math.sin(2 * Math.PI * (time / 24))),
-				(float) (SUN_DISTANCE * Math.cos(2 * Math.PI * (time / 24))));
+		float y = (float) (SUN_DISTANCE * Math.sin(Math.PI * (time - 2.25) / 24));
+		float z = (float) (SUN_DISTANCE * Math.cos(Math.PI * (time - 2.25) / 24));
+		sun.setPosition(0, y, z);
 	}
 
 	public float getTerrainHeightAt(float x, float z) {

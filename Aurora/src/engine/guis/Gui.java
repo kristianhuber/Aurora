@@ -11,11 +11,13 @@ public class Gui {
 	private int texture;
 	private boolean colored = false;
 	private Vector4f color = new Vector4f(0, 0, 0, 0);
+	private String ID;
 
 	public Gui(String texture, float x, float y, float width, float height) {
-		this.position = Calculator.toOpenGLCoordinates(x, y, width, height);
-		this.texture = TextureManager.getTexture(texture).getID();
 		this.scale = Calculator.toOpenGLScale(width, height);
+		this.position = Calculator.toOpenGLCoordinates(x, y, scale.x, scale.y);
+		this.texture = TextureManager.getTexture(texture).getID();
+		this.ID = texture;
 	}
 	
 	public Gui(Vector4f color, float x, float y, float width, float height) {
@@ -23,6 +25,7 @@ public class Gui {
 		this.position = Calculator.toOpenGLCoordinates(x, y, scale.x, scale.y);
 		this.color = color;
 		this.colored = true;
+		this.ID = color.toString();
 	}
 
 	public int getTexture() {
@@ -55,5 +58,10 @@ public class Gui {
 	
 	public boolean isColored() {
 		return colored;
+	}
+	
+	@Override
+	public String toString() {
+		return ID;
 	}
 }

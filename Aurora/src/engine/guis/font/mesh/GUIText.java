@@ -3,7 +3,6 @@ package engine.guis.font.mesh;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
-import engine.guis.font.FontManager;
 import engine.rendering.models.ModelManager;
 import engine.util.Calculator;
 
@@ -66,14 +65,7 @@ public class GUIText {
 	}
 
 	public GUIText(String text, float fontSize, FontType font, float x, float y){
-		this(text, fontSize, font, Calculator.toCenteredOpenGLCoordinates(x, y), 0.5f, false);
-	}
-	
-	/**
-	 * Remove the text from the screen.
-	 */
-	public void remove() {
-		FontManager.removeText(this);
+		this(text, fontSize / 8, font, Calculator.toCenteredOpenGLCoordinates(x, y), 0.5f, false);
 	}
 
 	/**
@@ -90,6 +82,10 @@ public class GUIText {
 		int vao = ModelManager.loadToVAO(data.getVertexPositions(), data.getTextureCoords());
 		ModelManager.removeVAO(this.textMeshVao);
 		this.setMeshInfo(vao, data.getVertexCount());
+	}
+	
+	public String getText() {
+		return textString;
 	}
 	
 	/**

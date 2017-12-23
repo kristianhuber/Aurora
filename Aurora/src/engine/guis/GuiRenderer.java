@@ -1,8 +1,5 @@
 package engine.guis;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
@@ -14,7 +11,6 @@ import engine.rendering.models.RawModel;
 import engine.util.Calculator;
 
 public class GuiRenderer {
-	private static List<Gui> guis  = new ArrayList<Gui>();
 	private static GuiShader shader;
 	private static RawModel quad;
 
@@ -28,8 +24,7 @@ public class GuiRenderer {
 	}
 
 	/* Renders all of the GUIs */
-	public static void render() {
-
+	public static void render(GuiList guis) {
 		shader.start();
 
 		// Enables the settings required to render GUIs
@@ -38,9 +33,8 @@ public class GuiRenderer {
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		GL20.glEnableVertexAttribArray(0);
 		GL11.glEnable(GL11.GL_BLEND);
-
-		// Renders each individual GUI
-		for (Gui gui : guis) {
+		
+		for (Gui gui : guis.getAllItems()) {
 			// Loads the texture to OpenGL texture 0
 			if (!gui.isColored()) {
 				GL13.glActiveTexture(GL13.GL_TEXTURE0);
@@ -64,17 +58,7 @@ public class GuiRenderer {
 
 		shader.stop();
 	}
-
-	/* Add a texture to the render list */
-	public static void addGui(Gui g) {
-		guis.add(g);
-	}
-
-	/* Remove a texture from the render list */
-	public static void removeGui(Gui g) {
-		guis.remove(g);
-	}
-
+	
 	/* Destroy the shader */
 	public static void cleanUp() {
 		shader.cleanUp();

@@ -4,7 +4,6 @@ import java.awt.Toolkit;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
-import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.ContextAttribs;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
@@ -41,7 +40,7 @@ public abstract class Engine {
 	protected World world;
 	
 	private RenderMode renderWorld;
-	protected RenderMode mode;
+	private RenderMode mode;
 	
 	/* Constructor Method */
 	public Engine() {
@@ -91,8 +90,6 @@ public abstract class Engine {
 		MasterRenderer.initialize();
 		FontManager.initialize();
 		GuiRenderer.initalize();
-
-		Engine.showMouse(false);
 		
 		this.preRender();
 		
@@ -134,13 +131,18 @@ public abstract class Engine {
 		return (world != null);
 	}
 	
+	protected void setRenderMode(RenderMode renderMode) {
+		renderMode.initialize();
+		this.mode = renderMode;
+	}
+	
 	protected void renderWorld() {
 		if(renderWorld == null) {
 			world = new World(testWorld);
 			camera = new Camera(world);	
 			renderWorld = new RenderWorld(world);
 		}
-		this.mode = renderWorld;
+		this.setRenderMode(renderWorld);
 	}
 		
 	/* Do stuff after rendering */
@@ -151,11 +153,6 @@ public abstract class Engine {
 	
 	/* Load All Your Resources Here */
 	protected abstract void loadResources();
-	
-	/* Toggles if the mouse is shown */
-	public static void showMouse(boolean show) {
-		Mouse.setGrabbed(!show);
-	}
 
 	/* Returns the difference in time between renders */
 	public static float getDelta() {

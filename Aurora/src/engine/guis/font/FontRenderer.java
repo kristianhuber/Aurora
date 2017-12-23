@@ -20,6 +20,7 @@ public class FontRenderer {
 	}
 	
 	public void render(Map<FontType, List<GUIText>> texts){
+		
 		prepare();
 		for(FontType font : texts.keySet()){
 			GL13.glActiveTexture(GL13.GL_TEXTURE0);
