@@ -7,11 +7,17 @@ out vec4 out_Color;
 uniform sampler2D guiTexture;
 uniform float colored;
 uniform vec4 color;
+uniform float filtered;
 
 void main(void){
 
 	if(colored == 0){
-		out_Color = texture(guiTexture,textureCoords);
+		vec4 textureColor = texture(guiTexture,textureCoords);
+		if(filtered == 1){
+			out_Color = vec4(textureColor.r + color.r, textureColor.g + color.g, textureColor.b + color.b, textureColor.a + color.a);
+		}else{
+			out_Color = textureColor;
+		}
 	}else{
 		out_Color = color;
 	}

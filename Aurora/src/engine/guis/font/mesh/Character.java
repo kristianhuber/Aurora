@@ -58,7 +58,7 @@ public class Character {
 		this.sizeY = sizeY;
 		this.xMaxTextureCoord = xTexSize + xTextureCoord;
 		this.yMaxTextureCoord = yTexSize + yTextureCoord;
-		this.xAdvance = xAdvance;
+		this.xAdvance = xAdvance + 0.002;
 	}
 
 	protected int getId() {

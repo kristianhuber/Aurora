@@ -12,6 +12,7 @@ public class Gui {
 	private boolean colored = false;
 	private Vector4f color = new Vector4f(0, 0, 0, 0);
 	private String ID;
+	private boolean hasFilter = false;
 
 	public Gui(String texture, float x, float y, float width, float height) {
 		this.scale = Calculator.toOpenGLScale(width, height);
@@ -27,9 +28,22 @@ public class Gui {
 		this.colored = true;
 		this.ID = color.toString();
 	}
+	
+	public void update() {
+		
+	}
 
 	public int getTexture() {
 		return texture;
+	}
+	
+	public String getID() {
+		return ID;
+	}
+	
+	public void setTexture(String texture) {
+		this.ID = texture;
+		this.texture = TextureManager.getTexture(texture).getID();
 	}
 	
 	public Vector2f getPosition() {
@@ -50,6 +64,19 @@ public class Gui {
 	
 	public void setColor(Vector4f color) {
 		this.color = color;
+	}
+	
+	public void addFilter(Vector4f color) {
+		this.hasFilter = true;
+		this.color = color;
+	}
+	
+	public void removeFilter() {
+		this.hasFilter = false;
+	}
+	
+	public boolean hasFilter() {
+		return hasFilter;
 	}
 	
 	public Vector4f getColor() {

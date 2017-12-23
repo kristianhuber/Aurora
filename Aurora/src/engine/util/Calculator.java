@@ -57,6 +57,14 @@ public class Calculator {
 		return new Vector2f(x2, -y2);
 	}
 	
+	/* Converts Java coordinates to OpenGL*/
+	public static Vector2f toOpenGLCoordinates(float x, float y) {
+		float x2 = 2 * x / Display.getWidth() - 1;
+		float y2 = 2 * y / Display.getHeight() - 1;
+		
+		return new Vector2f(x2, -y2);
+	}
+	
 	/* Creates a matrix used to change a 2D object's position and scale */
 	public static Matrix4f createTransformationMatrix(Vector2f translation, Vector2f scale) {
 		Matrix4f matrix = new Matrix4f();

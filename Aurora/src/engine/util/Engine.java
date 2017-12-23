@@ -42,6 +42,8 @@ public abstract class Engine {
 	private RenderMode renderWorld;
 	private RenderMode mode;
 	
+	private boolean run;
+	
 	/* Constructor Method */
 	public Engine() {
 		Engine.HEIGHT = (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight();
@@ -51,6 +53,7 @@ public abstract class Engine {
 		Engine.delta = 0;
 
 		this.testWorld = false;
+		this.run = true;
 	}
 	
 	protected void start(String title, boolean fullScreen) {
@@ -98,7 +101,9 @@ public abstract class Engine {
 		}
 		
 		// Main Loop
-		while (!Display.isCloseRequested()) {
+		while (!Display.isCloseRequested() && run) {
+			InputManager.tick();
+			
 			this.loop();
 			
 			this.mode.render();
@@ -127,6 +132,10 @@ public abstract class Engine {
 		Display.destroy();
 	}
 	
+	public void endProgram() {
+		this.run = false;
+	}
+	
 	public boolean isWorldCreated() {
 		return (world != null);
 	}
@@ -136,7 +145,7 @@ public abstract class Engine {
 		this.mode = renderMode;
 	}
 	
-	protected void renderWorld() {
+	public void renderWorld() {
 		if(renderWorld == null) {
 			world = new World(testWorld);
 			camera = new Camera(world);	

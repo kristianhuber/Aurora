@@ -13,6 +13,7 @@ public class GuiShader extends ShaderProgram {
 	private int location_transformationMatrix;
 	private int location_colored;
 	private int location_color;
+	private int location_filtered;
 
 	/* Constructor: Passes the file locations of the shaders to the super class */
 	public GuiShader() {
@@ -29,6 +30,7 @@ public class GuiShader extends ShaderProgram {
 		location_transformationMatrix = super.getUniformLocation("transformationMatrix");
 		location_colored = super.getUniformLocation("colored");
 		location_color = super.getUniformLocation("color");
+		location_filtered = super.getUniformLocation("filtered");
 	}
 	
 	/* Loads a transformation matrix to the vertex shader */
@@ -36,8 +38,10 @@ public class GuiShader extends ShaderProgram {
 		super.loadMatrix(location_transformationMatrix, matrix);
 	}
 	
-	public void loadColorData(boolean colored, Vector4f color) {
+	
+	public void loadColorData(boolean filtered, boolean colored, Vector4f color) {
 		super.loadBoolean(location_colored, colored);
 		super.load4DVector(location_color, color);
+		super.loadBoolean(location_filtered, filtered);
 	}
 }

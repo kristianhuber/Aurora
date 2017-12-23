@@ -65,7 +65,7 @@ public class GUIText {
 	}
 
 	public GUIText(String text, float fontSize, FontType font, float x, float y){
-		this(text, fontSize / 8, font, Calculator.toCenteredOpenGLCoordinates(x, y), 0.5f, false);
+		this(text, fontSize / 8, font, Calculator.toCenteredOpenGLCoordinates(x, y), 1, false);
 	}
 
 	/**

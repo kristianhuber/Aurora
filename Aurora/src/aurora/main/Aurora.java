@@ -28,7 +28,9 @@ public class Aurora extends Engine {
 		TextureManager.loadTexture("Default", "gui");
 		TextureManager.loadTexture("backgroundImage", "gui");
 		TextureManager.loadTexture("button", "gui");
-		TextureManager.loadTexture("button_select", "gui");
+		TextureManager.loadTexture("button_hover", "gui");
+		TextureManager.loadTexture("Birch2", "gui");
+		TextureManager.loadTexture("Birch2_hover", "gui");
 
 		// Terrain Textures
 		TextureManager.loadTexture("GrassTexture");
@@ -62,11 +64,12 @@ public class Aurora extends Engine {
 
 		FontManager.addFont("papyrus");
 		FontManager.addFont("tempus");
+		FontManager.addFont("cherokee");
 	}
 
 	@Override
 	protected void preRender() {
-		mainMenu = new RenderMainMenu();
+		mainMenu = new RenderMainMenu(this);
 		this.setRenderMode(mainMenu);
 	}
 

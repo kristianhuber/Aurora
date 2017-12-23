@@ -44,7 +44,7 @@ public class GuiRenderer {
 			// Applies transformations to get it in the correct position
 			Matrix4f matrix = Calculator.createTransformationMatrix(gui.getPosition(), gui.getScale());
 			shader.loadTransformation(matrix);
-			shader.loadColorData(gui.isColored(), gui.getColor());
+			shader.loadColorData(gui.hasFilter(), gui.isColored(), gui.getColor());
 
 			// Finally renders it to the screen
 			GL11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, 0, quad.getVertexCount());

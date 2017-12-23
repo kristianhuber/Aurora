@@ -33,6 +33,15 @@ public class GuiList {
 		}
 	}
 
+	public void update() {
+		for (Integer i : items.keySet()) {
+			ArrayList<Gui> batch = items.get(i);
+			for (Gui s : batch) {
+				s.update();
+			}
+		}
+	}
+	
 	public ArrayList<Gui> getAllItems() {
 		ArrayList<Gui> output = new ArrayList<Gui>();
 		for (Integer i : items.keySet()) {
