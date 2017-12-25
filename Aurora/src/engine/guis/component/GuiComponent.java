@@ -2,6 +2,8 @@ package engine.guis.component;
 
 import java.awt.geom.Rectangle2D;
 
+import org.lwjgl.util.vector.Vector3f;
+
 import engine.guis.Gui;
 import engine.guis.font.FontManager;
 import engine.guis.font.mesh.GUIText;
@@ -44,6 +46,18 @@ public class GuiComponent extends Gui {
 		}
 	}
 
+	public void setForegroundColor(Vector3f color) {
+		gText.setColor(color);
+	}
+	
+	public void setTextMode(int mode) {
+		gText.setMode(mode);
+	}
+	
+	public void setTextSecondary(Vector3f color) {
+		gText.setSecondaryColor(color);
+	}
+	
 	public interface HoverAction {
 		public void onHover();
 	}
@@ -62,8 +76,7 @@ public class GuiComponent extends Gui {
 
 	public void setText(String text) {
 		this.text = text;
-		gText = new GUIText(text, 16, FontManager.font("tempus"), this.getPosition().x + this.getScale().x / 2,
-				this.getPosition().y);
+		gText = new GUIText(text, 16, FontManager.font("tempus"), area.x + 50, area.y + 25);
 		render.loadText(gText);
 	}
 

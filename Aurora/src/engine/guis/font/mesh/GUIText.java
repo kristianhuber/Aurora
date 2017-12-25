@@ -13,7 +13,15 @@ import engine.util.Calculator;
  *
  */
 public class GUIText {
-
+	
+	public static final int MODE_PLAIN = 0;
+	public static final int MODE_GLOWING = 1;
+	public static final int MODE_OUTLINE = 2;
+	public static final int MODE_DROPSHADOW = 3;
+	
+	private Vector3f secondaryColor;
+	private int mode;
+	
 	private String textString;
 	private float fontSize;
 
@@ -65,7 +73,7 @@ public class GUIText {
 	}
 
 	public GUIText(String text, float fontSize, FontType font, float x, float y){
-		this(text, fontSize / 8, font, Calculator.toCenteredOpenGLCoordinates(x, y), 1, false);
+		this(text, fontSize / 8, font, Calculator.toOpenGLScale(x, y), 1, false);
 	}
 
 	/**
@@ -84,6 +92,25 @@ public class GUIText {
 		this.setMeshInfo(vao, data.getVertexCount());
 	}
 	
+	public Vector3f getSecondaryColor() {
+		if(secondaryColor == null) {
+			secondaryColor = new Vector3f(0, 0, 0);
+		}
+		return secondaryColor;
+	}
+	
+	public void setSecondaryColor(Vector3f color) {
+		this.secondaryColor = color;
+	}
+	
+	public void setMode(int mode) {
+		this.mode = mode;
+	}
+	
+	public int getMode() {
+		return this.mode;
+	}
+	
 	public String getText() {
 		return textString;
 	}
@@ -100,6 +127,10 @@ public class GUIText {
 	 */
 	public void setColour(float r, float g, float b) {
 		colour.set(r, g, b);
+	}
+	
+	public void setColor(Vector3f color) {
+		colour = color;
 	}
 
 	/**

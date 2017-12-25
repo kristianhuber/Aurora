@@ -12,6 +12,8 @@ public class FontShader extends ShaderProgram{
 	
 	private int location_colour;
 	private int location_translation;
+	private int location_secondaryColor;
+	private int location_mode;
 	
 	public FontShader() {
 		super(VERTEX_FILE, FRAGMENT_FILE);
@@ -21,12 +23,19 @@ public class FontShader extends ShaderProgram{
 	protected void getAllUniformLocations() {
 		location_colour = super.getUniformLocation("colour");
 		location_translation = super.getUniformLocation("translation");
+		location_mode = super.getUniformLocation("mode");
+		location_secondaryColor = super.getUniformLocation("secondaryColor");
 	}
 
 	@Override
 	protected void bindAttributes() {
 		super.bindAttribute(0, "position");
 		super.bindAttribute(1, "textureCoords");
+	}
+	
+	public void loadMode(int mode, Vector3f secondary) {
+		this.loadVector(location_secondaryColor, secondary);
+		this.loadInt(location_mode, mode);
 	}
 	
 	protected void loadColour(Vector3f colour){

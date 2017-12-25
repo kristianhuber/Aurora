@@ -6,23 +6,39 @@ out vec4 out_colour;
 
 uniform vec3 colour;
 uniform sampler2D fontAtlas;
+uniform int mode;
+uniform vec3 secondaryColor;
 
-const float width = 0.5;
+const float width = 0.45;
 const float edge = 0.1;
 
-//for plain, width = 0, edge is same
-//width > edge for outline
-//edge > width for glowing
-const float borderWidth = 0.4;
-const float borderEdge = 0.6;
-
-const vec3 outlineColor2 = vec3(0.604, 0.804, 0.196);
-const vec3 outlineColor = vec3(0.678, 1, 0.184);
-
-//Drop shadow effect, fix with more padding or smaller offset
-const vec2 offset = vec2(0.000, 0.000);
-
 void main(void){
+
+
+	//Plain, width = 0, edge is same
+	
+	float borderWidth = 0.0;
+	float borderEdge = 0.5;
+	vec2 offset = vec2(0.0, 0.0);
+	
+	// Glowing: width < edge
+	if(mode == 1){
+		borderWidth = 0.4;
+		borderEdge = 0.6;
+	}
+	
+	// Outline: width > edge
+	if(mode == 2){
+		borderWidth = 0.5;
+		borderEdge = 0.1;
+	}	
+	
+	// Drop Shadow
+	if(mode == 3){
+		borderWidth = 0.5;
+		borderEdge = 0.1;
+		offset = vec2(0.003, 0.003);
+	}
 
 	float distance = 1.0 - texture(fontAtlas, pass_textureCoords).a;
 	float alpha = 1.0 - smoothstep(width, width + edge, distance);
@@ -31,7 +47,7 @@ void main(void){
 	float outlineAlpha = 1.0 - smoothstep(borderWidth, borderWidth + borderEdge, distance2);
 	
 	float overallAlpha = alpha + (1.0 - alpha) * outlineAlpha;
-	vec3 overallColor = mix(outlineColor, colour, alpha / overallAlpha);
+	vec3 overallColor = mix(secondaryColor, colour, alpha / overallAlpha);
 	
 	out_colour = vec4(overallColor, overallAlpha);
 
