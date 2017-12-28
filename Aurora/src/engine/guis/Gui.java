@@ -32,6 +32,18 @@ public class Gui {
 	public void update() {
 		
 	}
+	
+	public void setSize(float width, float height) {
+		this.scale = Calculator.toOpenGLScale(width, height);
+	}
+	
+	public void setWidth(float width) {
+		this.scale.x = Calculator.toOpenGLScale(width, 0).x;
+	}
+	
+	public void setHeight(float height) {
+		this.scale.y = Calculator.toOpenGLScale(0, height).y;
+	}
 
 	public int getTexture() {
 		return texture;
@@ -50,7 +62,7 @@ public class Gui {
 		return position;
 	}
 	
-	public void setPosition(int x, int y) {
+	public void setPosition(float x, float y) {
 		this.position = Calculator.toOpenGLCoordinates(x, y, scale.x, scale.y);
 	}
 

@@ -10,8 +10,6 @@ import engine.rendering.MasterRenderer;
 import engine.rendering.models.ModelManager;
 import engine.rendering.models.RawModel;
 import engine.rendering.textures.TextureManager;
-import engine.world.World;
-import engine.world.terrain.Terrain;
 
 /**
  * @Description: Draws the skybox in the world

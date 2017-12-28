@@ -13,10 +13,16 @@ public class Aurora extends Engine {
 
 	private RenderMode mainMenu;
 
-	// How are you supposed to quickly add GUIs?
-	// Need to make the GUI converter on a fixed scale
+	// How are you supposed to quickly add GUIs in the world (need a better render mode)?
+	
+	// Need to make loading chunks
+	
+	// Make a progress bar, slider, check box
+	
+	// Make it so that text updates when GUI is resized
+	
 	public Aurora() {
-		this.testWorld = true;
+		this.testWorld = false;
 		this.start("Aurora", true);
 	}
 	
@@ -31,7 +37,8 @@ public class Aurora extends Engine {
 		TextureManager.loadTexture("button_hover", "gui");
 		TextureManager.loadTexture("Birch2", "gui");
 		TextureManager.loadTexture("Birch2_hover", "gui");
-
+		TextureManager.loadTexture("progressbar", "gui");
+		
 		// Terrain Textures
 		TextureManager.loadTexture("GrassTexture");
 		TextureManager.loadTexture("Mud");

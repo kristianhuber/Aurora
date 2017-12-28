@@ -20,7 +20,6 @@ public class FontManager {
 		renderer.render(texts);
 	}
 	
-	
 	public static void addFont(String font) {
 		FontType fontType = new FontType(font);
 		FontManager.fonts.put(font, fontType);

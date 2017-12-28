@@ -21,7 +21,7 @@ public class RenderWorld extends RenderMode{
 		positonVec.setColour(1, 0.45f, 0);
 		this.loadText(positonVec);
 		
-		time = new GUIText("Time", 16, FontManager.font("papyrus"), 250, 0);
+		time = new GUIText("Time", 16, FontManager.font("papyrus"), 750, 0);
 		time.setColour(1, 0.45f, 0);
 		this.loadText(time);
 	}

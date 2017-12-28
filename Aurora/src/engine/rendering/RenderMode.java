@@ -24,6 +24,10 @@ public abstract class RenderMode {
 		
 	}
 	
+	public void addGui(Gui g) {
+		guis.add(1, g);
+	}
+	
 	public void addGui(int priority, Gui g) {
 		guis.add(priority, g);
 	}

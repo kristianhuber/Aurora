@@ -69,8 +69,8 @@ public abstract class Engine {
 			if (fullScreen) {
 				System.setProperty("org.lwjgl.opengl.Window.undecorated", "true");
 			} else {
-				Engine.HEIGHT *= 0.95f;
-				Engine.WIDTH *= 0.95f;
+				Engine.HEIGHT *= 0.99f;
+				Engine.WIDTH *= 0.99f;
 			}
 
 			Display.setDisplayMode(new DisplayMode(WIDTH, HEIGHT));

@@ -34,7 +34,7 @@ public class GUIText {
 	private int numberOfLines;
 
 	private FontType font;
-
+	
 	private boolean centerText = false;
 
 	/**
@@ -67,13 +67,17 @@ public class GUIText {
 		this.textString = text;
 		this.fontSize = fontSize;
 		this.font = font;
-		this.position = position;
 		this.lineMaxSize = maxLineLength;
+		this.position = position;
 		this.centerText = centered;
 	}
 
 	public GUIText(String text, float fontSize, FontType font, float x, float y){
 		this(text, fontSize / 8, font, Calculator.toOpenGLScale(x, y), 1, false);
+	}
+	
+	public GUIText(String text, float fontSize, FontType font, float x, float y, boolean centered){
+		this(text, fontSize / 8, font, Calculator.toOpenGLScale(x, y), 1, centered);
 	}
 
 	/**
@@ -90,6 +94,11 @@ public class GUIText {
 		int vao = ModelManager.loadToVAO(data.getVertexPositions(), data.getTextureCoords());
 		ModelManager.removeVAO(this.textMeshVao);
 		this.setMeshInfo(vao, data.getVertexCount());
+	}
+	
+	public void setCentered(boolean centered) {
+		this.centerText = centered;
+		this.setText(textString);
 	}
 	
 	public Vector3f getSecondaryColor() {
@@ -109,6 +118,10 @@ public class GUIText {
 	
 	public int getMode() {
 		return this.mode;
+	}
+	
+	public void setPosition(float x, float y) {
+		this.position = Calculator.toOpenGLScale(x, y);
 	}
 	
 	public String getText() {
