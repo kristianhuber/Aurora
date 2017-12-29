@@ -38,6 +38,7 @@ public class Aurora extends Engine {
 		TextureManager.loadTexture("Birch2", "gui");
 		TextureManager.loadTexture("Birch2_hover", "gui");
 		TextureManager.loadTexture("progressbar", "gui");
+		TextureManager.loadTexture("textfield", "gui");
 		
 		// Terrain Textures
 		TextureManager.loadTexture("GrassTexture");

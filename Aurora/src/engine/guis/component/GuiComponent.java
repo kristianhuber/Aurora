@@ -79,7 +79,7 @@ public class GuiComponent extends Gui {
 
 			} else if (aligment == GuiComponent.TEXT_ALIGN_LEFT) {
 
-				gText = new GUIText(text, 16, FontManager.font("cherokee"), area.x + area.width * 0.1f,
+				gText = new GUIText(text, area.height / 8, FontManager.font("cherokee"), area.x + area.width * 0.05f,
 						area.y + area.height / 4);
 
 			}

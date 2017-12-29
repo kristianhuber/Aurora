@@ -1,5 +1,6 @@
 package aurora.mainmenu;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector3f;
 
@@ -8,6 +9,7 @@ import engine.guis.Gui;
 import engine.guis.GuiRenderer;
 import engine.guis.component.GuiComponent.ClickAction;
 import engine.guis.component.GuiProgressBar;
+import engine.guis.component.GuiTextField;
 import engine.guis.font.FontManager;
 import engine.guis.font.mesh.GUIText;
 import engine.rendering.RenderMode;
@@ -17,12 +19,13 @@ public class RenderMainMenu extends RenderMode {
 	private MenuButton button, button2, button3, button4, button5;
 	private Gui backgroundImage;
 	private GuiProgressBar bar;
+	private GuiTextField field;
 	private GUIText title;
 
 	private Vector3f foregroundColor = new Vector3f(255 / 255f, 255 / 255f, 255 / 255f);
 
 	public RenderMainMenu(Aurora aurora) {
-
+		
 		title = new GUIText("Aurora", 42, FontManager.font("cherokee"), 1225, 0, false);
 		title.setColour(34 / 255f, 139 / 255f, 34 / 255f);
 		title.setMode(GUIText.MODE_GLOWING);
@@ -47,6 +50,9 @@ public class RenderMainMenu extends RenderMode {
 		bar.showProgress(true);
 		bar.setForegroundColor(new Vector3f(0, 0, 0));
 		this.addGui(bar);
+		
+		field = new GuiTextField(this, "textfield", 50, 256, 512, 64);
+		this.addGui(field);
 
 		button2 = new MenuButton(this, 1050, 360, 850, 128);
 		button2.setText("Scenarios");
@@ -95,6 +101,10 @@ public class RenderMainMenu extends RenderMode {
 	@Override
 	public void render() {
 
+		if(Keyboard.getEventKey() == Keyboard.KEY_A) {
+			bar.increaseProgress(1);
+		}
+		
 		this.resetScreen();
 		this.guis.update();
 		GuiRenderer.render(this.guis);
