@@ -15,9 +15,9 @@ import engine.world.terrain.Terrain;
 
 public class Camera {
 
-	private final float MOUSE_TOLERANCE = 5.0F;
+	private final float MOUSE_TOLERANCE = 3.0F;
 	private final float Y_OFFSET = 5F;
-	private final float SCROLL = 150.0F;
+	private final float SCROLL = 100.0F;
 	private float SPEED = 15.0F;
 
 	private Vector3f position = new Vector3f(0, 50, 0);

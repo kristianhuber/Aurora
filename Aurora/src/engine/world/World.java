@@ -23,7 +23,7 @@ public class World {
 	public static final float SUN_DISTANCE = 5000;
 	public static final int WORLD_SIZE = 32;
 
-	public static final int RENDER_DISTANCE = 5;
+	public static final int RENDER_DISTANCE = 4;
 
 	private Map<TexturedModel, List<Entity>> entities = new HashMap<TexturedModel, List<Entity>>();
 	private Map<Integer, Chunk> terrainMap = new HashMap<Integer, Chunk>();
@@ -38,9 +38,13 @@ public class World {
 	public World(boolean testWorld) {
 
 		this.testWorld = testWorld;
-
+		
 		seed = new Random().nextInt(10000000);
 
+		/*Entity l = new Entity(this, "stallRev10",
+				new Vector3f(World.WORLD_SIZE * Terrain.SIZE / 2, 400, World.WORLD_SIZE * Terrain.SIZE / 2 + 10));
+		this.addEntity(l);*/
+		
 		time = 19.5f;
 
 		seaLevel = 155;
