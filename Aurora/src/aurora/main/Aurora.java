@@ -71,8 +71,8 @@ public class Aurora extends Engine {
 		ModelManager.loadModel("pine");
 		
 		//Load TexturedModels:
-		//ModelManager.loadModel2("stallRev10");
-		//TextureManager.loadEntityTexture("stallRev10");
+		ModelManager.loadModel2("stallRev10");
+		TextureManager.loadEntityTexture("stallRev10");
 
 		FontManager.addFont("papyrus");
 		FontManager.addFont("tempus");
@@ -89,7 +89,7 @@ public class Aurora extends Engine {
 	protected void loop() {
 		if (this.isWorldCreated()) {
 			if (!testWorld)
-				Engine.getCamera().setFlying(false);
+				Engine.getCamera().setFlying(true);
 		}
 		if (Keyboard.isKeyDown(Keyboard.KEY_TAB)) {
 			this.renderWorld();

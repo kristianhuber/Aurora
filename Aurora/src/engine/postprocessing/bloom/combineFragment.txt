@@ -14,7 +14,7 @@ void main(void){
 	
 	out_Colour = sceneColor + highlightColor * 0.75;
 	
-	float average = out_Colour.r + out_Colour.g + out_Colour.b;
-	average = average / 3;
-	out_Colour = vec4(average, average, average, 1);
+	//float average = out_Colour.r + out_Colour.g + out_Colour.b;
+	//average = average / 3;
+	//out_Colour = vec4(average, average, average, 1);
 }
