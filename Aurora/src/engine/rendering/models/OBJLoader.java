@@ -1,10 +1,13 @@
 package engine.rendering.models;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
@@ -15,7 +18,6 @@ import org.lwjgl.util.vector.Vector3f;
  */
 
 public class OBJLoader {
-
 	/* Loads an OBJ model given the file name */
 	public static ModelData loadOBJ(String ID) {
 
@@ -29,8 +31,8 @@ public class OBJLoader {
 		try {
 
 			// Loads the file and starts reading
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					OBJLoader.class.getResourceAsStream("/aurora/assets/models/" + ID + ".obj")));
+			BufferedReader reader = new BufferedReader(
+					new InputStreamReader(OBJLoader.class.getResourceAsStream("/aurora/assets/models/" + ID + ".obj")));
 
 			while (true) {
 
@@ -107,6 +109,106 @@ public class OBJLoader {
 		ModelData data = new ModelData(verticesArray, texturesArray, normalsArray, indicesArray, furthest);
 
 		return data;
+	}
+
+	// Returns the raw model of the given entity ID.
+	public static RawModel loadRawModel(String ID) throws FileNotFoundException {
+		System.out.print("[INFO] Loading Model: " + ID + " Result: ");
+		File configFile = new File("textured models\\" + ID + "\\config.txt");
+		Scanner sc = new Scanner(configFile);
+		String data = "";
+		while (sc.hasNextLine())
+			data += sc.nextLine() + "|";
+
+		// getting level of Detail number:
+		String[] dataArray = data.split("\\|");
+		List<String> levelOfDetailInfo = new ArrayList<String>();
+		for (int i = 0; i < dataArray.length; i++)
+			if (dataArray[i].length() >= 2 && dataArray[i].substring(0, 2).equals("c:"))
+				levelOfDetailInfo.add(dataArray[i].substring(2));
+			else if (!levelOfDetailInfo.isEmpty())
+				break;
+
+		String verticesString = "";
+		String normalsString = "";
+		String texturesString = "";
+		List<String[]> indicesStrings = new ArrayList<String[]>();
+
+		for (int i = 0; i < dataArray.length; i++)
+			if (dataArray[i].length() >= 2)
+				if (dataArray[i].substring(0, 2).equals("v:"))
+					verticesString = dataArray[i].substring(2);
+				else if (dataArray[i].substring(0, 2).equals("n:"))
+					normalsString = dataArray[i].substring(2);
+				else if (dataArray[i].substring(0, 2).equals("t:"))
+					texturesString = dataArray[i].substring(2);
+				else if (dataArray[i].substring(0, 2).equals("i:"))
+					indicesStrings.add(dataArray[i].substring(2).split("\\,"));
+
+		// checking to make sure the number of level of details is correct.
+		if (levelOfDetailInfo.size() != indicesStrings.size()) {
+			System.out.println("[ERROR] config file incorrect!");
+			return null;
+		}
+
+		// Constructing the vertex, normals, and texture arrays.
+		String[] verticesStringArray = verticesString.split("\\,");
+		String[] normalsStringArray = normalsString.split("\\,");
+		String[] texturesStringArray = texturesString.split("\\,");
+		float[] vertices = new float[verticesStringArray.length];
+		float[] normals = new float[normalsStringArray.length];
+		float[] textures = new float[texturesStringArray.length];
+		for (int i = 0; i < verticesStringArray.length / 3; i++) {
+			vertices[i * 3] = Float.parseFloat(verticesStringArray[i * 3]);
+			vertices[i * 3 + 1] = Float.parseFloat(verticesStringArray[i * 3 + 1]);
+			vertices[i * 3 + 2] = Float.parseFloat(verticesStringArray[i * 3 + 2]);
+			normals[i * 3] = Float.parseFloat(normalsStringArray[i * 3]);
+			normals[i * 3 + 1] = Float.parseFloat(normalsStringArray[i * 3 + 1]);
+			normals[i * 3 + 2] = Float.parseFloat(normalsStringArray[i * 3 + 2]);
+			textures[i * 2] = Float.parseFloat(texturesStringArray[i * 2]);
+			textures[i * 2 + 1] = Float.parseFloat(texturesStringArray[i * 2 + 1]);
+		}
+
+		// Getting the farthest length:
+		float farthestLength = 0;
+		for (int i = 0; i < vertices.length / 3; i++) {
+			float length = (float) (Math.pow(vertices[i * 3], 2) + Math.pow(vertices[i * 3 + 1], 2)
+					+ Math.pow(vertices[i * 3 + 2], 2));
+			if (length > farthestLength)
+				farthestLength = length;
+		}
+
+		// Now the index array has to be constructed which is just going to be each
+		// index array one after the other in one giant array. The starting indices and
+		// lengths of each set of indices have to be stored in the level of detail data
+		// strings.
+		int indicesSize = 0;
+		for (int i = 0; i < levelOfDetailInfo.size(); i++)
+			indicesSize += indicesStrings.get(i).length;
+
+		String[] indicesStringArray = new String[0];
+		for (int i = 0; i < levelOfDetailInfo.size(); i++) {
+			int startingIndex = indicesStringArray.length;
+			indicesStringArray = combineArrays(indicesStringArray, indicesStrings.get(i));
+			int currentLODLength = indicesStringArray.length - startingIndex;
+			levelOfDetailInfo.set(i, levelOfDetailInfo.get(i) + "," + startingIndex + "," + currentLODLength);
+		}
+
+		int[] indices = new int[indicesStringArray.length];
+		for (int i = 0; i < indices.length; i++)
+			indices[i] = Integer.parseInt(indicesStringArray[i]);
+
+		System.out.println("SUCCESS");
+		return ModelManager.loadToVAO(vertices, normals, textures, indices);
+	}
+
+	private static String[] combineArrays(String[] a, String[] b) {
+		String[] newArr = new String[a.length + b.length];
+		for (int i = 0; i < a.length; i++)
+			newArr[i] = a[i];
+		for (int i = a.length; i < a.length + b.length; i++)
+			newArr[i] = b[i - a.length];
+		return newArr;
 	}
 
 	/* Creates a vertex object to process */

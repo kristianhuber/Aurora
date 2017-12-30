@@ -1,5 +1,6 @@
 package engine.rendering.models;
 
+import java.io.FileNotFoundException;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
@@ -23,6 +24,10 @@ public class ModelManager {
 	private static List<Integer> VAOs = new ArrayList<Integer>();
 	private static List<Integer> VBOs = new ArrayList<Integer>();
 
+	public static void loadModelFromEntity(String ID) {
+
+	}
+
 	/* Loads a model given the model ID */
 	public static void loadModel(String ID) {
 
@@ -33,6 +38,18 @@ public class ModelManager {
 
 		// Stores it in the engine
 		ModelManager.models.put(ID, model);
+	}
+
+	// Loads a model from a level of Detail file.
+	public static void loadModel2(String ID) {
+		RawModel model;
+		try {
+			model = OBJLoader.loadRawModel(ID);
+			ModelManager.models.put(ID, model);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/* Loads a model given a string and vertices */
@@ -93,6 +110,23 @@ public class ModelManager {
 		return new RawModel(vaoID, indices.length);
 	}
 
+	public static RawModel loadToVAO(float[] vertices, float[] normals, float[] textures, int[] indices,
+			List<String> lodData) {
+		RawModel model = loadToVAO(vertices, textures, normals, indices);
+
+		int[][] lodDataArray = new int[lodData.size()][6];
+		for (int n = 0; n < lodData.size(); n++) {
+			String[] data = lodData.get(n).split("\\,");
+			int[] intData = new int[data.length];
+			for (int i = 0; i < intData.length; i++)
+				intData[i] = Integer.parseInt(data[i]);
+			lodDataArray[n] = intData;
+		}
+		model.setLODInfo(lodDataArray);
+
+		return model;
+	}
+
 	/* Loads a VAO and returns the ID for it, used in GUIs */
 	public static int loadToVAO(float[] positions, float[] textureCoords) {
 
@@ -126,7 +160,7 @@ public class ModelManager {
 
 		return vaoID;
 	}
-	
+
 	/* Removes a VAO, should only be used for text */
 	public static void removeVAO(int id) {
 		VAOs.remove(new Integer(id));
