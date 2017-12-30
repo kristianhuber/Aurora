@@ -69,6 +69,10 @@ public class Aurora extends Engine {
 		ModelManager.loadModel("Rock");
 		ModelManager.loadModel("lamp");
 		ModelManager.loadModel("pine");
+		
+		//Load TexturedModels:
+		//ModelManager.loadModel2("stallRev10");
+		//TextureManager.loadEntityTexture("stallRev10");
 
 		FontManager.addFont("papyrus");
 		FontManager.addFont("tempus");
