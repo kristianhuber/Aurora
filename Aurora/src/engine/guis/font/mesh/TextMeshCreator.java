@@ -61,6 +61,7 @@ public class TextMeshCreator {
 	}
 
 	private TextMeshData createQuadVertices(GUIText text, List<Line> lines, double max) {
+		text.setActualLength((float)max);
 		text.setNumberOfLines(lines.size());
 		double curserX = 0f;
 		double curserY = 0f;
@@ -136,5 +137,4 @@ public class TextMeshCreator {
 		}
 		return array;
 	}
-
 }

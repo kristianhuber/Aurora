@@ -267,6 +267,19 @@ public class GuiComponent extends Gui {
 	}
 
 	/**
+	 * Gets the text length
+	 * 
+	 * @return - Returns the OpenGL length of the text
+	 */
+	public float getTextLength() {
+		if (gText != null) {
+			return gText.getActualLength();
+		} else {
+			return 0;
+		}
+	}
+
+	/**
 	 * Sets the text
 	 * 
 	 * @param text

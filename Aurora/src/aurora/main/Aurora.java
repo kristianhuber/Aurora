@@ -22,7 +22,7 @@ public class Aurora extends Engine {
 	// Make it so that text updates when GUI is resized
 	
 	public Aurora() {
-		this.testWorld = false;
+		this.testWorld = true;
 		this.start("Aurora", true);
 	}
 	

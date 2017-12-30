@@ -53,7 +53,7 @@ public class RenderMainMenu extends RenderMode {
 		
 		field = new GuiTextField(this, "textfield", 50, 256, 512, 64);
 		this.addGui(field);
-
+		
 		button2 = new MenuButton(this, 1050, 360, 850, 128);
 		button2.setText("Scenarios");
 		button2.setForegroundColor(foregroundColor);
@@ -101,7 +101,7 @@ public class RenderMainMenu extends RenderMode {
 	@Override
 	public void render() {
 
-		if(Keyboard.getEventKey() == Keyboard.KEY_A) {
+		if(Keyboard.isKeyDown(Keyboard.KEY_A)) {
 			bar.increaseProgress(1);
 		}
 		

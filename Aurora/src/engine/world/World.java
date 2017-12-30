@@ -41,7 +41,7 @@ public class World {
 
 		seed = new Random().nextInt(10000000);
 
-		time = 18;
+		time = 19.5f;
 
 		seaLevel = 155;
 		if(testWorld)
@@ -58,7 +58,7 @@ public class World {
 	public void update() {
 		Engine.getCamera().move();
 		
-		time += Engine.getDelta()/10;
+		time += Engine.getDelta()/20;
 		if (time >= 24) {
 			time = 0;
 		}

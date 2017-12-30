@@ -126,7 +126,11 @@ public class MasterRenderer {
 		MasterRenderer.terrainRenderer.render(world,
 				MasterRenderer.shadowMapRenderer.getToShadowMapSpaceMatrix(), clipPlane);
 
-		MasterRenderer.skyboxRenderer.render(world.getSkyColor(), "day", "night", 0);
+		if(world.getWorldTime() < 6 || world.getWorldTime() > 20) {
+			MasterRenderer.skyboxRenderer.render(world.getSkyColor(), "day", "night", 1);
+		}else {
+			MasterRenderer.skyboxRenderer.render(world.getSkyColor(), "day", "night", 0);	
+		}
 	}
 
 	public static void prepare(Vector3f skyColor) {

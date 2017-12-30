@@ -66,6 +66,10 @@ public class Gui {
 		this.position = Calculator.toOpenGLCoordinates(x, y, scale.x, scale.y);
 	}
 
+	public void setPosition(float x) {
+		this.position.x = x;
+	}
+	
 	public Vector2f getScale() {
 		return scale;
 	}

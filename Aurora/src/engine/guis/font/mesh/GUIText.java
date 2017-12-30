@@ -35,6 +35,8 @@ public class GUIText {
 
 	private FontType font;
 	
+	private float actualLength;
+	
 	private boolean centerText = false;
 
 	/**
@@ -118,6 +120,10 @@ public class GUIText {
 	
 	public int getMode() {
 		return this.mode;
+	}
+	
+	public float getActualLength() {
+		return actualLength;
 	}
 	
 	public void setPosition(float x, float y) {
@@ -236,6 +242,10 @@ public class GUIText {
 	 */
 	protected String getTextString() {
 		return textString;
+	}
+
+	public void setActualLength(float max) {
+		this.actualLength = max;		
 	}
 
 }
