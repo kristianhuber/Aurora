@@ -20,6 +20,8 @@ public class Entity {
 	private int textureIndex;
 	private float scale;
 
+	private String ID;
+
 	/* Main Constructor Method */
 	public Entity(World w, String ID, String texture, Vector3f position, Vector3f rotation) {
 		this.model = new TexturedModel(ID, texture);
@@ -28,6 +30,11 @@ public class Entity {
 		this.textureIndex = 0;
 		this.world = w;
 		this.scale = 1;
+		this.ID = ID;
+	}
+
+	public String getID() {
+		return ID;
 	}
 
 	/* Constructor Method for basic entities with a texture */
@@ -96,7 +103,7 @@ public class Entity {
 		this.rotation.y = y;
 		this.rotation.z = z;
 	}
-	
+
 	/* Return the rotation vector */
 	public Vector3f getRotation() {
 		return rotation;
@@ -116,11 +123,11 @@ public class Entity {
 	public TexturedModel getModel() {
 		return model;
 	}
-	
+
 	public void setSelection(boolean selected) {
 		this.selected = selected;
 	}
-	
+
 	public boolean isSelected() {
 		return selected;
 	}

@@ -8,8 +8,10 @@ import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
+import aurora.main.Aurora;
 import engine.rendering.MasterRenderer;
 import engine.rendering.models.RawModel;
 import engine.rendering.models.TexturedModel;
@@ -58,7 +60,19 @@ public class EntityRenderer {
 			List<Entity> batch = entities.get(model);
 			for (Entity entity : batch) {
 				this.prepareInstance(entity);
-				GL11.glDrawElements(GL11.GL_TRIANGLES, model.getRawModel().getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
+				if (model.getRawModel().hasLevelsOfDetail()) {
+					Vector3f cameraCoords = Aurora.getCamera().getPosition();
+					Vector3f entityPos = entity.getPosition();
+					float dx = cameraCoords.x - entityPos.x;
+					float dy = cameraCoords.y - entityPos.y;
+					float dz = cameraCoords.z - entityPos.z;
+					float distance = dx * dx + dy * dy + dz * dz;
+					int[] renderComponents = model.getRawModel().getIndexArrayStartAndLength(distance);
+					GL11.glDrawElements(GL11.GL_TRIANGLES, renderComponents[1], GL11.GL_UNSIGNED_INT,
+							renderComponents[0]);
+				} else
+					GL11.glDrawElements(GL11.GL_TRIANGLES, model.getRawModel().getVertexCount(), GL11.GL_UNSIGNED_INT,
+							0);
 			}
 
 			// Unload the model
@@ -91,7 +105,7 @@ public class EntityRenderer {
 		}
 		shader.loadFakeLightingVariable(texture.useFakeLighting());
 		shader.loadShineVariables(texture.getShineDamper(), texture.getReflectivity());
-		
+
 		// Load the texture to OpenGL
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, model.getTexture().getID());

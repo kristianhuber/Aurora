@@ -33,4 +33,10 @@ public class TexturedModel {
 	public RawModel getRawModel() {
 		return rawModel;
 	}
+
+	@Override
+	public boolean equals(Object arg0) {
+		TexturedModel tm = (TexturedModel) arg0;
+		return rawModel.getVaoID() == tm.getRawModel().getVaoID() && texture.getID() == tm.getTexture().getID();
+	}
 }
