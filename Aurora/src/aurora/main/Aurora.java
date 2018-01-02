@@ -29,52 +29,47 @@ public class Aurora extends Engine {
 
 	@Override
 	protected void loadResources() {
-		TextureManager.loadTexture("dudvMap", "extras");
-		TextureManager.loadTexture("normalMap", "extras");
 
-		TextureManager.loadTexture("Default", "gui");
-		TextureManager.loadTexture("backgroundImage", "gui");
-		TextureManager.loadTexture("button", "gui");
-		TextureManager.loadTexture("button_hover", "gui");
-		TextureManager.loadTexture("Birch2", "gui");
-		TextureManager.loadTexture("Birch2_hover", "gui");
-		TextureManager.loadTexture("progressbar", "gui");
-		TextureManager.loadTexture("textfield", "gui");
-		TextureManager.loadTexture("checkbox", "gui");
-		TextureManager.loadTexture("checkbox_checked", "gui");
+		// Texture Manager is for Textures, Model Manager is for Models, and MetaFile is
+		// for Fonts
 
-		// Terrain Textures
-		TextureManager.loadTexture("GrassTexture");
-		TextureManager.loadTexture("Mud");
-		TextureManager.loadTexture("Flowers");
-		TextureManager.loadTexture("Stone");
-		TextureManager.loadTexture("sand");
+		// Load Water Resources:
+		TextureManager.loadTexture("dudvMap", "textures\\water");
+		TextureManager.loadTexture("normalMap", "textures\\water");
+		
+		// Load the default texture
+		TextureManager.loadTexture("Default", "textures");
+
+		// Load GUI Textures:
+		TextureManager.loadTexture("backgroundImage", "guis");
+		TextureManager.loadTexture("Birch2", "guis");
+		TextureManager.loadTexture("Birch2_hover", "guis");
+		TextureManager.loadTexture("progressbar", "guis");
+		TextureManager.loadTexture("textfield", "guis");
+		TextureManager.loadTexture("checkbox", "guis");
+		TextureManager.loadTexture("checkbox_checked", "guis");
+
+		// Load Terrain Textures:
+		TextureManager.loadTexture("GrassTexture", "textures\\terrain");
+		TextureManager.loadTexture("Mud", "textures\\terrain");
+		TextureManager.loadTexture("Flowers", "textures\\terrain");
+		TextureManager.loadTexture("Stone", "textures\\terrain");
+		TextureManager.loadTexture("sand", "textures\\terrain");
 		TextureManager.createTerrainTexturePack("default", "GrassTexture", "sand", "Flowers", "Stone");
 
-		// Entity and Particle Textures
-		TextureManager.loadTexture("lamp");
-		TextureManager.loadTexture("pine");
-		TextureManager.loadTexture("Rock");
-		TextureManager.loadTexture("cosmic");
+		// Load Particle Textures:
+		TextureManager.loadTexture("cosmic", "textures\\particles");
 
-		// Load Cube Maps the Skybox
+		// Load Cube Maps:
 		TextureManager.loadCubeMap("day");
 		TextureManager.loadCubeMap("night");
-
-		// Set the Attributes to the Textures
-		TextureManager.getTexture("lamp").setUseFakeLighting(true);
-		TextureManager.getTexture("pine").setHasTransparency(true);
-
-		// Loads the Models
-		ModelManager.loadModel("Rock");
-		ModelManager.loadModel("lamp");
-		ModelManager.loadModel("pine");
 
 		// Load TexturedModels:
 		ModelManager.loadTexturedModel("stall");
 		ModelManager.loadTexturedModel("stall1");
 		ModelManager.loadTexturedModel("betterpine");
 
+		// Load Fonts:
 		FontManager.addFont("papyrus");
 		FontManager.addFont("tempus");
 		FontManager.addFont("cherokee");

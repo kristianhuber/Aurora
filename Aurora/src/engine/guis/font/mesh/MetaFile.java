@@ -1,7 +1,9 @@
 package engine.guis.font.mesh;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
@@ -135,12 +137,13 @@ public class MetaFile {
 	 */
 	private void openFile(String file) {
 		try {
-			reader = new BufferedReader(new InputStreamReader(
-					MetaFile.class.getResourceAsStream("/aurora/assets/fonts/" + file + ".fnt")));
+			InputStream inputStream = new FileInputStream("res\\fonts\\" + file + ".fnt");
+			reader = new BufferedReader(new InputStreamReader(inputStream));
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.err.println("Couldn't read font meta file!");
+			System.err.println("[Console]: Error Reading '" + file + "' meta data");
 		}
+		System.out.println("[Console]: Loaded Font '" + file + "'");
 	}
 
 	/**

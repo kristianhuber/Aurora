@@ -38,8 +38,7 @@ public class TextureManager {
 		try {
 
 			// Loads the texture
-			Texture texture = TextureLoader.getTexture("PNG",
-					TextureManager.class.getResourceAsStream("/aurora/assets/" + path + "/" + ID + ".png"));
+			Texture texture = TextureLoader.getTexture("PNG", new FileInputStream("res\\" + path + "\\" + ID + ".png"));
 
 			// Generates different forms of the texture
 			GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
@@ -64,14 +63,16 @@ public class TextureManager {
 		} catch (Exception e) {
 			// If it can't find the texture, write what it cannot find
 			System.err.println("[Console]: Could not find Texture for '" + ID + "'");
+			System.err.println("[Console]: res\\" + path + "\\" + ID + ".png");
 		}
+		System.out.println("[Console]: Loaded texture for '" + ID + "'");
 	}
 
 	/* Simple Constructor Method */
 	public static void loadTexture(String ID) {
 		TextureManager.loadTexture(ID, "textures");
 	}
-	
+
 	public static void loadEntityTexture(String ID) {
 		// Tries to read the file
 		try {
@@ -95,7 +96,7 @@ public class TextureManager {
 				// If the computer can't handle it, let the user know
 				System.err.println("[Console]: Anisotropic filtering not supported");
 			}
-			
+
 			ModelTexture newModelTexture = new ModelTexture(texture.getTextureID());
 
 			File configFile = new File("res\\textured models\\" + ID + "\\config.txt");
@@ -110,7 +111,7 @@ public class TextureManager {
 
 			for (int i = 0; i < uniformStrings.size(); i++) {
 				String[] uniformData = uniformStrings.get(i).split("\\=");
-				
+
 				if (uniformData[0].equals("hasTransparency")) {
 					newModelTexture.setHasTransparency(uniformData[1].equals("true"));
 				} else if (uniformData[0].equals("useFakeLighting")) {
@@ -188,7 +189,7 @@ public class TextureManager {
 		try {
 			// Store the data in variables
 			PNGDecoder decoder = new PNGDecoder(
-					TextureManager.class.getResourceAsStream("/aurora/assets/textures/" + fileName + ".png"));
+					new FileInputStream("res\\textures\\skyboxes\\" + fileName + ".png"));
 			width = decoder.getWidth();
 			height = decoder.getHeight();
 			buffer = ByteBuffer.allocateDirect(4 * width * height);
