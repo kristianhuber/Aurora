@@ -55,6 +55,7 @@ void main(void){
 		float num = pow(2, gradient);
 		blendR = (num - pow(2, height - seaLevel))/num;
 	}
+	
 	vec4 blendMapColor = vec4(blendR, 0, 0, 0);
 	
 	float backTextureAmount = 1 - (blendMapColor.r + blendMapColor.g + blendMapColor.b);

@@ -11,7 +11,9 @@ public class Chunk {
 	
 	public Chunk(int seed, int x, int z, float seaLevel) {
 		terrain = new Terrain(x, 0, z, "default", seed, seaLevel);
-		water = new WaterTile(x, seaLevel, z);
+		if(terrain.getLowestHeight() <= seaLevel) {
+			water = new WaterTile(x, seaLevel, z);	
+		}
 		
 		this.x = x;
 		this.z = z;

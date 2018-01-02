@@ -56,10 +56,10 @@ public abstract class Engine {
 		this.run = true;
 	}
 	
-	protected void start(String title, boolean fullScreen) {
+	protected void start(String title, boolean fullScreen, boolean wireframes) {
 		this.createDisplay(title, fullScreen);
 		this.loadResources();
-		this.startRendering();
+		this.startRendering(wireframes);
 		this.cleanUp();
 	}
 
@@ -89,8 +89,8 @@ public abstract class Engine {
 	}
 
 	/* Start Rendering */
-	private void startRendering() {		
-		MasterRenderer.initialize();
+	private void startRendering(boolean wireframes) {		
+		MasterRenderer.initialize(wireframes);
 		FontManager.initialize();
 		GuiRenderer.initalize();
 		

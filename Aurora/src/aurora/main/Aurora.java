@@ -23,7 +23,7 @@ public class Aurora extends Engine {
 	
 	public Aurora() {
 		this.testWorld = false;
-		this.start("Aurora", true);
+		this.start("Aurora", true, false);
 	}
 	
 	@Override

@@ -116,7 +116,7 @@ public class TextureManager {
 		// Loads it to the engine
 		TextureManager.cubeMaps.put(ID, texID);
 	}
-	
+
 	public static void loadEntityTexture(String ID) {
 		// Tries to read the file
 		try {
@@ -125,24 +125,22 @@ public class TextureManager {
 			Texture texture = TextureLoader.getTexture("PNG",
 					new FileInputStream(new File("textured models\\" + ID + "\\texture.png")));
 
-			// // Generates different forms of the texture
-			// GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
-			// GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER,
-			// GL11.GL_LINEAR_MIPMAP_LINEAR);
-			// GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, 0f);
-			//
-			// // Enables anisotropic filtering, helps with oblique angles
-			// if (GLContext.getCapabilities().GL_EXT_texture_filter_anisotropic) {
-			// // Sets the amount of filtering
-			// float amount = Math.min(4f,
-			// GL11.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
-			// GL11.glTexParameterf(GL11.GL_TEXTURE_2D,
-			// EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT,
-			// amount);
-			// } else {
-			// // If the computer can't handle it, let the user know
-			// System.err.println("[Console]: Anisotropic filtering not supported");
-			// }
+			// Generates different forms of the texture
+			GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
+			GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, 0f);
+
+			// Enables anisotropic filtering, helps with oblique angles
+			if (GLContext.getCapabilities().GL_EXT_texture_filter_anisotropic) {
+				// Sets the amount of filtering
+				float amount = Math.min(4f,
+						GL11.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
+				GL11.glTexParameterf(GL11.GL_TEXTURE_2D, EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT,
+						amount);
+			} else {
+				// If the computer can't handle it, let the user know
+				System.err.println("[Console]: Anisotropic filtering not supported");
+			}
 
 			// Loads it into the engine
 			TextureManager.textures.put(ID, new ModelTexture(texture.getTextureID()));

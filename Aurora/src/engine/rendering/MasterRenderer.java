@@ -30,12 +30,14 @@ public class MasterRenderer {
 	public static final float FOG_DENSITY = 0.0035F;
 	public static final float FOG_GRADIENT = 8F;
 	public static final float FOG_DIVIDER = 2.5F;
-	
+
 	public static final float NEAR_PLANE = 0.1F;
 	public static final float FAR_PLANE = 1500F;
 	public static final float FOV = 65F;
-	
+
 	private static Matrix4f projectionMatrix;
+
+	private static boolean wireframes;
 
 	private static FBO multisampledFBO;
 	private static FBO outputFBO;
@@ -47,7 +49,7 @@ public class MasterRenderer {
 	private static EntityRenderer renderer;
 
 	/* Initializes all of the variables */
-	public static void initialize() {
+	public static void initialize(boolean wireframes) {
 
 		// Initialize the FBOs
 		MasterRenderer.outputFBO = new FBO(Engine.WIDTH, Engine.HEIGHT, FBO.DEPTH_TEXTURE);
@@ -66,11 +68,17 @@ public class MasterRenderer {
 
 		ParticleMaster.initialize();
 		PostProcessing.initialize();
+
+		MasterRenderer.wireframes = wireframes;
 	}
 
 	public static void renderWorld(World world) {
 		GL11.glClearColor(0, 0.5f, 1, 1);
-		
+
+		if (wireframes) {
+			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
+		}
+
 		MasterRenderer.shadowMapRenderer.render(world.getEntities(), world.getLights().get(0));
 
 		ParticleMaster.update();
@@ -92,7 +100,7 @@ public class MasterRenderer {
 		camera.getPosition().y += distance;
 
 		waterRenderer.bindRefractionFrameBuffer();
-		
+
 		MasterRenderer.renderScene(world, new Vector4f(0, -1, 0, world.getSeaLevel() + 1.0f));
 
 		waterRenderer.unbindCurrentFrameBuffer();
@@ -100,11 +108,10 @@ public class MasterRenderer {
 
 		// Actual Stuff
 		MasterRenderer.multisampledFBO.bindFrameBuffer();
-		
+
 		MasterRenderer.renderScene(world, new Vector4f(0, -1, 0, 100000));
 
-		MasterRenderer.waterRenderer.render(world, world.getLights().get(0),
-				world.getSkyColor());
+		MasterRenderer.waterRenderer.render(world, world.getLights().get(0), world.getSkyColor());
 
 		// Particle Stuff
 		ParticleMaster.renderParticles();
@@ -113,6 +120,10 @@ public class MasterRenderer {
 
 		MasterRenderer.multisampledFBO.resolveToFbo(MasterRenderer.outputFBO);
 
+		if (wireframes) {
+			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
+		}
+		
 		// Post Processing
 		PostProcessing.doPostProcessing(outputFBO.getColourTexture());
 	}
@@ -120,16 +131,16 @@ public class MasterRenderer {
 	public static void renderScene(World world, Vector4f clipPlane) {
 		MasterRenderer.prepare(world.getSkyColor());
 
-		MasterRenderer.renderer.render(world, world.getEntities(), MasterRenderer.shadowMapRenderer.getToShadowMapSpaceMatrix(),
-				clipPlane);
-
-		MasterRenderer.terrainRenderer.render(world,
+		MasterRenderer.renderer.render(world, world.getEntities(),
 				MasterRenderer.shadowMapRenderer.getToShadowMapSpaceMatrix(), clipPlane);
 
-		if(world.getWorldTime() < 6 || world.getWorldTime() > 20) {
+		MasterRenderer.terrainRenderer.render(world, MasterRenderer.shadowMapRenderer.getToShadowMapSpaceMatrix(),
+				clipPlane);
+
+		if (world.getWorldTime() < 6 || world.getWorldTime() > 20) {
 			MasterRenderer.skyboxRenderer.render(world.getSkyColor(), "day", "night", 1);
-		}else {
-			MasterRenderer.skyboxRenderer.render(world.getSkyColor(), "day", "night", 0);	
+		} else {
+			MasterRenderer.skyboxRenderer.render(world.getSkyColor(), "day", "night", 0);
 		}
 	}
 

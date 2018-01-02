@@ -23,6 +23,8 @@ public class Terrain {
 	private float seaLevel;
 
 	private float[][] heights;
+	
+	private float lowestHeight;
 
 	public Terrain() {
 		this.model = generateTerrain();
@@ -39,7 +41,7 @@ public class Terrain {
 		this.seaLevel = seaLevel;
 		this.model = generateTerrain(seed);
 	}
-	
+
 	public Terrain(int gridX, float y, int gridZ, String texturePack) {
 		this.texturePack = TextureManager.getTerrainTexturePack(texturePack);
 		this.x = gridX * SIZE;
@@ -93,7 +95,8 @@ public class Terrain {
 	}
 
 	private RawModel generateTerrain(int seed) {
-
+		lowestHeight = -999;
+		
 		// Test Comment
 		int VERTEX_COUNT = 32;
 		HeightsGenerator generator = new HeightsGenerator((int) (x / SIZE), (int) (z / SIZE), VERTEX_COUNT, seed,
@@ -112,6 +115,9 @@ public class Terrain {
 				vertices[vertexPointer * 3] = (float) j / ((float) VERTEX_COUNT - 1) * SIZE;
 				float height = getHeight(j, i, generator);
 				heights[j][i] = height;
+				if(lowestHeight == -999 || height < lowestHeight) {
+					lowestHeight = height;
+				}
 				vertices[vertexPointer * 3 + 1] = height;
 				vertices[vertexPointer * 3 + 2] = (float) i / ((float) VERTEX_COUNT - 1) * SIZE;
 				Vector3f normal = calculateNormal(j, i, generator);
@@ -138,6 +144,7 @@ public class Terrain {
 				indices[pointer++] = bottomRight;
 			}
 		}
+		
 		return ModelManager.loadToVAO(vertices, textureCoords, normals, indices);
 	}
 
@@ -148,6 +155,7 @@ public class Terrain {
 		float heightU = getHeight(x, z + 1, generator);
 		Vector3f normal = new Vector3f(heightL - heightR, 2f, heightD - heightU);
 		normal.normalise();
+		
 		return normal;
 	}
 
@@ -182,6 +190,10 @@ public class Terrain {
 					new Vector2f(xCoord, zCoord));
 		}
 		return answer + y;
+	}
+	
+	public float getLowestHeight() {
+		return lowestHeight;
 	}
 
 	public TerrainTexturePack getTexturePack() {

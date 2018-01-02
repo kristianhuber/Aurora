@@ -180,8 +180,9 @@ public class World {
 		int x = c.getX();
 		int z = c.getZ();
 		terrainMap.put(x * 1000 + z, c);
-		if (!testWorld)
+		if (!testWorld) {
 			this.decorate(x, z);
+		}
 	}
 
 	public void addLight(Light light) {

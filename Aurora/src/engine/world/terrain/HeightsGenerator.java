@@ -44,7 +44,7 @@ public class HeightsGenerator {
 	/* ampX is X - 1, ampZ is Z - 1, ampW is X - 1 and Z - 1 */
 	public float generateHeight(int x, int z, float seaLevel) {
 		float total = 0;
-		
+
 		float d = (float) Math.pow(2, OCTAVES - 1);
 		for (int i = 0; i < OCTAVES; i++) {
 			float freq = (float) (Math.pow(2, i) / d);
@@ -59,24 +59,26 @@ public class HeightsGenerator {
 		float zDist = (Math.abs((zOffset + z) - CENTER_OF_MAP) / CENTER_OF_MAP);
 		float distance = (float) Math.sqrt(xDist * xDist + zDist * zDist);
 		float addition = (float) (1 - 0.9f * Math.pow(distance, 2));
-		if(distance < 0 && addition > 0) addition *= -1;
+		if (distance < 0 && addition > 0)
+			addition *= -1;
 		total *= addition;
-		
-		/*float borderPercent = 0.25f;
-		float xPos = xOffset + x;
-		if (xPos < MAP_SIZE * borderPercent) {
-			total *= (xPos / (MAP_SIZE * borderPercent));
-		}
-		if (xPos > MAP_SIZE * (1 - borderPercent)) {
-			total *= ((MAP_SIZE - xPos) / (MAP_SIZE * borderPercent));
-		}*/
-		
+
 		// Beach Stuff
-		int tolerance = 5;
+		int tolerance = 4;
 		if (total < seaLevel + tolerance && total > seaLevel - tolerance) {
-			total = (total + seaLevel)/2;
+			float leftOver = total - seaLevel;
+			total = seaLevel + leftOver / 2.25f;
 		}
 
+		if (total < seaLevel + tolerance * 2 && total >= seaLevel + tolerance) {
+			float percent = total - seaLevel;
+			float leftOver = seaLevel + percent / 2.25f;
+			percent -= tolerance;
+			percent /= tolerance;
+
+			total = percent * total + (1 - percent) * leftOver;
+		}
+		
 		return total;
 	}
 
