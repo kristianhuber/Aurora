@@ -16,6 +16,7 @@ public class RawModel {
 	// index,percentage,smallDistanceBound,largeDistanceBound,arrayStart,arrayLength
 	// ...
 	int[][] lodInfo = null;
+	private boolean hasMultipleLevelsOfDetail = false;
 
 	/* Constructor Method */
 	public RawModel(int vaoID, int vertexCount) {
@@ -25,10 +26,11 @@ public class RawModel {
 
 	public void setLODInfo(int[][] lodInfo) {
 		this.lodInfo = lodInfo;
+		hasMultipleLevelsOfDetail = lodInfo.length > 1;
 	}
 
 	public boolean hasLevelsOfDetail() {
-		return lodInfo != null;
+		return hasMultipleLevelsOfDetail;
 	}
 
 	/**
@@ -43,16 +45,15 @@ public class RawModel {
 	 *         it returns an array of two zeros.
 	 */
 	public int[] getIndexArrayStartAndLength(float distance) {
-
 		for (int i = 0; i < lodInfo.length; i++) {
 			if (lodInfo[i][3] < 0) {
 				// If the large bound is negative, the distance only has to be greater than the
 				// small bound.
-				if (distance >= lodInfo[i][2])
+				if (distance >= Math.pow(lodInfo[i][2], 2))
 					return new int[] { lodInfo[i][4], lodInfo[i][5] };
 			} else {
 				// Otherwise, the distance has to be between the smaller and greater bounds.
-				if (distance >= lodInfo[i][2] && distance < lodInfo[i][3])
+				if (distance >= Math.pow(lodInfo[i][2], 2) && distance < Math.pow(lodInfo[i][3], 2))
 					return new int[] { lodInfo[i][4], lodInfo[i][5] };
 			}
 		}

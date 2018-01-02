@@ -13,19 +13,20 @@ public class Aurora extends Engine {
 
 	private RenderMode mainMenu;
 
-	// How are you supposed to quickly add GUIs in the world (need a better render mode)?
-	
+	// How are you supposed to quickly add GUIs in the world (need a better render
+	// mode)?
+
 	// Need to make loading chunks
-	
+
 	// Make a progress bar, slider, check box
-	
+
 	// Make it so that text updates when GUI is resized
-	
+
 	public Aurora() {
 		this.testWorld = false;
 		this.start("Aurora", true, false);
 	}
-	
+
 	@Override
 	protected void loadResources() {
 		TextureManager.loadTexture("dudvMap", "extras");
@@ -39,7 +40,7 @@ public class Aurora extends Engine {
 		TextureManager.loadTexture("Birch2_hover", "gui");
 		TextureManager.loadTexture("progressbar", "gui");
 		TextureManager.loadTexture("textfield", "gui");
-		
+
 		// Terrain Textures
 		TextureManager.loadTexture("GrassTexture");
 		TextureManager.loadTexture("Mud");
@@ -53,7 +54,6 @@ public class Aurora extends Engine {
 		TextureManager.loadTexture("pine");
 		TextureManager.loadTexture("Rock");
 		TextureManager.loadTexture("cosmic");
-		TextureManager.loadTexture("betterpine");
 
 		// Load Cube Maps the Skybox
 		TextureManager.loadCubeMap("day");
@@ -62,17 +62,16 @@ public class Aurora extends Engine {
 		// Set the Attributes to the Textures
 		TextureManager.getTexture("lamp").setUseFakeLighting(true);
 		TextureManager.getTexture("pine").setHasTransparency(true);
-		TextureManager.getTexture("betterpine").setHasTransparency(true);
 
 		// Loads the Models
-		ModelManager.loadModel("betterpine");
 		ModelManager.loadModel("Rock");
 		ModelManager.loadModel("lamp");
 		ModelManager.loadModel("pine");
-		
-		//Load TexturedModels:
-		ModelManager.loadModel2("stallRev10");
-		TextureManager.loadEntityTexture("stallRev10");
+
+		// Load TexturedModels:
+		ModelManager.loadTexturedModel("stall");
+		ModelManager.loadTexturedModel("stall1");
+		ModelManager.loadTexturedModel("betterpine");
 
 		FontManager.addFont("papyrus");
 		FontManager.addFont("tempus");
@@ -94,7 +93,7 @@ public class Aurora extends Engine {
 		if (Keyboard.isKeyDown(Keyboard.KEY_TAB)) {
 			this.renderWorld();
 		}
-		if(Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
+		if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
 			this.setRenderMode(mainMenu);
 		}
 	}

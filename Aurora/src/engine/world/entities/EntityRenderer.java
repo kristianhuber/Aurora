@@ -28,6 +28,7 @@ import engine.world.World;
 public class EntityRenderer {
 
 	private StaticShader shader;
+	private static float renderDistance = 700;
 
 	/* Constructor Method */
 	public EntityRenderer() {
@@ -50,8 +51,13 @@ public class EntityRenderer {
 		shader.loadToShadowSpaceMatrix(toShadowSpace);
 		shader.loadFogSettings();
 
+		Vector3f cameraCoords = Aurora.getCamera().getPosition();
+		float renderDistanceSquare = renderDistance * renderDistance;
+
+		int count = 0;
 		// Start rendering the entities
 		for (TexturedModel model : entities.keySet()) {
+			count++;
 
 			// Prepare this type of entity
 			this.prepareTexturedModel(model);
@@ -59,25 +65,37 @@ public class EntityRenderer {
 			// Start rendering the instances of the type
 			List<Entity> batch = entities.get(model);
 			for (Entity entity : batch) {
-				this.prepareInstance(entity);
-				if (model.getRawModel().hasLevelsOfDetail()) {
-					Vector3f cameraCoords = Aurora.getCamera().getPosition();
-					Vector3f entityPos = entity.getPosition();
-					float dx = cameraCoords.x - entityPos.x;
-					float dy = cameraCoords.y - entityPos.y;
-					float dz = cameraCoords.z - entityPos.z;
-					float distance = dx * dx + dy * dy + dz * dz;
-					int[] renderComponents = model.getRawModel().getIndexArrayStartAndLength(distance);
-					GL11.glDrawElements(GL11.GL_TRIANGLES, renderComponents[1], GL11.GL_UNSIGNED_INT,
-							renderComponents[0]);
-				} else
-					GL11.glDrawElements(GL11.GL_TRIANGLES, model.getRawModel().getVertexCount(), GL11.GL_UNSIGNED_INT,
-							0);
+				Vector3f entityPos = entity.getPosition();
+				float dx = cameraCoords.x - entityPos.x;
+				float dy = cameraCoords.y - entityPos.y;
+				float dz = cameraCoords.z - entityPos.z;
+				float distanceSquare = dx * dx + dy * dy + dz * dz;
+
+				// Making sure all entities are within the render distance before rendering
+				// them. This overrides the level of detail because the player will not be able
+				// to see models at all past the render distance.
+				if (distanceSquare < renderDistanceSquare) {
+
+					// Preparing the entity to render.
+					this.prepareInstance(entity);
+
+					// If the entity has different levels of detail, then render the correct one,
+					// otherwise, render the only one it has.
+					if (model.getRawModel().hasLevelsOfDetail()) {
+						int[] renderComponents = model.getRawModel().getIndexArrayStartAndLength(distanceSquare);
+						GL11.glDrawElements(GL11.GL_TRIANGLES, renderComponents[1], GL11.GL_UNSIGNED_INT,
+								renderComponents[0] * 4);
+					} else
+						GL11.glDrawElements(GL11.GL_TRIANGLES, model.getRawModel().getVertexCount(),
+								GL11.GL_UNSIGNED_INT, 0);
+				}
 			}
+
 
 			// Unload the model
 			this.unbindTexturedModel();
 		}
+		System.out.println(count);
 
 		// Close the shader
 		shader.stop();

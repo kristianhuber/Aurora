@@ -3,7 +3,10 @@ package engine.rendering.textures;
 import java.io.File;
 import java.io.FileInputStream;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Scanner;
 
 import org.lwjgl.opengl.EXTTextureFilterAnisotropic;
 import org.lwjgl.opengl.GL11;
@@ -68,6 +71,65 @@ public class TextureManager {
 	public static void loadTexture(String ID) {
 		TextureManager.loadTexture(ID, "textures");
 	}
+	
+	public static void loadEntityTexture(String ID) {
+		// Tries to read the file
+		try {
+			// Loads the texture
+			Texture texture = TextureLoader.getTexture("PNG",
+					new FileInputStream("res\\textured models\\" + ID + "\\texture.png"));
+
+			// Generates different forms of the texture
+			GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
+			GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, 0f);
+
+			// Enables anisotropic filtering, helps with oblique angles
+			if (GLContext.getCapabilities().GL_EXT_texture_filter_anisotropic) {
+				// Sets the amount of filtering
+				float amount = Math.min(4f,
+						GL11.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
+				GL11.glTexParameterf(GL11.GL_TEXTURE_2D, EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT,
+						amount);
+			} else {
+				// If the computer can't handle it, let the user know
+				System.err.println("[Console]: Anisotropic filtering not supported");
+			}
+			
+			ModelTexture newModelTexture = new ModelTexture(texture.getTextureID());
+
+			File configFile = new File("res\\textured models\\" + ID + "\\config.txt");
+			Scanner sc = new Scanner(configFile);
+			List<String> uniformStrings = new ArrayList<String>();
+
+			while (sc.hasNextLine()) {
+				String line = sc.nextLine();
+				if (line.contains("="))
+					uniformStrings.add(line);
+			}
+
+			for (int i = 0; i < uniformStrings.size(); i++) {
+				String[] uniformData = uniformStrings.get(i).split("\\=");
+				
+				if (uniformData[0].equals("hasTransparency")) {
+					newModelTexture.setHasTransparency(uniformData[1].equals("true"));
+				} else if (uniformData[0].equals("useFakeLighting")) {
+					newModelTexture.setUseFakeLighting(uniformData[1].equals("true"));
+				} else if (uniformData[0].equals("shineDamper")) {
+					newModelTexture.setShineDamper(Float.parseFloat(uniformData[1]));
+				} else if (uniformData[0].equals("reflectivity")) {
+					newModelTexture.setReflectivity(Float.parseFloat(uniformData[1]));
+				}
+			}
+
+			// Loads it into the engine
+			TextureManager.textures.put(ID, newModelTexture);
+
+		} catch (Exception e) {
+			// If it can't find the texture, write what it cannot find
+			System.err.println("[Console]: Could not find Texture for '" + ID + "'");
+		}
+	}
 
 	/* Creates a terrain texture pack */
 	public static void createTerrainTexturePack(String ID, String background, String r, String g, String b) {
@@ -115,40 +177,6 @@ public class TextureManager {
 
 		// Loads it to the engine
 		TextureManager.cubeMaps.put(ID, texID);
-	}
-
-	public static void loadEntityTexture(String ID) {
-		// Tries to read the file
-		try {
-
-			// Loads the texture
-			Texture texture = TextureLoader.getTexture("PNG",
-					new FileInputStream(new File("textured models\\" + ID + "\\texture.png")));
-
-			// Generates different forms of the texture
-			GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
-			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
-			GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, 0f);
-
-			// Enables anisotropic filtering, helps with oblique angles
-			if (GLContext.getCapabilities().GL_EXT_texture_filter_anisotropic) {
-				// Sets the amount of filtering
-				float amount = Math.min(4f,
-						GL11.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
-				GL11.glTexParameterf(GL11.GL_TEXTURE_2D, EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT,
-						amount);
-			} else {
-				// If the computer can't handle it, let the user know
-				System.err.println("[Console]: Anisotropic filtering not supported");
-			}
-
-			// Loads it into the engine
-			TextureManager.textures.put(ID, new ModelTexture(texture.getTextureID()));
-
-		} catch (Exception e) {
-			// If it can't find the texture, write what it cannot find
-			System.err.println("[Console]: Could not find Texture for '" + ID + "'");
-		}
 	}
 
 	/* Loads a texture file and stores it in a texture data class */

@@ -14,6 +14,8 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL33;
 
+import engine.rendering.textures.TextureManager;
+
 /**
  * @Description: Holds all of the models and their data
  * 
@@ -24,8 +26,15 @@ public class ModelManager {
 	private static List<Integer> VAOs = new ArrayList<Integer>();
 	private static List<Integer> VBOs = new ArrayList<Integer>();
 
-	public static void loadModelFromEntity(String ID) {
-
+	/**
+	 * Loads a texture and raw model with the given id from res/texturedModels
+	 * 
+	 * @param ID
+	 *            - the ID of the model and texture to load.
+	 */
+	public static void loadTexturedModel(String ID) {
+		ModelManager.loadEntityModel(ID);
+		TextureManager.loadEntityTexture(ID);
 	}
 
 	/* Loads a model given the model ID */
@@ -41,13 +50,11 @@ public class ModelManager {
 	}
 
 	// Loads a model from a level of Detail file.
-	public static void loadModel2(String ID) {
-		RawModel model;
+	public static void loadEntityModel(String ID) {
 		try {
-			model = OBJLoader.loadRawModel(ID);
+			RawModel model = OBJLoader.loadRawModel(ID);
 			ModelManager.models.put(ID, model);
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

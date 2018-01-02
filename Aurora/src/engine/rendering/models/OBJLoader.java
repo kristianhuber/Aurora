@@ -113,8 +113,8 @@ public class OBJLoader {
 
 	// Returns the raw model of the given entity ID.
 	public static RawModel loadRawModel(String ID) throws FileNotFoundException {
-		System.out.print("[INFO] Loading Model: " + ID + " Result: ");
-		File configFile = new File("textured models\\" + ID + "\\config.txt");
+		System.out.print("[INFO] Loading Model: " + ID + " ");
+		File configFile = new File("res\\textured models\\" + ID + "\\config.txt");
 		Scanner sc = new Scanner(configFile);
 		String data = "";
 		while (sc.hasNextLine())
@@ -187,19 +187,26 @@ public class OBJLoader {
 			indicesSize += indicesStrings.get(i).length;
 
 		String[] indicesStringArray = new String[0];
+		int[][] lodInfoData = new int[levelOfDetailInfo.size()][6];
 		for (int i = 0; i < levelOfDetailInfo.size(); i++) {
 			int startingIndex = indicesStringArray.length;
 			indicesStringArray = combineArrays(indicesStringArray, indicesStrings.get(i));
 			int currentLODLength = indicesStringArray.length - startingIndex;
+
 			levelOfDetailInfo.set(i, levelOfDetailInfo.get(i) + "," + startingIndex + "," + currentLODLength);
+			String[] lodPieces = levelOfDetailInfo.get(i).split("\\,");
+			for (int n = 0; n < lodInfoData[0].length; n++)
+				lodInfoData[i][n] = Integer.parseInt(lodPieces[n]);
 		}
 
 		int[] indices = new int[indicesStringArray.length];
 		for (int i = 0; i < indices.length; i++)
 			indices[i] = Integer.parseInt(indicesStringArray[i]);
 
-		System.out.println("SUCCESS");
-		return ModelManager.loadToVAO(vertices, normals, textures, indices);
+		System.out.println();
+		RawModel rawModel = ModelManager.loadToVAO(vertices, textures, normals, indices);
+		rawModel.setLODInfo(lodInfoData);
+		return rawModel;
 	}
 
 	private static String[] combineArrays(String[] a, String[] b) {

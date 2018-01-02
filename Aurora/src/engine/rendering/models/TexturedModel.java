@@ -54,6 +54,7 @@ public class TexturedModel {
 
 	@Override
 	public boolean equals(Object arg0) {
-		return this.toString().equals(arg0.toString());
+		TexturedModel tm = (TexturedModel) arg0;
+		return rawModel.getVaoID() == tm.getRawModel().getVaoID() && texture.getID() == tm.getTexture().getID();
 	}
 }

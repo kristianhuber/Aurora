@@ -41,7 +41,7 @@ public class World {
 		
 		seed = new Random().nextInt(10000000);
 
-		Entity l = new Entity(this, "stallRev10",
+		Entity l = new Entity(this, "stall",
 				new Vector3f(World.WORLD_SIZE * Terrain.SIZE / 2, 400, World.WORLD_SIZE * Terrain.SIZE / 2 + 10));
 		this.addEntity(l);
 		
@@ -191,14 +191,14 @@ public class World {
 
 	public void addEntity(Entity entity) {
 		TexturedModel entityModel = entity.getModel();
-		List<Entity> batch = entities.get(entityModel);
-		if (batch != null) {
-			batch.add(entity);
-		} else {
-			List<Entity> newBatch = new ArrayList<Entity>();
-			newBatch.add(entity);
-			entities.put(entityModel, newBatch);
-		}
+		for (TexturedModel tm : entities.keySet())
+			if (tm.equals(entityModel)) {
+				entities.get(tm).add(entity);
+				return;
+			}
+		List<Entity> newBatch = new ArrayList<Entity>();
+		newBatch.add(entity);
+		entities.put(entityModel, newBatch);
 	}
 
 	public Vector3f getSkyColor() {
