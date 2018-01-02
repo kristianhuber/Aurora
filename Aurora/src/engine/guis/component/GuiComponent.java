@@ -20,6 +20,7 @@ public class GuiComponent extends Gui {
 
 	public static int TEXT_ALIGN_LEFT = -1;
 	public static int TEXT_ALIGN_CENTERED = 0;
+	public static int TEXT_ALIGN_POSTLEFT = 2;
 
 	protected Vector3f foregroundColor;
 	protected Rectangle2D.Float area;
@@ -30,9 +31,10 @@ public class GuiComponent extends Gui {
 	private RenderMode render;
 	private ClickAction click;
 	private HoverAction hover;
+	private float textSize;
 	private GUIText gText;
 	private int gTextMode;
-	private int aligment;
+	private int alignment;
 
 	/**
 	 * Main Constructor
@@ -56,9 +58,10 @@ public class GuiComponent extends Gui {
 		this.clickedInHere = false;
 		this.render = render;
 		this.foregroundColor = new Vector3f(0, 0, 0);
-		this.aligment = 0;
+		this.alignment = 0;
 		this.gTextMode = 0;
 		this.textSecondary = new Vector3f(0, 0, 0);
+		this.textSize = -1;
 	}
 
 	/**
@@ -72,15 +75,20 @@ public class GuiComponent extends Gui {
 		if (text != null && gText == null) {
 
 			// Select bounds based on alignment
-			if (aligment == GuiComponent.TEXT_ALIGN_CENTERED) {
+			if (alignment == GuiComponent.TEXT_ALIGN_CENTERED) {
 
-				gText = new GUIText(text, area.height / 8, FontManager.font("cherokee"), area.x + area.width / 2,
+				gText = new GUIText(text, textSize, FontManager.font("cherokee"), area.x + area.width / 2,
 						area.y + area.height / 4, true);
 
-			} else if (aligment == GuiComponent.TEXT_ALIGN_LEFT) {
+			} else if (alignment == GuiComponent.TEXT_ALIGN_LEFT) {
 
-				gText = new GUIText(text, area.height / 8, FontManager.font("cherokee"), area.x + area.width * 0.05f,
+				gText = new GUIText(text, textSize, FontManager.font("cherokee"), area.x + area.width * 0.05f,
 						area.y + area.height / 4);
+
+			} else if (alignment == GuiComponent.TEXT_ALIGN_POSTLEFT) {
+
+				gText = new GUIText(text, textSize, FontManager.font("cherokee"), area.x + area.width,
+						area.y);
 
 			}
 
@@ -254,7 +262,7 @@ public class GuiComponent extends Gui {
 	 *            - Variable for text alignment relative to the GUI
 	 */
 	public void setTextAlign(int alignment) {
-		this.aligment = alignment;
+		this.alignment = alignment;
 	}
 
 	/**
@@ -290,5 +298,18 @@ public class GuiComponent extends Gui {
 		if (gText != null) {
 			gText.setText(text);
 		}
+		if(this.textSize == -1) {
+			this.textSize = this.area.height / 8;
+		}
+	}
+
+	/**
+	 * Sets the text size, this is made for the initial text
+	 * 
+	 * @param size
+	 *            - A float value to represent the size;
+	 */
+	public void setTextSize(float size) {
+		this.textSize = size;
 	}
 }

@@ -2,7 +2,7 @@ package aurora.main;
 
 import org.lwjgl.input.Keyboard;
 
-import aurora.mainmenu.RenderMainMenu;
+import aurora.menus.RenderMainMenu;
 import engine.guis.font.FontManager;
 import engine.rendering.RenderMode;
 import engine.rendering.models.ModelManager;
@@ -40,6 +40,8 @@ public class Aurora extends Engine {
 		TextureManager.loadTexture("Birch2_hover", "gui");
 		TextureManager.loadTexture("progressbar", "gui");
 		TextureManager.loadTexture("textfield", "gui");
+		TextureManager.loadTexture("checkbox", "gui");
+		TextureManager.loadTexture("checkbox_checked", "gui");
 
 		// Terrain Textures
 		TextureManager.loadTexture("GrassTexture");

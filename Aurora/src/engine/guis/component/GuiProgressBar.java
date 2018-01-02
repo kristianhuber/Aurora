@@ -13,8 +13,13 @@ public class GuiProgressBar extends GuiComponent {
 	private Gui bar;
 
 	public GuiProgressBar(RenderMode render, String texture, float x, float y, float width, float height) {
+		this(render, texture, x, y, width, height, GuiComponent.TEXT_ALIGN_CENTERED);
+	}
+	
+	public GuiProgressBar(RenderMode render, String texture, float x, float y, float width, float height, int textAlignment) {
 		super(render, texture, x, y, width, height);
 		bar = new Gui(new Vector4f(0, 1, 0, 1), x + 5, y + 5, 0, height - 10);
+		this.setTextAlign(textAlignment);
 		render.addGui(2, bar);
 		this.maxProgress = 100;
 		this.progress = 0;

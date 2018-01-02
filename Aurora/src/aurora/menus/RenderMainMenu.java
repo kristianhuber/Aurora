@@ -1,4 +1,4 @@
-package aurora.mainmenu;
+package aurora.menus;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
@@ -7,6 +7,7 @@ import org.lwjgl.util.vector.Vector3f;
 import aurora.main.Aurora;
 import engine.guis.Gui;
 import engine.guis.GuiRenderer;
+import engine.guis.component.GuiCheckbox;
 import engine.guis.component.GuiComponent.ClickAction;
 import engine.guis.component.GuiProgressBar;
 import engine.guis.component.GuiTextField;
@@ -20,6 +21,7 @@ public class RenderMainMenu extends RenderMode {
 	private Gui backgroundImage;
 	private GuiProgressBar bar;
 	private GuiTextField field;
+	private GuiCheckbox box;
 	private GUIText title;
 
 	private Vector3f foregroundColor = new Vector3f(255 / 255f, 255 / 255f, 255 / 255f);
@@ -53,6 +55,11 @@ public class RenderMainMenu extends RenderMode {
 		
 		field = new GuiTextField(this, "textfield", 50, 256, 512, 64);
 		this.addGui(field);
+		
+		box = new GuiCheckbox(this, "checkbox", 64, 512, 45, 45);
+		box.setText("Enable Anisotropic Filtering");
+		box.setForegroundColor(255, 255, 255);
+		this.addGui(box);
 		
 		button2 = new MenuButton(this, 1050, 360, 850, 128);
 		button2.setText("Scenarios");

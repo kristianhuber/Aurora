@@ -1,4 +1,4 @@
-package aurora.mainmenu;
+package aurora.menus;
 
 import org.lwjgl.util.vector.Vector3f;
 
