@@ -1,13 +1,13 @@
 package aurora.menus;
 
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector3f;
 
 import aurora.main.Aurora;
 import engine.guis.Gui;
 import engine.guis.GuiRenderer;
 import engine.guis.component.GuiCheckbox;
+import engine.guis.component.GuiComponent;
 import engine.guis.component.GuiComponent.ClickAction;
 import engine.guis.component.GuiProgressBar;
 import engine.guis.component.GuiTextField;
@@ -28,16 +28,18 @@ public class RenderMainMenu extends RenderMode {
 
 	public RenderMainMenu(Aurora aurora) {
 		
-		title = new GUIText("Aurora", 42, FontManager.font("cherokee"), 1225, 0, false);
+		backgroundImage = new Gui("backgroundImage", 0, 0, 1000, 750);
+		this.guis.add(0, backgroundImage);
+		
+		title = new GUIText("Aurora", 40, FontManager.font("cherokee"), 675, 25, false);
 		title.setColour(34 / 255f, 139 / 255f, 34 / 255f);
 		title.setMode(GUIText.MODE_GLOWING);
 		title.setSecondaryColor(new Vector3f(155 / 255f, 1, 155 / 255f));
 		this.loadText(title);
 
-		backgroundImage = new Gui("backgroundImage", 0, 0, Display.getWidth(), Display.getHeight());
-		this.guis.add(0, backgroundImage);
-
-		button = new MenuButton(this, 1050, 200, 850, 128);
+		
+		//Menu Buttons 
+		button = new MenuButton(this, 600, 150, 400, 90);
 		button.addClickAction(new ClickAction() {
 			@Override
 			public void onClick() {
@@ -47,26 +49,13 @@ public class RenderMainMenu extends RenderMode {
 		button.setText("Single Player");
 		button.setForegroundColor(foregroundColor);
 		this.addGui(button);
-
-		bar = new GuiProgressBar(this, "progressbar", 50, 50, 512, 64);
-		bar.showProgress(true);
-		bar.setForegroundColor(new Vector3f(0, 0, 0));
-		this.addGui(bar);
 		
-		field = new GuiTextField(this, "textfield", 50, 256, 512, 64);
-		this.addGui(field);
-		
-		box = new GuiCheckbox(this, "checkbox", 64, 512, 45, 45);
-		box.setText("Enable Anisotropic Filtering");
-		box.setForegroundColor(255, 255, 255);
-		this.addGui(box);
-		
-		button2 = new MenuButton(this, 1050, 360, 850, 128);
+		button2 = new MenuButton(this, 600, 250, 400, 90);
 		button2.setText("Scenarios");
 		button2.setForegroundColor(foregroundColor);
 		this.addGui(button2);
 
-		button3 = new MenuButton(this, 1050, 520, 850, 128);
+		button3 = new MenuButton(this, 600, 350, 400, 90);
 		button3.setText("Multiplayer");
 		button3.setForegroundColor(foregroundColor);
 		button3.addClickAction(new ClickAction() {
@@ -77,7 +66,7 @@ public class RenderMainMenu extends RenderMode {
 		});
 		this.addGui(button3);
 
-		button4 = new MenuButton(this, 1050, 680, 850, 128);
+		button4 = new MenuButton(this, 600, 450, 400, 90);
 		button4.setText("Options");
 		button4.setForegroundColor(foregroundColor);
 		button4.addClickAction(new ClickAction() {
@@ -88,7 +77,7 @@ public class RenderMainMenu extends RenderMode {
 		});
 		this.addGui(button4);
 
-		button5 = new MenuButton(this, 1050, 840, 850, 128);
+		button5 = new MenuButton(this, 600, 550, 400, 90);
 		button5.addClickAction(new ClickAction() {
 			@Override
 			public void onClick() {
@@ -98,6 +87,20 @@ public class RenderMainMenu extends RenderMode {
 		button5.setText("Exit");
 		button5.setForegroundColor(foregroundColor);
 		this.addGui(button5);
+		
+		//Experiments
+		bar = new GuiProgressBar(this, "progressbar", 50, 50, 250, 50);
+		bar.showProgress(true);
+		bar.setForegroundColor(new Vector3f(1, 0, 0));
+		this.addGui(bar);
+		
+		field = new GuiTextField(this, "textfield", 50, 110, 250, 50);
+		this.addGui(field);
+		
+		box = new GuiCheckbox(this, "checkbox", 50, 170, 15, 15);
+		box.setText("Enable Anisotropic Filtering");
+		box.setForegroundColor(255, 0, 0);
+		this.addGui(box);
 	}
 
 	@Override

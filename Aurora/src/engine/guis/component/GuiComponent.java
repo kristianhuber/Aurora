@@ -88,8 +88,7 @@ public class GuiComponent extends Gui {
 			} else if (alignment == GuiComponent.TEXT_ALIGN_POSTLEFT) {
 
 				gText = new GUIText(text, textSize, FontManager.font("cherokee"), area.x + area.width,
-						area.y);
-
+						area.y - area.height / 2);
 			}
 
 			// Add the attributes and render it
@@ -299,7 +298,7 @@ public class GuiComponent extends Gui {
 			gText.setText(text);
 		}
 		if(this.textSize == -1) {
-			this.textSize = this.area.height / 8;
+			this.textSize = this.area.height / 6;
 		}
 	}
 

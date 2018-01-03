@@ -18,7 +18,7 @@ public class GuiProgressBar extends GuiComponent {
 	
 	public GuiProgressBar(RenderMode render, String texture, float x, float y, float width, float height, int textAlignment) {
 		super(render, texture, x, y, width, height);
-		bar = new Gui(new Vector4f(0, 1, 0, 1), x + 5, y + 5, 0, height - 10);
+		bar = new Gui(new Vector4f(0, 1, 0, 1), x, y + 5, 0, height * 0.815f);
 		this.setTextAlign(textAlignment);
 		render.addGui(2, bar);
 		this.maxProgress = 100;
@@ -29,7 +29,6 @@ public class GuiProgressBar extends GuiComponent {
 		this.showProgress = progress;
 		if(showProgress) {
 			this.setText((int)this.progress + "%");
-			this.setTextAlign(TEXT_ALIGN_CENTERED);
 		}
 	}
 
@@ -54,7 +53,6 @@ public class GuiProgressBar extends GuiComponent {
 
 		if(showProgress) {
 			this.setText((int)progress + "%");
-			this.setTextAlign(GuiComponent.TEXT_ALIGN_CENTERED);
 		}
 		
 		if (progress > maxProgress)
@@ -62,9 +60,9 @@ public class GuiProgressBar extends GuiComponent {
 		if (progress < 0)
 			progress = 0;
 
-		float maxWidth = area.width - 10;
+		float maxWidth = area.width * 0.98f;
 		maxWidth *= (progress / maxProgress);
 		bar.setWidth(maxWidth);
-		bar.setPosition(area.x + 5, area.y + 5);
+		bar.setPosition(area.x * 1.06f, area.y * 1.1f);
 	}
 }

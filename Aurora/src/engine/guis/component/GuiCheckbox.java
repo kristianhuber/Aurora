@@ -11,11 +11,11 @@ public class GuiCheckbox extends GuiComponent {
 	private boolean checked;
 	
 	public GuiCheckbox(RenderMode render, String texture, float x, float y, float width, float height) {
-		super(render, texture, x, y, width, height);
+		super(render, texture, x, y, width, height * 4/3);
 		this.setTextAlign(TEXT_ALIGN_POSTLEFT);
 		this.rootTexture = texture;
 		this.checked = false;
-		this.setTextSize(width / 4);
+		this.setTextSize(width / 1.25f);
 	}
 	
 	@Override

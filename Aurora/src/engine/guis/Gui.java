@@ -16,14 +16,14 @@ public class Gui {
 
 	public Gui(String texture, float x, float y, float width, float height) {
 		this.scale = Calculator.toOpenGLScale(width, height);
-		this.position = Calculator.toOpenGLCoordinates(x, y, scale.x, scale.y);
+		this.position = Calculator.toOpenGL(x, y, scale.x, scale.y);
 		this.texture = TextureManager.getTexture(texture).getID();
 		this.ID = texture;
 	}
 	
 	public Gui(Vector4f color, float x, float y, float width, float height) {
 		this.scale = Calculator.toOpenGLScale(width, height);
-		this.position = Calculator.toOpenGLCoordinates(x, y, scale.x, scale.y);
+		this.position = Calculator.toOpenGL(x, y, scale.x, scale.y);
 		this.color = color;
 		this.colored = true;
 		this.ID = color.toString();
@@ -63,7 +63,7 @@ public class Gui {
 	}
 	
 	public void setPosition(float x, float y) {
-		this.position = Calculator.toOpenGLCoordinates(x, y, scale.x, scale.y);
+		this.position = Calculator.toOpenGL(x, y, scale.x, scale.y);
 	}
 
 	public void setPosition(float x) {

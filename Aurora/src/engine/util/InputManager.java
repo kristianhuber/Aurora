@@ -4,6 +4,7 @@ import java.awt.Point;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.util.vector.Vector2f;
 
 public class InputManager {
 	public static Point mousePosition = new Point(0, 0);
@@ -22,7 +23,11 @@ public class InputManager {
 
 	/* Updates the Keyboard and Mouse */
 	public static void tick() {
-		InputManager.mousePosition = new Point(Mouse.getX(), Engine.HEIGHT - Mouse.getY());
+		float x = Mouse.getX();
+		float y = Engine.HEIGHT - Mouse.getY();
+		Vector2f point = Calculator.toOpenGLFromJava(x, y);
+		
+		InputManager.mousePosition = new Point((int)point.x, (int)point.y);
 
 		InputManager.updateKeyState();
 		InputManager.outputKeys();
