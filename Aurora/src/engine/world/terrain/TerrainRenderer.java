@@ -9,6 +9,8 @@ import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
 import engine.rendering.MasterRenderer;
+import engine.rendering.models.ModelData;
+import engine.rendering.models.ModelManager;
 import engine.rendering.models.RawModel;
 import engine.rendering.textures.TerrainTexturePack;
 import engine.util.Calculator;
@@ -55,6 +57,13 @@ public class TerrainRenderer {
 
 		RawModel rawModel = terrain.getModel();
 
+		if (rawModel == null) {
+			ModelData data = terrain.getData();
+			rawModel = ModelManager.loadToVAO(data.getVertices(), data.getTextureCoords(), data.getNormals(),
+					data.getIndices());
+			terrain.setModel(rawModel);
+		}
+
 		GL30.glBindVertexArray(rawModel.getVaoID());
 		GL20.glEnableVertexAttribArray(0);
 		GL20.glEnableVertexAttribArray(1);
@@ -79,8 +88,8 @@ public class TerrainRenderer {
 		GL13.glActiveTexture(GL13.GL_TEXTURE3);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texturePack.getBTexture());
 
-		//GL13.glActiveTexture(GL13.GL_TEXTURE4);
-		//GL11.glBindTexture(GL11.GL_TEXTURE_2D, terrain.getBlendMap());
+		// GL13.glActiveTexture(GL13.GL_TEXTURE4);
+		// GL11.glBindTexture(GL11.GL_TEXTURE_2D, terrain.getBlendMap());
 	}
 
 	private void unbindTexturedModel() {
@@ -91,8 +100,8 @@ public class TerrainRenderer {
 	}
 
 	private void loadModelMatrix(Terrain terrain) {
-		Matrix4f transformationMatrix = Calculator
-				.createTransformationMatrix(new Vector3f(terrain.getX(), terrain.getY(), terrain.getZ()), new Vector3f(0, 0, 0), 1);
+		Matrix4f transformationMatrix = Calculator.createTransformationMatrix(
+				new Vector3f(terrain.getX(), terrain.getY(), terrain.getZ()), new Vector3f(0, 0, 0), 1);
 		shader.loadTransformationMatrix(transformationMatrix);
 	}
 

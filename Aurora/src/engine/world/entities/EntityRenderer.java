@@ -95,7 +95,6 @@ public class EntityRenderer {
 			// Unload the model
 			this.unbindTexturedModel();
 		}
-		System.out.println(count);
 
 		// Close the shader
 		shader.stop();

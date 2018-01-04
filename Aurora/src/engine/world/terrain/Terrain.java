@@ -3,7 +3,7 @@ package engine.world.terrain;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
-import engine.rendering.models.ModelManager;
+import engine.rendering.models.ModelData;
 import engine.rendering.models.RawModel;
 import engine.rendering.textures.TerrainTexturePack;
 import engine.rendering.textures.TextureManager;
@@ -19,6 +19,7 @@ public class Terrain {
 	private float x;
 	private float y;
 	private float z;
+	private ModelData data;
 
 	private float seaLevel;
 
@@ -26,20 +27,13 @@ public class Terrain {
 	
 	private float lowestHeight;
 
-	public Terrain() {
-		this.model = generateTerrain();
-		this.x = -999;
-		this.y = 0;
-		this.z = -999;
-	}
-
 	public Terrain(int gridX, float y, int gridZ, String texturePack, int seed, float seaLevel) {
 		this.texturePack = TextureManager.getTerrainTexturePack(texturePack);
 		this.x = gridX * SIZE;
 		this.y = y;
 		this.z = gridZ * SIZE;
 		this.seaLevel = seaLevel;
-		this.model = generateTerrain(seed);
+		generateTerrain(seed);
 	}
 
 	public Terrain(int gridX, float y, int gridZ, String texturePack) {
@@ -48,10 +42,10 @@ public class Terrain {
 		this.y = y;
 		this.z = gridZ * SIZE;
 		this.seaLevel = -1;
-		this.model = generateTerrain();
+		generateTerrain();
 	}
 
-	private RawModel generateTerrain() {
+	private void generateTerrain() {
 		int VERTEX_COUNT = 4;
 		heights = new float[VERTEX_COUNT][VERTEX_COUNT];
 		int count = VERTEX_COUNT * VERTEX_COUNT;
@@ -91,10 +85,11 @@ public class Terrain {
 				indices[pointer++] = bottomRight;
 			}
 		}
-		return ModelManager.loadToVAO(vertices, textureCoords, normals, indices);
+		
+		this.data = new ModelData(vertices, textureCoords, normals, indices, 0);
 	}
 
-	private RawModel generateTerrain(int seed) {
+	private void generateTerrain(int seed) {
 		lowestHeight = -999;
 		
 		// Test Comment
@@ -145,7 +140,7 @@ public class Terrain {
 			}
 		}
 		
-		return ModelManager.loadToVAO(vertices, textureCoords, normals, indices);
+		this.data = new ModelData(vertices, textureCoords, normals, indices, 0);
 	}
 
 	private Vector3f calculateNormal(int x, int z, HeightsGenerator generator) {
@@ -190,6 +185,14 @@ public class Terrain {
 					new Vector2f(xCoord, zCoord));
 		}
 		return answer + y;
+	}
+	
+	public ModelData getData() {
+		return data;
+	}
+	
+	public void setModel(RawModel model) {
+		this.model = model;
 	}
 	
 	public float getLowestHeight() {

@@ -32,7 +32,7 @@ public class Camera {
 	public Camera(World world) {
 		this.world = world;
 		this.flying = true;
-		if(flying) SPEED = 50;
+		if(flying) SPEED = 30;
 		//this.position.x = 50;
 		this.position.x = World.WORLD_SIZE * Terrain.SIZE / 2;
 		this.position.y = 200;

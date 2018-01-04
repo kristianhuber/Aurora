@@ -11,13 +11,18 @@ public class ChunkQueue {
 	}
 
 	public void addChunk(ChunkData data) {
-		chunksToProcess.add(data);
+		int dist = data.getDistance();
+		if(dist > chunksToProcess.size()) {
+			chunksToProcess.add(data);
+		}else {
+			chunksToProcess.add(dist, data);	
+		}
 	}
 
 	public boolean isEmpty() {
 		return chunksToProcess.isEmpty();
 	}
-
+	
 	public ChunkData next() {
 		if (!chunksToProcess.isEmpty()) {
 			ChunkData data = chunksToProcess.get(0);

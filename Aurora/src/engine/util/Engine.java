@@ -136,6 +136,10 @@ public abstract class Engine {
 		this.run = false;
 	}
 	
+	public boolean isRunning() {
+		return this.run;
+	}
+	
 	public boolean isWorldCreated() {
 		return (world != null);
 	}
@@ -147,7 +151,7 @@ public abstract class Engine {
 	
 	public void renderWorld() {
 		if(renderWorld == null) {
-			world = new World(testWorld);
+			world = new World(this, testWorld);
 			camera = new Camera(world);	
 			renderWorld = new RenderWorld(world);
 		}

@@ -32,8 +32,6 @@ public class RenderWorld extends RenderMode{
 	
 	@Override
 	public void render() {
-		super.render();
-		
 		world.update();
 		
 		Vector3f pos = Engine.getCamera().getPosition();
@@ -48,5 +46,7 @@ public class RenderWorld extends RenderMode{
 		}
 
 		MasterRenderer.renderWorld(world);
+		
+		super.render();
 	}
 }

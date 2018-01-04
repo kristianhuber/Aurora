@@ -2,16 +2,21 @@ package engine.world.chunks;
 
 public class ChunkData {
 
+	private int seed, x, z, distance;
 	private float seaLevel;
-	private int seed, x, z;
 	
-	public ChunkData(int seed, int x, int z, float seaLevel) {
+	public ChunkData(int distance, int seed, int x, int z, float seaLevel) {
 		this.seaLevel = seaLevel;
 		this.seed = seed;
 		this.x = x;
 		this.z = z;
+		this.distance = distance;
 	}
 
+	public int getDistance() {
+		return distance;
+	}
+	
 	public float getSeaLevel() {
 		return seaLevel;
 	}

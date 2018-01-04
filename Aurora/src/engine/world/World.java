@@ -2,6 +2,7 @@ package engine.world;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -13,6 +14,8 @@ import engine.rendering.models.TexturedModel;
 import engine.util.Calculator;
 import engine.util.Engine;
 import engine.world.chunks.Chunk;
+import engine.world.chunks.ChunkData;
+import engine.world.chunks.ChunkLoader;
 import engine.world.entities.Camera;
 import engine.world.entities.Entity;
 import engine.world.entities.Light;
@@ -24,19 +27,30 @@ public class World {
 	public static final float SUN_DISTANCE = 5000;
 	public static final int WORLD_SIZE = 32;
 
-	public static final int RENDER_DISTANCE = 4;
+	public static final int RENDER_DISTANCE = 5;
 
-	private Map<TexturedModel, List<Entity>> entities = new HashMap<TexturedModel, List<Entity>>();
-	private Map<Integer, Chunk> terrainMap = new HashMap<Integer, Chunk>();
-	private List<Light> lights = new ArrayList<Light>();
+	private ChunkLoader loader;
+
+	private Map<TexturedModel, List<Entity>> entities;
+	private Map<Integer, Chunk> terrainMap;
+	private List<Light> lights;
 	private float seaLevel;
 	private float time;
 	private Light sun;
 	private int seed;
 	private Vector3f skyColor = new Vector3f(154 / 255F, 160 / 255F, 181 / 255F);
 	private boolean testWorld;
+	private List<Entity> queued;
 
-	public World(boolean testWorld) {
+	public World(Engine engine, boolean testWorld) {
+
+		entities = new HashMap<TexturedModel, List<Entity>>();
+		terrainMap = new HashMap<Integer, Chunk>();
+		lights = new ArrayList<Light>();
+		queued = new ArrayList<Entity>();
+
+		loader = new ChunkLoader(engine, this);
+		loader.start();
 
 		this.testWorld = testWorld;
 
@@ -67,6 +81,12 @@ public class World {
 		if (time >= 24) {
 			time = 0;
 		}
+
+		for (Iterator<Entity> it = queued.iterator(); it.hasNext();) {
+			this.addEntity(it.next());
+			it.remove();
+		}
+		queued.clear();
 
 		float y = (float) (SUN_DISTANCE * Math.sin(Math.PI * (time - 2.25) / 24));
 		float z = (float) (SUN_DISTANCE * Math.cos(Math.PI * (time - 2.25) / 24));
@@ -100,15 +120,12 @@ public class World {
 				for (int b = -i - 1; b < i + 2; b++) {
 					int x2 = x + a;
 					int y2 = y + b;
+					int dist = a * a + b * b;
 					if (x2 >= 0 && y2 >= 0 && x2 < WORLD_SIZE && y2 < WORLD_SIZE) {
 						Chunk c = this.terrainMap.get(x2 * 1000 + y2);
 						if (c == null) {
-							if (testWorld) {
-								c = new Chunk(x2, y2);
-							} else {
-								c = new Chunk(seed, x2, y2, seaLevel);
-							}
-							this.addChunk(c);
+							ChunkData data = new ChunkData(dist, seed, x2, y2, seaLevel);
+							loader.createChunk(data);
 						} else {
 							Terrain t = c.getTerrain();
 							if (!toRender.contains(t) && t != null) {
@@ -140,11 +157,12 @@ public class World {
 				for (int b = -i - 1; b < i + 2; b++) {
 					int x2 = x + a;
 					int y2 = y + b;
+					int dist = a * a + b * b;
 					if (x2 >= 0 && y2 >= 0 && x2 < WORLD_SIZE && y2 < WORLD_SIZE) {
 						Chunk c = this.terrainMap.get(x2 * 1000 + y2);
 						if (c == null) {
-							c = new Chunk(seed, x2, y2, seaLevel);
-							this.addChunk(c);
+							ChunkData data = new ChunkData(dist, seed, x2, y2, seaLevel);
+							loader.createChunk(data);
 						} else {
 							WaterTile t = c.getWater();
 							if (!toRender.contains(t) && t != null) {
@@ -185,9 +203,6 @@ public class World {
 		int x = c.getX();
 		int z = c.getZ();
 		terrainMap.put(x * 1000 + z, c);
-		if (!testWorld) {
-			this.decorate(x, z);
-		}
 	}
 
 	public void addLight(Light light) {
@@ -204,6 +219,10 @@ public class World {
 		List<Entity> newBatch = new ArrayList<Entity>();
 		newBatch.add(entity);
 		entities.put(entityModel, newBatch);
+	}
+
+	public void addEntityFromThread(Entity entity) {
+		queued.add(entity);
 	}
 
 	public Vector3f getSkyColor() {
