@@ -140,7 +140,7 @@ public abstract class Engine {
 		return (world != null);
 	}
 	
-	protected void setRenderMode(RenderMode renderMode) {
+	public void setRenderMode(RenderMode renderMode) {
 		renderMode.initialize();
 		this.mode = renderMode;
 	}

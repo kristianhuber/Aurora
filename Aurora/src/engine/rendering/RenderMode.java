@@ -9,6 +9,8 @@ import org.lwjgl.opengl.GL11;
 
 import engine.guis.Gui;
 import engine.guis.GuiList;
+import engine.guis.GuiRenderer;
+import engine.guis.font.FontManager;
 import engine.guis.font.mesh.FontType;
 import engine.guis.font.mesh.GUIText;
 import engine.guis.font.mesh.TextMeshData;
@@ -18,7 +20,11 @@ public abstract class RenderMode {
 	protected HashMap<FontType, List<GUIText>> texts = new HashMap<FontType, List<GUIText>>();
 	protected GuiList guis = new GuiList();
 	
-	public abstract void render();
+	public void render() {
+		guis.update();
+		GuiRenderer.render(this.guis);
+		FontManager.render(this.texts);
+	}
 	
 	public void initialize() {
 		
@@ -36,7 +42,7 @@ public abstract class RenderMode {
 		guis.remove(g);
 	}
 	
-	public void loadText(GUIText text){
+	public void addText(GUIText text){
 		FontType font = text.getFont();
 		TextMeshData data = font.loadText(text);
 		int vao = ModelManager.loadToVAO(data.getVertexPositions(), data.getTextureCoords());

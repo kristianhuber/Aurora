@@ -95,7 +95,7 @@ public class GuiComponent extends Gui {
 			gText.setColor(foregroundColor);
 			gText.setMode(gTextMode);
 			gText.setSecondaryColor(textSecondary);
-			render.loadText(gText);
+			render.addText(gText);
 		}
 
 		// Updates clickedInHere variable

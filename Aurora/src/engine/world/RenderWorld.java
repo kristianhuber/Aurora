@@ -2,7 +2,6 @@ package engine.world;
 
 import org.lwjgl.util.vector.Vector3f;
 
-import engine.guis.GuiRenderer;
 import engine.guis.font.FontManager;
 import engine.guis.font.mesh.GUIText;
 import engine.rendering.MasterRenderer;
@@ -19,11 +18,11 @@ public class RenderWorld extends RenderMode{
 		
 		positonVec = new GUIText("Position", 16, FontManager.font("papyrus"), 0, 0);
 		positonVec.setColour(1, 0.45f, 0);
-		this.loadText(positonVec);
+		this.addText(positonVec);
 		
 		time = new GUIText("Time", 16, FontManager.font("papyrus"), 750, 0);
 		time.setColour(1, 0.45f, 0);
-		this.loadText(time);
+		this.addText(time);
 	}
 
 	@Override
@@ -32,7 +31,9 @@ public class RenderWorld extends RenderMode{
 	}
 	
 	@Override
-	public void render() {		
+	public void render() {
+		super.render();
+		
 		world.update();
 		
 		Vector3f pos = Engine.getCamera().getPosition();
@@ -47,8 +48,5 @@ public class RenderWorld extends RenderMode{
 		}
 
 		MasterRenderer.renderWorld(world);
-		
-		GuiRenderer.render(this.guis);
-		FontManager.render(this.texts);
 	}
 }

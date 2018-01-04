@@ -12,6 +12,7 @@ import org.lwjgl.util.vector.Vector3f;
 import engine.rendering.models.TexturedModel;
 import engine.util.Calculator;
 import engine.util.Engine;
+import engine.world.chunks.Chunk;
 import engine.world.entities.Camera;
 import engine.world.entities.Entity;
 import engine.world.entities.Light;
@@ -38,19 +39,19 @@ public class World {
 	public World(boolean testWorld) {
 
 		this.testWorld = testWorld;
-		
+
 		seed = new Random().nextInt(10000000);
 
 		Entity l = new Entity(this, "stall",
 				new Vector3f(World.WORLD_SIZE * Terrain.SIZE / 2, 400, World.WORLD_SIZE * Terrain.SIZE / 2 + 10));
 		this.addEntity(l);
-		
+
 		time = 19.5f;
 
 		seaLevel = 155;
-		if(testWorld)
+		if (testWorld)
 			seaLevel = -999;
-		
+
 		sun = new Light(new Vector3f(0, World.SUN_DISTANCE, 0), new Vector3f(1.15F, 1.15F, 1.15F));
 		this.addLight(sun);
 	}
@@ -61,8 +62,8 @@ public class World {
 
 	public void update() {
 		Engine.getCamera().move();
-		
-		time += Engine.getDelta()/20;
+
+		time += Engine.getDelta() / 20;
 		if (time >= 24) {
 			time = 0;
 		}
@@ -108,10 +109,12 @@ public class World {
 								c = new Chunk(seed, x2, y2, seaLevel);
 							}
 							this.addChunk(c);
+						} else {
+							Terrain t = c.getTerrain();
+							if (!toRender.contains(t) && t != null) {
+								toRender.add(t);
+							}
 						}
-						Terrain t = c.getTerrain();
-						if (!toRender.contains(t) && t != null)
-							toRender.add(t);
 					}
 				}
 			}
@@ -142,10 +145,12 @@ public class World {
 						if (c == null) {
 							c = new Chunk(seed, x2, y2, seaLevel);
 							this.addChunk(c);
+						} else {
+							WaterTile t = c.getWater();
+							if (!toRender.contains(t) && t != null) {
+								toRender.add(t);
+							}
 						}
-						WaterTile t = c.getWater();
-						if (!toRender.contains(t) && t != null)
-							toRender.add(t);
 					}
 				}
 			}

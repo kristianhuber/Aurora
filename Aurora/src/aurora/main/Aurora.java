@@ -3,6 +3,7 @@ package aurora.main;
 import org.lwjgl.input.Keyboard;
 
 import aurora.menus.RenderMainMenu;
+import aurora.menus.RenderSettingsScreen;
 import engine.guis.font.FontManager;
 import engine.rendering.RenderMode;
 import engine.rendering.models.ModelManager;
@@ -11,8 +12,9 @@ import engine.util.Engine;
 
 public class Aurora extends Engine {
 
-	private RenderMode mainMenu;
-
+	public RenderMode settingsScreen;
+	public RenderMode mainMenu;
+	
 	// How are you supposed to quickly add GUIs in the world (need a better render
 	// mode)?
 
@@ -42,6 +44,7 @@ public class Aurora extends Engine {
 
 		// Load GUI Textures:
 		TextureManager.loadTexture("backgroundImage", "guis");
+		TextureManager.loadTexture("backgroundImage2", "guis");
 		TextureManager.loadTexture("Birch2", "guis");
 		TextureManager.loadTexture("Birch2_hover", "guis");
 		TextureManager.loadTexture("progressbar", "guis");
@@ -77,7 +80,9 @@ public class Aurora extends Engine {
 
 	@Override
 	protected void preRender() {
+		settingsScreen = new RenderSettingsScreen(this);
 		mainMenu = new RenderMainMenu(this);
+		
 		this.setRenderMode(mainMenu);
 	}
 
