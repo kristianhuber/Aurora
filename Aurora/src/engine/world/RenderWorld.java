@@ -17,11 +17,11 @@ public class RenderWorld extends RenderMode{
 		this.world = world;
 		
 		positonVec = new GUIText("Position", 16, FontManager.font("papyrus"), 0, 0);
-		positonVec.setColour(1, 0.45f, 0);
+		positonVec.setColor(255, 0, 0);
 		this.addText(positonVec);
 		
 		time = new GUIText("Time", 16, FontManager.font("papyrus"), 750, 0);
-		time.setColour(1, 0.45f, 0);
+		time.setColor(255, 0, 0);
 		this.addText(time);
 	}
 

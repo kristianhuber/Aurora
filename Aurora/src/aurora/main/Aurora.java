@@ -18,9 +18,9 @@ public class Aurora extends Engine {
 	// How are you supposed to quickly add GUIs in the world (need a better render
 	// mode)?
 
-	// Need to make loading chunks
+	// Upgrade loading chunks?
 
-	// Make a progress bar, slider, check box
+	// Make a progress bar, slider
 
 	// Make it so that text updates when GUI is resized
 

@@ -24,10 +24,10 @@ import engine.world.water.WaterTile;
 
 public class World {
 
-	public static final float SUN_DISTANCE = 5000;
+	public static final float SUN_DISTANCE = 10000;
 	public static final int WORLD_SIZE = 32;
 
-	public static final int RENDER_DISTANCE = 5;
+	public static final int RENDER_DISTANCE = 6;
 
 	private ChunkLoader loader;
 

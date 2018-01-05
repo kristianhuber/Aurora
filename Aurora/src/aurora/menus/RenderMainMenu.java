@@ -27,7 +27,7 @@ public class RenderMainMenu extends RenderMode {
 		this.guis.add(0, backgroundImage);
 
 		title = new GUIText("Aurora", 40, FontManager.font("cherokee"), 675, 25, false);
-		title.setColour(34 / 255f, 139 / 255f, 34 / 255f);
+		title.setColor(34, 139, 34);
 		title.setMode(GUIText.MODE_GLOWING);
 		title.setSecondaryColor(new Vector3f(155 / 255f, 1, 155 / 255f));
 		this.addText(title);
