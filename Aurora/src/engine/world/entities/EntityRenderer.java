@@ -39,8 +39,8 @@ public class EntityRenderer {
 	}
 
 	/* Renders the entities in the world */
-	public void render(World world, Map<TexturedModel, List<Entity>> entities, Matrix4f toShadowSpace,
-			Vector4f clipPlane) {
+	public void render(World world, Map<TexturedModel, List<Entity>> entities,
+			Matrix4f toShadowSpace, Vector4f clipPlane) {
 
 		// Load the shader settings
 		shader.start();
@@ -54,48 +54,53 @@ public class EntityRenderer {
 		Vector3f cameraCoords = Aurora.getCamera().getPosition();
 		float renderDistanceSquare = renderDistance * renderDistance;
 
-		int count = 0;
-		// Start rendering the entities
-		for (TexturedModel model : entities.keySet()) {
-			count++;
+		synchronized (entities) {
+			// Start rendering the entities
+			for (TexturedModel model : entities.keySet()) {
 
-			// Prepare this type of entity
-			this.prepareTexturedModel(model);
+				// Prepare this type of entity
+				this.prepareTexturedModel(model);
 
-			// Start rendering the instances of the type
-			List<Entity> batch = entities.get(model);
-			for (Entity entity : batch) {
-				Vector3f entityPos = entity.getPosition();
-				float dx = cameraCoords.x - entityPos.x;
-				float dy = cameraCoords.y - entityPos.y;
-				float dz = cameraCoords.z - entityPos.z;
-				float distanceSquare = dx * dx + dy * dy + dz * dz;
+				// Start rendering the instances of the type
+				List<Entity> batch = entities.get(model);
+				for (Entity entity : batch) {
+					Vector3f entityPos = entity.getPosition();
+					float dx = cameraCoords.x - entityPos.x;
+					float dy = cameraCoords.y - entityPos.y;
+					float dz = cameraCoords.z - entityPos.z;
+					float distanceSquare = dx * dx + dy * dy + dz * dz;
 
-				// Making sure all entities are within the render distance before rendering
-				// them. This overrides the level of detail because the player will not be able
-				// to see models at all past the render distance.
-				if (distanceSquare < renderDistanceSquare) {
+					// Making sure all entities are within the render distance
+					// before rendering
+					// them. This overrides the level of detail because the
+					// player will not be able
+					// to see models at all past the render distance.
+					if (distanceSquare < renderDistanceSquare) {
 
-					// Preparing the entity to render.
-					this.prepareInstance(entity);
+						// Preparing the entity to render.
+						this.prepareInstance(entity);
 
-					// If the entity has different levels of detail, then render the correct one,
-					// otherwise, render the only one it has.
-					if (model.getRawModel().hasLevelsOfDetail()) {
-						int[] renderComponents = model.getRawModel().getIndexArrayStartAndLength(distanceSquare);
-						GL11.glDrawElements(GL11.GL_TRIANGLES, renderComponents[1], GL11.GL_UNSIGNED_INT,
-								renderComponents[0] * 4);
-					} else
-						GL11.glDrawElements(GL11.GL_TRIANGLES, model.getRawModel().getVertexCount(),
-								GL11.GL_UNSIGNED_INT, 0);
+						// If the entity has different levels of detail, then
+						// render the correct one,
+						// otherwise, render the only one it has.
+						if (model.getRawModel().hasLevelsOfDetail()) {
+							int[] renderComponents = model
+									.getRawModel()
+									.getIndexArrayStartAndLength(distanceSquare);
+							GL11.glDrawElements(GL11.GL_TRIANGLES,
+									renderComponents[1], GL11.GL_UNSIGNED_INT,
+									renderComponents[0] * 4);
+						} else
+							GL11.glDrawElements(GL11.GL_TRIANGLES, model
+									.getRawModel().getVertexCount(),
+									GL11.GL_UNSIGNED_INT, 0);
+					}
 				}
+
+				// Unload the model
+				this.unbindTexturedModel();
 			}
-
-
-			// Unload the model
-			this.unbindTexturedModel();
 		}
-
 		// Close the shader
 		shader.stop();
 	}
@@ -121,7 +126,8 @@ public class EntityRenderer {
 			MasterRenderer.disableCulling();
 		}
 		shader.loadFakeLightingVariable(texture.useFakeLighting());
-		shader.loadShineVariables(texture.getShineDamper(), texture.getReflectivity());
+		shader.loadShineVariables(texture.getShineDamper(),
+				texture.getReflectivity());
 
 		// Load the texture to OpenGL
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
@@ -144,10 +150,11 @@ public class EntityRenderer {
 
 	/* Loads settings to the shader per entity instance */
 	private void prepareInstance(Entity entity) {
-		Matrix4f transformationMatrix = Calculator.createTransformationMatrix(entity.getPosition(),
-				entity.getRotation(), entity.getScale());
+		Matrix4f transformationMatrix = Calculator.createTransformationMatrix(
+				entity.getPosition(), entity.getRotation(), entity.getScale());
 		shader.loadTransformationMatrix(transformationMatrix);
-		shader.loadOffset(entity.getTextureXOffset(), entity.getTextureYOffset());
+		shader.loadOffset(entity.getTextureXOffset(),
+				entity.getTextureYOffset());
 		shader.loadIsSelected(entity.isSelected());
 	}
 

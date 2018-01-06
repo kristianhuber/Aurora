@@ -38,7 +38,7 @@ public class Chunk {
 				Entity e = new Entity(world, "betterpine", new Vector3f(x2, y, z2));
 				e.setScale(7.5f);
 				e.setSelection(false);
-				world.addEntityFromThread(e);
+				world.addEntity(e);
 			}
 		}
 	}

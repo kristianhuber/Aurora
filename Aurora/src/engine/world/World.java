@@ -2,7 +2,6 @@ package engine.world;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -40,14 +39,12 @@ public class World {
 	private int seed;
 	private Vector3f skyColor = new Vector3f(154 / 255F, 160 / 255F, 181 / 255F);
 	private boolean testWorld;
-	private List<Entity> queued;
 
 	public World(Engine engine, boolean testWorld) {
 
 		entities = new HashMap<TexturedModel, List<Entity>>();
 		terrainMap = new HashMap<Integer, Chunk>();
 		lights = new ArrayList<Light>();
-		queued = new ArrayList<Entity>();
 
 		loader = new ChunkLoader(engine, this);
 		loader.start();
@@ -56,8 +53,9 @@ public class World {
 
 		seed = new Random().nextInt(10000000);
 
-		Entity l = new Entity(this, "stall",
-				new Vector3f(World.WORLD_SIZE * Terrain.SIZE / 2, 400, World.WORLD_SIZE * Terrain.SIZE / 2 + 10));
+		Entity l = new Entity(this, "stall", new Vector3f(World.WORLD_SIZE
+				* Terrain.SIZE / 2, 400, World.WORLD_SIZE * Terrain.SIZE / 2
+				+ 10));
 		this.addEntity(l);
 
 		time = 19.5f;
@@ -66,7 +64,8 @@ public class World {
 		if (testWorld)
 			seaLevel = -999;
 
-		sun = new Light(new Vector3f(0, World.SUN_DISTANCE, 0), new Vector3f(1.15F, 1.15F, 1.15F));
+		sun = new Light(new Vector3f(0, World.SUN_DISTANCE, 0), new Vector3f(
+				1.15F, 1.15F, 1.15F));
 		this.addLight(sun);
 	}
 
@@ -82,14 +81,10 @@ public class World {
 			time = 0;
 		}
 
-		for (Iterator<Entity> it = queued.iterator(); it.hasNext();) {
-			this.addEntity(it.next());
-			it.remove();
-		}
-		queued.clear();
-
-		float y = (float) (SUN_DISTANCE * Math.sin(Math.PI * (time - 2.25) / 24));
-		float z = (float) (SUN_DISTANCE * Math.cos(Math.PI * (time - 2.25) / 24));
+		float y = (float) (SUN_DISTANCE * Math
+				.sin(Math.PI * (time - 2.25) / 24));
+		float z = (float) (SUN_DISTANCE * Math
+				.cos(Math.PI * (time - 2.25) / 24));
 		sun.setPosition(0, y, z);
 	}
 
@@ -110,7 +105,8 @@ public class World {
 		List<Terrain> toRender = new ArrayList<Terrain>();
 
 		Camera cam = Engine.getCamera();
-		Vector2f pos = Calculator.terrainCoords(cam.getPosition().x, cam.getPosition().z);
+		Vector2f pos = Calculator.terrainCoords(cam.getPosition().x,
+				cam.getPosition().z);
 		float rot = (float) Math.toRadians(180 - (cam.getRotation().y % 360));
 
 		for (int i = 0; i < RENDER_DISTANCE; i++) {
@@ -121,10 +117,12 @@ public class World {
 					int x2 = x + a;
 					int y2 = y + b;
 					int dist = a * a + b * b;
-					if (x2 >= 0 && y2 >= 0 && x2 < WORLD_SIZE && y2 < WORLD_SIZE) {
+					if (x2 >= 0 && y2 >= 0 && x2 < WORLD_SIZE
+							&& y2 < WORLD_SIZE) {
 						Chunk c = this.terrainMap.get(x2 * 1000 + y2);
 						if (c == null) {
-							ChunkData data = new ChunkData(dist, seed, x2, y2, seaLevel);
+							ChunkData data = new ChunkData(dist, seed, x2, y2,
+									seaLevel);
 							loader.createChunk(data);
 						} else {
 							Terrain t = c.getTerrain();
@@ -147,7 +145,8 @@ public class World {
 			return toRender;
 
 		Camera cam = Engine.getCamera();
-		Vector2f pos = Calculator.terrainCoords(cam.getPosition().x, cam.getPosition().z);
+		Vector2f pos = Calculator.terrainCoords(cam.getPosition().x,
+				cam.getPosition().z);
 		float rot = (float) Math.toRadians(180 - (cam.getRotation().y % 360));
 
 		for (int i = 0; i < RENDER_DISTANCE; i++) {
@@ -158,10 +157,12 @@ public class World {
 					int x2 = x + a;
 					int y2 = y + b;
 					int dist = a * a + b * b;
-					if (x2 >= 0 && y2 >= 0 && x2 < WORLD_SIZE && y2 < WORLD_SIZE) {
+					if (x2 >= 0 && y2 >= 0 && x2 < WORLD_SIZE
+							&& y2 < WORLD_SIZE) {
 						Chunk c = this.terrainMap.get(x2 * 1000 + y2);
 						if (c == null) {
-							ChunkData data = new ChunkData(dist, seed, x2, y2, seaLevel);
+							ChunkData data = new ChunkData(dist, seed, x2, y2,
+									seaLevel);
 							loader.createChunk(data);
 						} else {
 							WaterTile t = c.getWater();
@@ -210,19 +211,17 @@ public class World {
 	}
 
 	public void addEntity(Entity entity) {
-		TexturedModel entityModel = entity.getModel();
-		for (TexturedModel tm : entities.keySet())
-			if (tm.equals(entityModel)) {
-				entities.get(tm).add(entity);
-				return;
-			}
-		List<Entity> newBatch = new ArrayList<Entity>();
-		newBatch.add(entity);
-		entities.put(entityModel, newBatch);
-	}
-
-	public void addEntityFromThread(Entity entity) {
-		queued.add(entity);
+		synchronized (entities) {
+			TexturedModel entityModel = entity.getModel();
+			for (TexturedModel tm : entities.keySet())
+				if (tm.equals(entityModel)) {
+					entities.get(tm).add(entity);
+					return;
+				}
+			List<Entity> newBatch = new ArrayList<Entity>();
+			newBatch.add(entity);
+			entities.put(entityModel, newBatch);
+		}
 	}
 
 	public Vector3f getSkyColor() {

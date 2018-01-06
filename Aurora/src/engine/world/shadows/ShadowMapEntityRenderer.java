@@ -28,7 +28,8 @@ public class ShadowMapEntityRenderer {
 	 *            - the orthographic projection matrix multiplied by the light's
 	 *            "view" matrix.
 	 */
-	protected ShadowMapEntityRenderer(ShadowShader shader, Matrix4f projectionViewMatrix) {
+	protected ShadowMapEntityRenderer(ShadowShader shader,
+			Matrix4f projectionViewMatrix) {
 		this.shader = shader;
 		this.projectionViewMatrix = projectionViewMatrix;
 	}
@@ -41,26 +42,29 @@ public class ShadowMapEntityRenderer {
 	 *            - the entities to be rendered to the shadow map.
 	 */
 	protected void render(Map<TexturedModel, List<Entity>> entities) {
-		for (TexturedModel model : entities.keySet()) {
-			RawModel rawModel = model.getRawModel();
-			bindModel(rawModel);
-			GL13.glActiveTexture(GL13.GL_TEXTURE0);
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, model.getTexture().getID());
-			if(model.getTexture().hasTransparency()){
-				MasterRenderer.disableCulling();
+		synchronized (entities) {
+			for (TexturedModel model : entities.keySet()) {
+				RawModel rawModel = model.getRawModel();
+				bindModel(rawModel);
+				GL13.glActiveTexture(GL13.GL_TEXTURE0);
+				GL11.glBindTexture(GL11.GL_TEXTURE_2D, model.getTexture()
+						.getID());
+				if (model.getTexture().hasTransparency()) {
+					MasterRenderer.disableCulling();
+				}
+				for (Entity entity : entities.get(model)) {
+					prepareInstance(entity);
+					GL11.glDrawElements(GL11.GL_TRIANGLES,
+							rawModel.getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
+				}
+				if (model.getTexture().hasTransparency()) {
+					MasterRenderer.enableCulling();
+				}
 			}
-			for (Entity entity : entities.get(model)) {
-				prepareInstance(entity);
-				GL11.glDrawElements(GL11.GL_TRIANGLES, rawModel.getVertexCount(),
-						GL11.GL_UNSIGNED_INT, 0);
-			}
-			if(model.getTexture().hasTransparency()){
-				MasterRenderer.enableCulling();
-			}
+			GL20.glDisableVertexAttribArray(0);
+			GL20.glDisableVertexAttribArray(1);
+			GL30.glBindVertexArray(0);
 		}
-		GL20.glDisableVertexAttribArray(0);
-		GL20.glDisableVertexAttribArray(1);
-		GL30.glBindVertexArray(0);
 	}
 
 	/**
@@ -87,9 +91,10 @@ public class ShadowMapEntityRenderer {
 	 *            - the entity to be prepared for rendering.
 	 */
 	private void prepareInstance(Entity entity) {
-		Matrix4f modelMatrix = Calculator.createTransformationMatrix(entity.getPosition(),
-				entity.getRotation(), entity.getScale());
-		Matrix4f mvpMatrix = Matrix4f.mul(projectionViewMatrix, modelMatrix, null);
+		Matrix4f modelMatrix = Calculator.createTransformationMatrix(
+				entity.getPosition(), entity.getRotation(), entity.getScale());
+		Matrix4f mvpMatrix = Matrix4f.mul(projectionViewMatrix, modelMatrix,
+				null);
 		shader.loadMvpMatrix(mvpMatrix);
 	}
 
