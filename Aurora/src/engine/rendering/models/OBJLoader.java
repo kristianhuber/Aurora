@@ -205,6 +205,7 @@ public class OBJLoader {
 
 		System.out.println();
 		RawModel rawModel = ModelManager.loadToVAO(vertices, textures, normals, indices);
+		rawModel.setModelData(new ModelData(vertices, textures, normals, indices, farthestLength));
 		rawModel.setLODInfo(lodInfoData);
 		return rawModel;
 	}

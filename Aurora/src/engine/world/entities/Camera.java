@@ -32,12 +32,13 @@ public class Camera {
 	public Camera(World world) {
 		this.world = world;
 		this.flying = true;
-		if(flying) SPEED = 30;
-		//this.position.x = 50;
+		if (flying)
+			SPEED = 30;
+		// this.position.x = 50;
 		this.position.x = World.WORLD_SIZE * Terrain.SIZE / 2;
 		this.position.y = 200;
 		this.position.z = World.WORLD_SIZE * Terrain.SIZE / 2;
-		//this.position.z = 50;
+		// this.position.z = 50;
 	}
 
 	/* Moves the camera around the world */
@@ -47,10 +48,10 @@ public class Camera {
 		float delta = Engine.getDelta();
 		this.checkInputs(delta);
 
-		if(!flying) {
+		if (!flying) {
 			velocity.y = -5;
 		}
-		
+
 		// Calculates the change in position based on the velocity and direction
 		this.position.x += velocity.x * Math.cos(Math.toRadians(rotation.y));
 		this.position.x -= velocity.z * Math.sin(Math.toRadians(rotation.y));
@@ -166,12 +167,12 @@ public class Camera {
 	public Vector3f getPosition() {
 		return position;
 	}
-	
+
 	public void setFlying(boolean flying) {
 		this.flying = flying;
-		if(flying) {
+		if (flying) {
 			SPEED = 50;
-		}else {
+		} else {
 			SPEED = 15;
 		}
 	}

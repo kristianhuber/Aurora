@@ -11,17 +11,23 @@ public class RawModel {
 
 	// This is the array that determines where in the index array to render the
 	// model based on a given distance.
-	// index,percentage,smallDistanceBound,largeDistanceBound,arrayStart,arrayLength
-	// index,percentage,smallDistanceBound,largeDistanceBound,arrayStart,arrayLength
-	// index,percentage,smallDistanceBound,largeDistanceBound,arrayStart,arrayLength
-	// ...
 	int[][] lodInfo = null;
 	private boolean hasMultipleLevelsOfDetail = false;
+	
+	private ModelData modelData = null;
 
 	/* Constructor Method */
 	public RawModel(int vaoID, int vertexCount) {
 		this.vaoID = vaoID;
 		this.vertexCount = vertexCount;
+	}
+
+	public ModelData getModelData() {
+		return modelData;
+	}
+
+	public void setModelData(ModelData modelData) {
+		this.modelData = modelData;
 	}
 
 	public void setLODInfo(int[][] lodInfo) {

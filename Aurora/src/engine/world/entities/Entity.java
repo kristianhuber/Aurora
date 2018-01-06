@@ -1,9 +1,12 @@
 package engine.world.entities;
 
+import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
 import engine.rendering.models.TexturedModel;
+import engine.util.Calculator;
 import engine.world.World;
+import engine.world.entities.collisions.AABB;
 
 /**
  * @Description: Main class for objects in the game
@@ -19,6 +22,9 @@ public class Entity {
 	private boolean selected;
 	private int textureIndex;
 	private float scale;
+	
+	private AABB boundingBox;
+	private Matrix4f transformationMatrix;
 
 	private String ID;
 
@@ -31,6 +37,12 @@ public class Entity {
 		this.world = w;
 		this.scale = 1;
 		this.ID = ID;
+		updateTransformationMatrix();
+	}
+	
+	private void updateTransformationMatrix() {
+		transformationMatrix = Calculator.createTransformationMatrix(position, rotation, scale);
+		boundingBox = new AABB(model.getRawModel().getModelData().calculateAABB(position, rotation, scale, transformationMatrix));
 	}
 
 	public String getID() {
@@ -57,6 +69,7 @@ public class Entity {
 		this.position.x += dx;
 		this.position.y += dy;
 		this.position.z += dz;
+		updateTransformationMatrix();
 	}
 
 	/* Increase the rotation easily */
@@ -64,6 +77,7 @@ public class Entity {
 		this.rotation.x += dx;
 		this.rotation.y += dy;
 		this.rotation.z += dz;
+		updateTransformationMatrix();
 	}
 
 	/* Calculates the x coordinate on texture map */
@@ -83,6 +97,7 @@ public class Entity {
 		this.position.x = x;
 		this.position.y = y;
 		this.position.z = z;
+		updateTransformationMatrix();
 	}
 
 	/* Set the position with 2 floats */
@@ -90,6 +105,7 @@ public class Entity {
 		this.position.x = x;
 		this.position.y = this.world.getTerrainHeightAt(x, z);
 		this.position.z = z;
+		updateTransformationMatrix();
 	}
 
 	/* Return the position vector */
@@ -102,6 +118,7 @@ public class Entity {
 		this.rotation.x = x;
 		this.rotation.y = y;
 		this.rotation.z = z;
+		updateTransformationMatrix();
 	}
 
 	/* Return the rotation vector */
@@ -112,6 +129,7 @@ public class Entity {
 	/* Set the scale of the entity */
 	public void setScale(float scale) {
 		this.scale = scale;
+		updateTransformationMatrix();
 	}
 
 	/* Get the scale of the entity */
@@ -130,5 +148,9 @@ public class Entity {
 
 	public boolean isSelected() {
 		return selected;
+	}
+
+	public Matrix4f getTransformationMatrix() {
+		return transformationMatrix;
 	}
 }

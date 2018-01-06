@@ -57,7 +57,7 @@ public class World {
 		seed = new Random().nextInt(10000000);
 
 		Entity l = new Entity(this, "stall",
-				new Vector3f(World.WORLD_SIZE * Terrain.SIZE / 2, 400, World.WORLD_SIZE * Terrain.SIZE / 2 + 10));
+				new Vector3f(World.WORLD_SIZE * Terrain.SIZE / 2, 300, World.WORLD_SIZE * Terrain.SIZE / 2 + 10));
 		this.addEntity(l);
 
 		time = 19.5f;

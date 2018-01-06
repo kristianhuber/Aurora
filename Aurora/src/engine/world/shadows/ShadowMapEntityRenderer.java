@@ -87,8 +87,7 @@ public class ShadowMapEntityRenderer {
 	 *            - the entity to be prepared for rendering.
 	 */
 	private void prepareInstance(Entity entity) {
-		Matrix4f modelMatrix = Calculator.createTransformationMatrix(entity.getPosition(),
-				entity.getRotation(), entity.getScale());
+		Matrix4f modelMatrix = entity.getTransformationMatrix(); //Calculator.createTransformationMatrix(entity.getPosition(),entity.getRotation(), entity.getScale());
 		Matrix4f mvpMatrix = Matrix4f.mul(projectionViewMatrix, modelMatrix, null);
 		shader.loadMvpMatrix(mvpMatrix);
 	}
