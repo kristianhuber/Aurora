@@ -114,6 +114,10 @@ public class GUIText {
 		this.secondaryColor = color;
 	}
 	
+	public void setSecondaryColor(float r, float g, float b) {
+		this.secondaryColor = new Vector3f(r/255, g/255, b/255);
+	}
+	
 	public void setMode(int mode) {
 		this.mode = mode;
 	}
@@ -144,8 +148,8 @@ public class GUIText {
 	 * @param b
 	 *            - blue value, between 0 and 1.
 	 */
-	public void setColour(float r, float g, float b) {
-		colour.set(r, g, b);
+	public void setColor(float r, float g, float b) {
+		colour.set(r/255, g/255, b/255);
 	}
 	
 	public void setColor(Vector3f color) {

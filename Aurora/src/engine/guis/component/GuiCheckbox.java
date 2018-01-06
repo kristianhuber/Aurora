@@ -23,14 +23,13 @@ public class GuiCheckbox extends GuiComponent {
 		super.update();
 		
 		if(area.contains(InputManager.mousePosition) && InputManager.leftDownEvent && clickedInHere) {
-			addFilter(new Vector4f(-0.1f, -0.1f, -0.1f, 0));
+			this.addFilter(new Vector4f(-0.1f, -0.1f, -0.1f, 0));
 			if(checked) {
-				this.checked = false;
 				this.setTexture(rootTexture);
 			}else {
-				this.checked = true;
 				this.setTexture(rootTexture + "_checked");
 			}
+			this.checked = !checked;
 		}
 		if(hasFilter() && !InputManager.leftDown) {
 			this.removeFilter();

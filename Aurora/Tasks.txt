@@ -1,0 +1,67 @@
+Weekly Tasks:
+
+To Do :
+
+	Notes:
+		•	ALL FILES MUST BE ORGANIZED AND COMMENTED
+		•	We can use temporary resources
+		
+	General:
+		Audio:
+			•	Make a background music player for the game
+			•	Ambient noises will come from in game (birds, wind / weather), although weather might be truly ambient
+			•	Other noises will come from objects in the game
+		Loading Files:
+			•	Load resources from a res folder now. Need to be able to read from a different folder on the computer. The reason for res right now is to share resources on GitHub
+			•	Need to be able to load settings
+			•	Need to be able to save and load worlds
+		Rendering:
+			•	This should not require any updates right now. Just clean code
+			
+	Screen:
+		GUIs:
+			•	Need to work on different components for the GUIs
+				•	Need to make text fields, combo boxes, fix progress bars, fix text align
+			•	Menus need to be finished (single player load world, multiplayer, settings), however we need to wait for some of these things
+			•	There needs to be an easy way to add HUDs to the game. These will always be on the in-game screen
+			•	There needs to be a mechanic for GUIs that pop up, like inventory
+			•	There needs to be a way to implement interactables, such as a forge
+		Post Processing:
+			•	Need to be able to have any amount of post processing effects. Do this with a linked list?
+		Text:
+			•	This code is awful right now. It needs to be cleaned up significantly.
+			•	 Need to be able to find the length of a text
+			
+	World:
+		Chunks:
+			•	Make these hold an entity and level of detail variable
+			•	Possibly fix multithreading, but I don't think that's an issue
+		Entities:
+			•	Implement Collision Detection
+			•	Implement Level of Detail
+		Particles:
+			•	Singular particles that represent explosions?
+			•	Spawn in different shapes
+			•	There's way too much to do here
+		Shadows:
+			•	Fix shadows not being connected
+			•	Make it so light can cancel out shadows
+		Skybox:
+			•	Make it bigger
+			•	Make it transition and have weather
+			•	Make a lens flare and sun. Do this with sampling
+		Terrain:
+			•	Figure another way to make the terrain other than when its null
+			•	The code in here is awful
+			•	Make the normals generate faster. Do this with an array
+		Water:
+			•	Figure out how to make rivers
+			•	Directional flow ^^^
+		World:
+			•	Generate the terrain better
+			•	Once the terrain generates properly, add biomes
+			
+	Future Features:
+		AIs
+		Animation
+		Multiplayer
