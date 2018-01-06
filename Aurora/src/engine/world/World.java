@@ -58,7 +58,7 @@ public class World {
 
 		Entity l = new Entity(this, "stall",
 				new Vector3f(World.WORLD_SIZE * Terrain.SIZE / 2, 300, World.WORLD_SIZE * Terrain.SIZE / 2 + 10));
-		this.addEntity(l);
+		this.addEntityFromThread(l);
 
 		time = 19.5f;
 
@@ -81,11 +81,9 @@ public class World {
 		if (time >= 24) {
 			time = 0;
 		}
-
-		for (Iterator<Entity> it = queued.iterator(); it.hasNext();) {
-			this.addEntity(it.next());
-			it.remove();
-		}
+		
+		for(Entity e : queued)
+			this.addEntity(e);
 		queued.clear();
 
 		float y = (float) (SUN_DISTANCE * Math.sin(Math.PI * (time - 2.25) / 24));
@@ -194,7 +192,7 @@ public class World {
 				Entity e = new Entity(this, "betterpine", new Vector3f(x, y, z));
 				e.setScale(7.5f);
 				e.setSelection(false);
-				this.addEntity(e);
+				this.addEntityFromThread(e);
 			}
 		}
 	}
