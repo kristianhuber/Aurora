@@ -39,8 +39,8 @@ public class EntityRenderer {
 	}
 
 	/* Renders the entities in the world */
-	public void render(World world, Map<TexturedModel, List<Entity>> entities,
-			Matrix4f toShadowSpace, Vector4f clipPlane) {
+	public void render(World world, Map<TexturedModel, List<Entity>> entities, Matrix4f toShadowSpace,
+			Vector4f clipPlane) {
 
 		// Load the shader settings
 		shader.start();
@@ -84,15 +84,11 @@ public class EntityRenderer {
 						// render the correct one,
 						// otherwise, render the only one it has.
 						if (model.getRawModel().hasLevelsOfDetail()) {
-							int[] renderComponents = model
-									.getRawModel()
-									.getIndexArrayStartAndLength(distanceSquare);
-							GL11.glDrawElements(GL11.GL_TRIANGLES,
-									renderComponents[1], GL11.GL_UNSIGNED_INT,
+							int[] renderComponents = model.getRawModel().getIndexArrayStartAndLength(distanceSquare);
+							GL11.glDrawElements(GL11.GL_TRIANGLES, renderComponents[1], GL11.GL_UNSIGNED_INT,
 									renderComponents[0] * 4);
 						} else
-							GL11.glDrawElements(GL11.GL_TRIANGLES, model
-									.getRawModel().getVertexCount(),
+							GL11.glDrawElements(GL11.GL_TRIANGLES, model.getRawModel().getVertexCount(),
 									GL11.GL_UNSIGNED_INT, 0);
 					}
 				}
@@ -126,8 +122,7 @@ public class EntityRenderer {
 			MasterRenderer.disableCulling();
 		}
 		shader.loadFakeLightingVariable(texture.useFakeLighting());
-		shader.loadShineVariables(texture.getShineDamper(),
-				texture.getReflectivity());
+		shader.loadShineVariables(texture.getShineDamper(), texture.getReflectivity());
 
 		// Load the texture to OpenGL
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
@@ -150,11 +145,10 @@ public class EntityRenderer {
 
 	/* Loads settings to the shader per entity instance */
 	private void prepareInstance(Entity entity) {
-		Matrix4f transformationMatrix = Calculator.createTransformationMatrix(
-				entity.getPosition(), entity.getRotation(), entity.getScale());
+		Matrix4f transformationMatrix = entity.getTransformationMatrix();// Calculator.createTransformationMatrix(entity.getPosition(),
+																			// entity.getRotation(), entity.getScale());
 		shader.loadTransformationMatrix(transformationMatrix);
-		shader.loadOffset(entity.getTextureXOffset(),
-				entity.getTextureYOffset());
+		shader.loadOffset(entity.getTextureXOffset(), entity.getTextureYOffset());
 		shader.loadIsSelected(entity.isSelected());
 	}
 
