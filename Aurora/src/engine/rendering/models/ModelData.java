@@ -34,7 +34,7 @@ public class ModelData {
 	 * @return an array of 6 floats representing the boundaries of the AABB in this
 	 *         order: xMin, yMin, zMin, xMax, yMax, zMax
 	 */
-	public float[] calculateAABB(Vector3f position, Vector3f rotation, float scale, Matrix4f transformationMatrix) {
+	public float[] calculateAABB(Vector3f position, Matrix4f transformationMatrix) {
 		// Creating a transformation matrix based on the rotation and scale, position
 		// doesn't matter because it is axis aligned so the bounds can be translated
 		// easily.

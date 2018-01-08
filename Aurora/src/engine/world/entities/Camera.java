@@ -13,15 +13,13 @@ import engine.world.terrain.Terrain;
  * 
  */
 
-public class Camera {
+public class Camera extends Entity {
 
 	private final float MOUSE_TOLERANCE = 3.0F;
 	private final float Y_OFFSET = 5F;
 	private final float SCROLL = 100.0F;
 	private float SPEED = 15.0F;
 
-	private Vector3f position = new Vector3f(0, 50, 0);
-	private Vector3f rotation = new Vector3f(0, 20, 0);
 	private Vector3f velocity = new Vector3f(0, 0, 0);
 
 	private World world;
@@ -30,19 +28,26 @@ public class Camera {
 
 	/* Construction Method */
 	public Camera(World world) {
+		super(world, "betterpine", new Vector3f(0, 0, 0));
+		this.scale = 5;
+		world.addEntity(this);
+		
 		this.world = world;
 		this.flying = true;
 		if (flying)
 			SPEED = 30;
-		// this.position.x = 50;
+		
 		this.position.x = World.WORLD_SIZE * Terrain.SIZE / 2;
 		this.position.y = 200;
 		this.position.z = World.WORLD_SIZE * Terrain.SIZE / 2;
-		// this.position.z = 50;
+		
+		updateTransformationMatrix();
 	}
 
 	/* Moves the camera around the world */
 	public void move() {
+
+		Entity[] playerCollisions = world.getCollisionManager().getBoxCollisions(this);
 
 		// Finds out which direction the player wants to move in
 		float delta = Engine.getDelta();
@@ -69,6 +74,9 @@ public class Camera {
 		if (position.y < height + Y_OFFSET) {
 			position.y = height + Y_OFFSET;
 		}
+		
+		updateTransformationMatrix();
+		updateBoundingBox();
 	}
 
 	/* Calculates the deceleration rate */
@@ -146,26 +154,9 @@ public class Camera {
 		Mouse.setCursorPosition(Engine.WIDTH / 2, Engine.HEIGHT / 2);
 	}
 
-	/* Sets the position */
-	public void setPosition(float x, float y, float z) {
-		this.position.x = x;
-		this.position.y = y;
-		this.position.z = z;
-	}
-
 	/* Inverts the x rotation, used when rendering reflections */
 	public void invertPitch() {
 		rotation.x = -rotation.x;
-	}
-
-	/* Gets the rotation */
-	public Vector3f getRotation() {
-		return rotation;
-	}
-
-	/* Gets the position */
-	public Vector3f getPosition() {
-		return position;
 	}
 
 	public void setFlying(boolean flying) {

@@ -8,7 +8,7 @@ import engine.rendering.MasterRenderer;
 import engine.rendering.RenderMode;
 import engine.util.Engine;
 
-public class RenderWorld extends RenderMode{
+public class RenderWorld extends RenderMode {
 	private GUIText positonVec;
 	private GUIText time;
 	private World world;

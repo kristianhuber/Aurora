@@ -21,8 +21,8 @@ public class Entity {
 	private TexturedModel model;
 	private boolean selected;
 	private int textureIndex;
-	private float scale;
-	
+	protected float scale;
+
 	private AABB boundingBox;
 	private Matrix4f transformationMatrix;
 
@@ -38,11 +38,23 @@ public class Entity {
 		this.scale = 1;
 		this.ID = ID;
 		updateTransformationMatrix();
+		updateBoundingBox();
 	}
-	
-	private void updateTransformationMatrix() {
+
+	protected void updateBoundingBox() {
+		if (boundingBox == null)
+			boundingBox = new AABB(model.getRawModel().getModelData().calculateAABB(position, transformationMatrix),
+					this);
+		else
+			boundingBox.updateBounds(model.getRawModel().getModelData().calculateAABB(position, transformationMatrix));
+	}
+
+	protected void updateTransformationMatrix() {
 		transformationMatrix = Calculator.createTransformationMatrix(position, rotation, scale);
-		boundingBox = new AABB(model.getRawModel().getModelData().calculateAABB(position, rotation, scale, transformationMatrix));
+	}
+
+	public AABB getBoundingBox() {
+		return boundingBox;
 	}
 
 	public String getID() {
@@ -78,6 +90,7 @@ public class Entity {
 		this.rotation.y += dy;
 		this.rotation.z += dz;
 		updateTransformationMatrix();
+		updateBoundingBox();
 	}
 
 	/* Calculates the x coordinate on texture map */
@@ -119,6 +132,7 @@ public class Entity {
 		this.rotation.y = y;
 		this.rotation.z = z;
 		updateTransformationMatrix();
+		updateBoundingBox();
 	}
 
 	/* Return the rotation vector */
@@ -130,6 +144,7 @@ public class Entity {
 	public void setScale(float scale) {
 		this.scale = scale;
 		updateTransformationMatrix();
+		updateBoundingBox();
 	}
 
 	/* Get the scale of the entity */

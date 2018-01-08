@@ -73,57 +73,47 @@ public class MasterRenderer {
 	}
 
 	public static void renderWorld(World world) {
+		// Clearing the previous frame
 		GL11.glClearColor(0, 0.5f, 1, 1);
 
+		// setting render mode to wire frames if appropriate:
 		if (wireframes) {
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
 		}
 
+		// Rendering shadows:
 		MasterRenderer.shadowMapRenderer.render(world.getEntities(), world.getLights().get(0));
-
 		ParticleMaster.update();
-
 		Camera camera = Engine.getCamera();
 
-		// Water Stuff
+		// Rendering Water
 		GL11.glEnable(GL30.GL_CLIP_DISTANCE0);
-
 		waterRenderer.bindReflectionFrameBuffer();
-
 		float distance = 2 * (camera.getPosition().y);
 		camera.getPosition().y -= distance;
 		camera.invertPitch();
-
 		MasterRenderer.renderScene(world, new Vector4f(0, 1, 0, world.getSeaLevel() + 0.5f));
-
 		camera.invertPitch();
 		camera.getPosition().y += distance;
-
 		waterRenderer.bindRefractionFrameBuffer();
-
 		MasterRenderer.renderScene(world, new Vector4f(0, -1, 0, world.getSeaLevel() + 1.0f));
-
 		waterRenderer.unbindCurrentFrameBuffer();
 		GL11.glDisable(GL30.GL_CLIP_DISTANCE0);
 
-		// Actual Stuff
+		// Rendering actual world
 		MasterRenderer.multisampledFBO.bindFrameBuffer();
-
 		MasterRenderer.renderScene(world, new Vector4f(0, -1, 0, 100000));
-
 		MasterRenderer.waterRenderer.render(world, world.getLights().get(0), world.getSkyColor());
 
-		// Particle Stuff
+		// Rendering particles
 		ParticleMaster.renderParticles();
-
 		MasterRenderer.multisampledFBO.unbindFrameBuffer();
-
 		MasterRenderer.multisampledFBO.resolveToFbo(MasterRenderer.outputFBO);
 
 		if (wireframes) {
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
 		}
-		
+
 		// Post Processing
 		PostProcessing.doPostProcessing(outputFBO.getColourTexture());
 	}
