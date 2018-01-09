@@ -6,7 +6,9 @@ import org.lwjgl.util.vector.Vector3f;
 
 import engine.util.Engine;
 import engine.world.World;
+import engine.world.entities.collisions.DetailedCollisionDetection;
 import engine.world.terrain.Terrain;
+import javafx.geometry.BoundingBox;
 
 /**
  * @Description: How the user moves around in the game
@@ -31,16 +33,16 @@ public class Camera extends Entity {
 		super(world, "betterpine", new Vector3f(0, 0, 0));
 		this.scale = 5;
 		world.addEntity(this);
-		
+
 		this.world = world;
 		this.flying = true;
 		if (flying)
 			SPEED = 30;
-		
+
 		this.position.x = World.WORLD_SIZE * Terrain.SIZE / 2;
 		this.position.y = 200;
 		this.position.z = World.WORLD_SIZE * Terrain.SIZE / 2;
-		
+
 		updateTransformationMatrix();
 	}
 
@@ -48,6 +50,11 @@ public class Camera extends Entity {
 	public void move() {
 
 		Entity[] playerCollisions = world.getCollisionManager().getBoxCollisions(this);
+		for (int i = 0; i < playerCollisions.length; i++)
+			DetailedCollisionDetection.getCollision(this, playerCollisions[i],
+					Math.abs(boundingBox.getEndpointObjects()[0].getValue() - this.getPosition().getX()),
+					Math.abs(boundingBox.getEndpointObjects()[1].getValue() - this.getPosition().getY()),
+					Math.abs(boundingBox.getEndpointObjects()[2].getValue() - this.getPosition().getZ()), velocity);
 
 		// Finds out which direction the player wants to move in
 		float delta = Engine.getDelta();
@@ -74,7 +81,7 @@ public class Camera extends Entity {
 		if (position.y < height + Y_OFFSET) {
 			position.y = height + Y_OFFSET;
 		}
-		
+
 		updateTransformationMatrix();
 		updateBoundingBox();
 	}

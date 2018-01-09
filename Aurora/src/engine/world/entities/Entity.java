@@ -23,7 +23,7 @@ public class Entity {
 	private int textureIndex;
 	protected float scale;
 
-	private AABB boundingBox;
+	protected AABB boundingBox;
 	private Matrix4f transformationMatrix;
 
 	private String ID;

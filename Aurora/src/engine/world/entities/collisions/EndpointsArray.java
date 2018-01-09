@@ -87,21 +87,6 @@ public class EndpointsArray {
 		sort(z_endpoints);
 	}
 
-	private void sort(Endpoint[] arr) {
-		int n = arr.length;
-		for (int i = 1; i < n; ++i) {
-			Endpoint key = arr[i];
-			int j = i - 1;
-			while (j >= 0 && arr[j].getValue() > key.getValue()) {
-				arr[j + 1] = arr[j];
-				arr[j + 1].setIndex(j + 1);
-				j = j - 1;
-			}
-			arr[j + 1] = key;
-			arr[j + 1].setIndex(j + 1);
-		}
-	}
-
 	/**
 	 * This method will only be called when there is a chance of the entity e
 	 * colliding with something. For example, if an entity is moving then it should
@@ -229,4 +214,20 @@ public class EndpointsArray {
 			return new Endpoint[0];
 	}
 
+	// Using insertion sort because it is most efficient when the array is mostly
+	// sorted which these ones are.
+	private void sort(Endpoint[] arr) {
+		int n = arr.length;
+		for (int i = 1; i < n; ++i) {
+			Endpoint key = arr[i];
+			int j = i - 1;
+			while (j >= 0 && arr[j].getValue() > key.getValue()) {
+				arr[j + 1] = arr[j];
+				arr[j + 1].setIndex(j + 1);
+				j = j - 1;
+			}
+			arr[j + 1] = key;
+			arr[j + 1].setIndex(j + 1);
+		}
+	}
 }
