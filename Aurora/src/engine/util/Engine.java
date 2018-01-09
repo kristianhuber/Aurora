@@ -29,8 +29,10 @@ import engine.world.entities.Camera;
 public abstract class Engine {
 	private final int FPS_CAP = 120;
 	
-	private static long lastFrameTime;
+	private static long lastFrameTime, runningTime;
 	private static float delta;
+	private static int FPS;
+	private static int frames;
 	
 	public static int WIDTH, HEIGHT;
 
@@ -50,8 +52,11 @@ public abstract class Engine {
 		Engine.WIDTH = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth();
 
 		Engine.lastFrameTime = 0;
+		Engine.runningTime = getCurrentTime();
+		Engine.frames = 0;
 		Engine.delta = 0;
-
+		Engine.FPS = 0;
+		
 		this.testWorld = false;
 		this.run = true;
 	}
@@ -120,6 +125,13 @@ public abstract class Engine {
 		long currentFrameTime = getCurrentTime();
 		Engine.delta = (currentFrameTime - Engine.lastFrameTime) / 1000f;
 		Engine.lastFrameTime = currentFrameTime;
+		
+		if(getCurrentTime() - runningTime > 1000) {
+			FPS = frames;
+			frames = 0;
+			runningTime = getCurrentTime();
+		}
+		frames++;
 	}
 
 	/* Clean Up Memory */
@@ -170,6 +182,10 @@ public abstract class Engine {
 	/* Returns the difference in time between renders */
 	public static float getDelta() {
 		return delta;
+	}
+	
+	public static int getFPS() {
+		return FPS;
 	}
 
 	/* Gets the system time in seconds */

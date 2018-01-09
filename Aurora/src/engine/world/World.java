@@ -27,7 +27,7 @@ public class World {
 	public static final float SUN_DISTANCE = 10000;
 	public static final int WORLD_SIZE = 32;
 
-	public static final int RENDER_DISTANCE = 6;
+	public static final int RENDER_DISTANCE = 5;
 
 	private ChunkLoader loader;
 

@@ -11,6 +11,7 @@ import engine.util.Engine;
 public class RenderWorld extends RenderMode {
 	private GUIText positonVec;
 	private GUIText time;
+	private GUIText fps;
 	private World world;
 	
 	public RenderWorld(World world) {
@@ -20,9 +21,13 @@ public class RenderWorld extends RenderMode {
 		positonVec.setColor(255, 0, 0);
 		this.addText(positonVec);
 		
-		time = new GUIText("Time", 16, FontManager.font("papyrus"), 750, 0);
+		time = new GUIText("Time", 16, FontManager.font("papyrus"), 500, 0);
 		time.setColor(255, 0, 0);
 		this.addText(time);
+		
+		fps = new GUIText("FPS", 16, FontManager.font("papyrus"), 750, 0);
+		fps.setColor(255, 0, 0);
+		this.addText(fps);
 	}
 
 	@Override
@@ -45,6 +50,8 @@ public class RenderWorld extends RenderMode {
 			time.setText((int) (theTime) + ":" + secondPart);
 		}
 
+		fps.setText("FPS: " + Engine.getFPS());
+		
 		MasterRenderer.renderWorld(world);
 		
 		super.render();
