@@ -13,7 +13,7 @@ public class DetailedCollisionDetection {
 	private static Vector3f velocityE3;
 	private static Vector3f basePointE3;
 
-	public static void getCollision(Entity baseEntity, Entity otherEntity, float x_radius, float y_radius,
+	public static Vector3f getCollision(Entity baseEntity, Entity otherEntity, float x_radius, float y_radius,
 			float z_radius, Vector3f velocityR3) {
 		// Establishing Vector Space Conversion Matrix:
 		Matrix3f vectorConversionMatrix = new Matrix3f();
@@ -210,8 +210,27 @@ public class DetailedCollisionDetection {
 
 		// If there is a closest intersection point then handle collision response.
 		if (intersectionPoint != null) {
+
+			// Calculating the normal vector to the sliding plane:
 			intersectionDistance = (float) Math.sqrt(intersectionDistance);
-		}
+			Vector3f slidingPlanePoint = intersectionPoint;
+			Vector3f displacementVector = scaleVector(velocityE3.normalise(null), intersectionDistance);
+			Vector3f newPosition = Vector3f.add(basePointE3, displacementVector, null);
+			Vector3f slidingPlaneNormal = Vector3f.sub(newPosition, intersectionPoint, null);
+			slidingPlaneNormal.normalise();
+
+			// Projecting the velocity vector onto the sliding plane:
+			Vector3f originalDestination = Vector3f.add(basePointE3, velocityE3, null);
+			float planeConstant = -Vector3f.dot(slidingPlaneNormal, slidingPlanePoint);
+			float distance = Math.abs(Vector3f.dot(slidingPlaneNormal, originalDestination) + planeConstant);
+			Vector3f newDestinationPoint = Vector3f.sub(originalDestination, scaleVector(slidingPlaneNormal, distance),
+					null);
+
+			Vector3f newVelocityE3 = Vector3f.sub(newDestinationPoint, intersectionPoint, null);
+			return new Vector3f(newVelocityE3.getX() * x_radius, newVelocityE3.getY() * y_radius,
+					newVelocityE3.getZ() * z_radius);
+		} else
+			return velocityR3;
 	}
 
 	public static float[] solveQuadratic(float a, float b, float c) {

@@ -86,7 +86,7 @@ public class MousePicker {
 	// **********************************************************
 
 	private Vector3f getPointOnRay(Vector3f ray, float distance) {
-		Vector3f camPos = camera.getPosition();
+		Vector3f camPos = camera.getCameraPosition();
 		Vector3f start = new Vector3f(camPos.x, camPos.y, camPos.z);
 		Vector3f scaledRay = new Vector3f(ray.x * distance, ray.y * distance, ray.z * distance);
 		return Vector3f.add(start, scaledRay, null);

@@ -18,7 +18,7 @@ import javafx.geometry.BoundingBox;
 public class Camera extends Entity {
 
 	private final float MOUSE_TOLERANCE = 3.0F;
-	private final float Y_OFFSET = 5F;
+	private final float Y_CAMERA_OFFSET = 5f;
 	private final float SCROLL = 100.0F;
 	private float SPEED = 15.0F;
 
@@ -31,7 +31,7 @@ public class Camera extends Entity {
 	/* Construction Method */
 	public Camera(World world) {
 		super(world, "betterpine", new Vector3f(0, 0, 0));
-		this.scale = 5;
+		this.scale = 1;
 		world.addEntity(this);
 
 		this.world = world;
@@ -40,25 +40,27 @@ public class Camera extends Entity {
 			SPEED = 30;
 
 		this.position.x = World.WORLD_SIZE * Terrain.SIZE / 2;
-		this.position.y = 200;
+		this.position.y = 50;
 		this.position.z = World.WORLD_SIZE * Terrain.SIZE / 2;
 
 		updateTransformationMatrix();
+		updateBoundingBox();
 	}
 
 	/* Moves the camera around the world */
 	public void move() {
 
-		Entity[] playerCollisions = world.getCollisionManager().getBoxCollisions(this);
-		for (int i = 0; i < playerCollisions.length; i++)
-			DetailedCollisionDetection.getCollision(this, playerCollisions[i],
-					Math.abs(boundingBox.getEndpointObjects()[0].getValue() - this.getPosition().getX()),
-					Math.abs(boundingBox.getEndpointObjects()[1].getValue() - this.getPosition().getY()),
-					Math.abs(boundingBox.getEndpointObjects()[2].getValue() - this.getPosition().getZ()), velocity);
-
 		// Finds out which direction the player wants to move in
 		float delta = Engine.getDelta();
 		this.checkInputs(delta);
+
+		Entity[] playerCollisions = world.getCollisionManager().getBoxCollisions(this);
+//		System.out.println(playerCollisions.length);
+//		for (int i = 0; i < playerCollisions.length; i++)
+//			velocity = DetailedCollisionDetection.getCollision(this, playerCollisions[i],
+//					Math.abs(boundingBox.getEndpointObjects()[0].getValue() - this.getPosition().getX()),
+//					Math.abs(boundingBox.getEndpointObjects()[1].getValue() - this.getPosition().getY()),
+//					Math.abs(boundingBox.getEndpointObjects()[2].getValue() - this.getPosition().getZ()), velocity);
 
 		if (!flying) {
 			velocity.y = -5;
@@ -71,6 +73,9 @@ public class Camera extends Entity {
 		this.position.z += velocity.x * Math.sin(Math.toRadians(rotation.y));
 		this.position.z += velocity.z * Math.cos(Math.toRadians(rotation.y));
 
+		updateTransformationMatrix();
+		updateBoundingBox();
+
 		// Updates the velocity
 		velocity.x = this.decelerate(velocity.x, 0.9f);
 		velocity.y = this.decelerate(velocity.y, 0.9f);
@@ -78,12 +83,9 @@ public class Camera extends Entity {
 
 		// Terrain collision detection
 		float height = world.getTerrainHeightAt(position);
-		if (position.y < height + Y_OFFSET) {
-			position.y = height + Y_OFFSET;
+		if (position.y < height) {
+			position.y = height;
 		}
-
-		updateTransformationMatrix();
-		updateBoundingBox();
 	}
 
 	/* Calculates the deceleration rate */
@@ -159,6 +161,10 @@ public class Camera extends Entity {
 
 		// Resets the cursor position
 		Mouse.setCursorPosition(Engine.WIDTH / 2, Engine.HEIGHT / 2);
+	}
+
+	public Vector3f getCameraPosition() {
+		return new Vector3f(position.getX(), position.getY() + Y_CAMERA_OFFSET, position.getZ());
 	}
 
 	/* Inverts the x rotation, used when rendering reflections */

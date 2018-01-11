@@ -168,4 +168,8 @@ public class Entity {
 	public Matrix4f getTransformationMatrix() {
 		return transformationMatrix;
 	}
+	
+	public String toString() {
+		return ID;
+	}
 }

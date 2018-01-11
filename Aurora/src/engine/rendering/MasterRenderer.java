@@ -89,12 +89,12 @@ public class MasterRenderer {
 		// Rendering Water
 		GL11.glEnable(GL30.GL_CLIP_DISTANCE0);
 		waterRenderer.bindReflectionFrameBuffer();
-		float distance = 2 * (camera.getPosition().y);
-		camera.getPosition().y -= distance;
+		float distance = 2 * (camera.getCameraPosition().y);
+		camera.getCameraPosition().y -= distance;
 		camera.invertPitch();
 		MasterRenderer.renderScene(world, new Vector4f(0, 1, 0, world.getSeaLevel() + 0.5f));
 		camera.invertPitch();
-		camera.getPosition().y += distance;
+		camera.getCameraPosition().y += distance;
 		waterRenderer.bindRefractionFrameBuffer();
 		MasterRenderer.renderScene(world, new Vector4f(0, -1, 0, world.getSeaLevel() + 1.0f));
 		waterRenderer.unbindCurrentFrameBuffer();

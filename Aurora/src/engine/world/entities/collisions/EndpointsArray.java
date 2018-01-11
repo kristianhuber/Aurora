@@ -10,16 +10,139 @@ import engine.world.entities.collisions.Endpoint.endpointAxis;
 public class EndpointsArray {
 
 	private Endpoint[] x_endpoints, y_endpoints, z_endpoints;
+	private PairManager pairManager;
 
 	public EndpointsArray() {
 		x_endpoints = new Endpoint[0];
 		y_endpoints = new Endpoint[0];
 		z_endpoints = new Endpoint[0];
+		pairManager = new PairManager();
 	}
 
 	private void updateEndpoint(endpointAxis axis, Endpoint toUpdate) {
-		deleteEndpoint(axis, toUpdate);
-		binaryEndpointInsertion(axis, toUpdate);
+		boolean isMin = toUpdate.isMin();
+		if (axis == endpointAxis.X_AXIS) {
+			int startingIndex = toUpdate.getIndex();
+			if (startingIndex == x_endpoints.length - 1) {
+				walkDownArray(x_endpoints, toUpdate, axis);
+			} else if (startingIndex == 0) {
+				walkUpArray(x_endpoints, toUpdate, axis);
+			} else {
+				if (toUpdate.getValue() > x_endpoints[toUpdate.getIndex() + 1].getValue())
+					walkUpArray(x_endpoints, toUpdate, axis);
+				else if (toUpdate.getValue() < x_endpoints[toUpdate.getIndex() - 1].getValue())
+					walkDownArray(x_endpoints, toUpdate, axis);
+			}
+		} else if (axis == endpointAxis.Y_AXIS) {
+			int startingIndex = toUpdate.getIndex();
+			if (startingIndex == y_endpoints.length - 1) {
+				walkDownArray(y_endpoints, toUpdate, axis);
+			} else if (startingIndex == 0) {
+				walkUpArray(y_endpoints, toUpdate, axis);
+			} else {
+				if (toUpdate.getValue() > y_endpoints[toUpdate.getIndex() + 1].getValue())
+					walkUpArray(y_endpoints, toUpdate, axis);
+				else if (toUpdate.getValue() < y_endpoints[toUpdate.getIndex() - 1].getValue())
+					walkDownArray(y_endpoints, toUpdate, axis);
+			}
+		} else {
+			int startingIndex = toUpdate.getIndex();
+			if (startingIndex == z_endpoints.length - 1) {
+				walkDownArray(z_endpoints, toUpdate, axis);
+			} else if (startingIndex == 0) {
+				walkUpArray(z_endpoints, toUpdate, axis);
+			} else {
+				if (toUpdate.getValue() > z_endpoints[toUpdate.getIndex() + 1].getValue())
+					walkUpArray(z_endpoints, toUpdate, axis);
+				else if (toUpdate.getValue() < z_endpoints[toUpdate.getIndex() - 1].getValue())
+					walkDownArray(z_endpoints, toUpdate, axis);
+			}
+		}
+	}
+
+	private void walkUpArray(Endpoint[] axisArray, Endpoint toWalk, endpointAxis axis) {
+		boolean isMin = toWalk.isMin();
+		while (toWalk.getValue() > axisArray[toWalk.getIndex() + 1].getValue()) {
+			int index = toWalk.getIndex();
+			boolean isOtherMin = axisArray[index + 1].isMin();
+			Endpoint placeHolder = toWalk;
+			axisArray[index] = axisArray[index + 1];
+			axisArray[index + 1] = placeHolder;
+			axisArray[index].setIndex(index);
+			axisArray[index + 1].setIndex(index + 1);
+
+			// updating the pair manager.
+			if (axisArray[index].getParentBox().getParentEntity() != axisArray[index + 1].getParentBox()
+					.getParentEntity())
+				if (axis == endpointAxis.X_AXIS) {
+					if (isMin && !isOtherMin)
+						pairManager.xAddCollision(axisArray[index].getParentBox().getParentEntity(),
+								axisArray[index + 1].getParentBox().getParentEntity());
+					else if (!isMin && isOtherMin)
+						pairManager.xDeleteCollision(axisArray[index].getParentBox().getParentEntity(),
+								axisArray[index + 1].getParentBox().getParentEntity());
+				} else if (axis == endpointAxis.Y_AXIS) {
+					if (isMin && !isOtherMin)
+						pairManager.yAddCollision(axisArray[index].getParentBox().getParentEntity(),
+								axisArray[index + 1].getParentBox().getParentEntity());
+					else if (!isMin && isOtherMin)
+						pairManager.yDeleteCollision(axisArray[index].getParentBox().getParentEntity(),
+								axisArray[index + 1].getParentBox().getParentEntity());
+				} else {
+					if (isMin && !isOtherMin)
+						pairManager.zAddCollision(axisArray[index].getParentBox().getParentEntity(),
+								axisArray[index + 1].getParentBox().getParentEntity());
+					else if (!isMin && isOtherMin)
+						pairManager.zDeleteCollision(axisArray[index].getParentBox().getParentEntity(),
+								axisArray[index + 1].getParentBox().getParentEntity());
+				}
+
+			if (index + 2 == axisArray.length)
+				return;
+		}
+	}
+
+	private void walkDownArray(Endpoint[] axisArray, Endpoint toWalk, endpointAxis axis) {
+		boolean isMin = toWalk.isMin();
+		while (toWalk.getValue() < axisArray[toWalk.getIndex() - 1].getValue()) {
+			int index = toWalk.getIndex();
+			boolean isOtherMin = axisArray[index - 1].isMin();
+			Endpoint placeHolder = toWalk;
+			axisArray[index] = axisArray[index - 1];
+			axisArray[index - 1] = placeHolder;
+			axisArray[index].setIndex(index);
+			axisArray[index - 1].setIndex(index - 1);
+
+			// updating the pair manager.
+			if (axisArray[index].getParentBox().getParentEntity() != axisArray[index - 1].getParentBox()
+					.getParentEntity())
+				if (axis == endpointAxis.X_AXIS) {
+					if (!isMin && isOtherMin)
+						pairManager.xAddCollision(axisArray[index].getParentBox().getParentEntity(),
+								axisArray[index - 1].getParentBox().getParentEntity());
+					else if (isMin && !isOtherMin)
+						pairManager.xDeleteCollision(axisArray[index].getParentBox().getParentEntity(),
+								axisArray[index - 1].getParentBox().getParentEntity());
+				} else if (axis == endpointAxis.Y_AXIS) {
+					if (!isMin && isOtherMin)
+						pairManager.yAddCollision(axisArray[index].getParentBox().getParentEntity(),
+								axisArray[index - 1].getParentBox().getParentEntity());
+					else if (isMin && !isOtherMin)
+						pairManager.yDeleteCollision(axisArray[index].getParentBox().getParentEntity(),
+								axisArray[index - 1].getParentBox().getParentEntity());
+				} else {
+					if (!isMin && isOtherMin)
+						pairManager.zAddCollision(axisArray[index].getParentBox().getParentEntity(),
+								axisArray[index - 1].getParentBox().getParentEntity());
+					else if (isMin && !isOtherMin)
+						pairManager.zDeleteCollision(axisArray[index].getParentBox().getParentEntity(),
+								axisArray[index - 1].getParentBox().getParentEntity());
+				}
+
+			// Checking to make sure it doesn't go out of bounds.
+			if (index - 1 == 0)
+				return;
+		}
 	}
 
 	private void binaryEndpointInsertion(endpointAxis axis, Endpoint toInsert) {
@@ -38,6 +161,22 @@ public class EndpointsArray {
 		}
 	}
 
+	private void addToArray(endpointAxis axis, Endpoint toInsert, boolean isMin) {
+		if (axis == endpointAxis.X_AXIS) {
+			x_endpoints = insertInArray(x_endpoints, toInsert, 0);
+			if (x_endpoints.length > 1)
+				updateEndpoint(endpointAxis.X_AXIS, toInsert);
+		} else if (axis == endpointAxis.Y_AXIS) {
+			y_endpoints = insertInArray(y_endpoints, toInsert, 0);
+			if (y_endpoints.length > 1)
+				updateEndpoint(endpointAxis.Y_AXIS, toInsert);
+		} else {
+			z_endpoints = insertInArray(z_endpoints, toInsert, 0);
+			if (z_endpoints.length > 1)
+				updateEndpoint(endpointAxis.Z_AXIS, toInsert);
+		}
+	}
+
 	private void deleteEndpoint(endpointAxis axis, Endpoint toDelete) {
 		if (axis == endpointAxis.X_AXIS)
 			x_endpoints = deleteFromArray(x_endpoints, getIndexToDelete(x_endpoints, toDelete));
@@ -49,12 +188,12 @@ public class EndpointsArray {
 
 	public void addAABB(AABB box) {
 		Endpoint[] boxEndpoints = box.getEndpointObjects();
-		this.binaryEndpointInsertion(endpointAxis.X_AXIS, boxEndpoints[0]);
-		this.binaryEndpointInsertion(endpointAxis.Y_AXIS, boxEndpoints[1]);
-		this.binaryEndpointInsertion(endpointAxis.Z_AXIS, boxEndpoints[2]);
-		this.binaryEndpointInsertion(endpointAxis.X_AXIS, boxEndpoints[3]);
-		this.binaryEndpointInsertion(endpointAxis.Y_AXIS, boxEndpoints[4]);
-		this.binaryEndpointInsertion(endpointAxis.Z_AXIS, boxEndpoints[5]);
+		this.addToArray(endpointAxis.X_AXIS, boxEndpoints[0], true);
+		this.addToArray(endpointAxis.Y_AXIS, boxEndpoints[1], true);
+		this.addToArray(endpointAxis.Z_AXIS, boxEndpoints[2], true);
+		this.addToArray(endpointAxis.X_AXIS, boxEndpoints[3], false);
+		this.addToArray(endpointAxis.Y_AXIS, boxEndpoints[4], false);
+		this.addToArray(endpointAxis.Z_AXIS, boxEndpoints[5], false);
 	}
 
 	public void deleteAABB(AABB box) {
@@ -65,6 +204,7 @@ public class EndpointsArray {
 		this.deleteEndpoint(endpointAxis.X_AXIS, boxEndpoints[3]);
 		this.deleteEndpoint(endpointAxis.Y_AXIS, boxEndpoints[4]);
 		this.deleteEndpoint(endpointAxis.Z_AXIS, boxEndpoints[5]);
+		pairManager.deleteAllWith(box.getParentEntity());
 	}
 
 	public void updateAABB(AABB box) {
@@ -101,40 +241,12 @@ public class EndpointsArray {
 	 *         overlapping.
 	 */
 	public Entity[] getBoxCollisions(Entity e) {
-		Entity[] xCollisions = getOverlappingEntities(endpointAxis.X_AXIS, e.getBoundingBox().getEndpointObjects()[0],
-				e.getBoundingBox().getEndpointObjects()[3]);
-		Entity[] yCollisions = getOverlappingEntities(endpointAxis.Y_AXIS, e.getBoundingBox().getEndpointObjects()[1],
-				e.getBoundingBox().getEndpointObjects()[4]);
-		Entity[] zCollisions = getOverlappingEntities(endpointAxis.Z_AXIS, e.getBoundingBox().getEndpointObjects()[2],
-				e.getBoundingBox().getEndpointObjects()[5]);
-
-		List<Entity> overlappingEntityList = new ArrayList<Entity>();
-		if (xCollisions.length == 0 || yCollisions.length == 0 || zCollisions.length == 0)
-			return new Entity[0];
-		else {
-			for (int x = 0; x < xCollisions.length; x++) {
-				for (int z = 0; z < zCollisions.length; z++)
-					if (xCollisions[x] == zCollisions[z]) {
-						overlappingEntityList.add(xCollisions[x]);
-						z = zCollisions.length;
-					}
-			}
-			if (overlappingEntityList.size() == 0)
-				return new Entity[0];
-			else
-				for (int x = 0; x < overlappingEntityList.size(); x++) {
-					boolean isContained = false;
-					for (int y = 0; y < yCollisions.length; y++)
-						if (overlappingEntityList.get(x) == yCollisions[y])
-							isContained = true;
-					if (!isContained)
-						overlappingEntityList.remove(x);
-				}
-		}
-		Entity[] entityArr = new Entity[overlappingEntityList.size()];
-		for (int i = 0; i < entityArr.length; i++)
-			entityArr[i] = overlappingEntityList.get(i);
-		return entityArr;
+		updateAABB(e.getBoundingBox());
+//		System.out.println(Arrays.toString(x_endpoints));
+//		System.out.println(Arrays.toString(y_endpoints));
+//		System.out.println(Arrays.toString(z_endpoints));
+//		System.out.println(pairManager.toString());
+		return pairManager.getCollidingEntities(e);
 	}
 
 	private Entity[] getOverlappingEntities(endpointAxis axis, Endpoint e1, Endpoint e2) {
@@ -142,6 +254,7 @@ public class EndpointsArray {
 		if (axis == endpointAxis.X_AXIS) {
 			for (int i = e1.getIndex() + 1; i < e2.getIndex(); i++)
 				overlappingEntityList.add(x_endpoints[i].getParentBox().getParentEntity());
+
 		} else if (axis == endpointAxis.Y_AXIS) {
 			for (int i = e1.getIndex() + 1; i < e2.getIndex(); i++)
 				overlappingEntityList.add(y_endpoints[i].getParentBox().getParentEntity());

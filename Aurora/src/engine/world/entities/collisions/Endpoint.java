@@ -43,7 +43,7 @@ public class Endpoint {
 	}
 	
 	public String toString() {
-		return "(" + value + ", " + index + ")";
+		return "(" + value + ", " + index + ", " + parentBox.getParentEntity().getID() + ")";
 	}
 
 }

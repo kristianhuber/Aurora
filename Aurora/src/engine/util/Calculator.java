@@ -145,8 +145,8 @@ public class Calculator {
 		Matrix4f.rotate((float) Math.toRadians(c.getRotation().z),
 				new Vector3f(0, 0, 1), matrix, matrix);
 
-		Vector3f negativeplayerPos = new Vector3f(-c.getPosition().x,
-				-c.getPosition().y, -c.getPosition().z);
+		Vector3f negativeplayerPos = new Vector3f(-c.getCameraPosition().x,
+				-c.getCameraPosition().y, -c.getCameraPosition().z);
 		Matrix4f.translate(negativeplayerPos, matrix, matrix);
 
 		return matrix;

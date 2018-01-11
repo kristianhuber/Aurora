@@ -30,7 +30,7 @@ public class ModelData {
 	/**
 	 * @param rotation
 	 * @param scale
-	 * @param transformationMatrix2 
+	 * @param transformationMatrix2
 	 * @return an array of 6 floats representing the boundaries of the AABB in this
 	 *         order: xMin, yMin, zMin, xMax, yMax, zMax
 	 */
@@ -67,14 +67,14 @@ public class ModelData {
 			else if (newPoint.getZ() > newBounds[5])
 				newBounds[5] = newPoint.getZ();
 		}
-		
-		newBounds[0] -= position.getX();
-		newBounds[1] -= position.getY();
-		newBounds[2] -= position.getZ();
-		newBounds[3] -= position.getX();
-		newBounds[4] -= position.getY();
-		newBounds[5] -= position.getZ();
-		
+
+		newBounds[0] = position.getX() - newBounds[0];
+		newBounds[1] = position.getY() - newBounds[1];
+		newBounds[2] = position.getZ() - newBounds[2];
+		newBounds[3] = position.getX() - newBounds[3];
+		newBounds[4] = position.getY() - newBounds[4];
+		newBounds[5] = position.getZ() - newBounds[5];
+
 		return newBounds;
 	}
 
