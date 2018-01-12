@@ -1,7 +1,7 @@
 package engine.world.entities.collisions;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import engine.world.entities.Entity;
@@ -18,62 +18,70 @@ public class PairManager {
 
 	public Entity[] getCollidingEntities(Entity e) {
 		List<Entity> xcollisionList = new ArrayList<Entity>();
-		for (int i = 0; i < x_collisions.size(); i++) {
-			System.out.println(x_collisions.get(i).toString());
-			if (x_collisions.get(i).getEntity1() == e && !xcollisionList.contains(x_collisions.get(i).getEntity2()))
-				xcollisionList.add(x_collisions.get(i).getEntity2());
-			if (x_collisions.get(i).getEntity2() == e && !xcollisionList.contains(x_collisions.get(i).getEntity2()))
-				xcollisionList.add(x_collisions.get(i).getEntity1());
-		}
+		for (int i = 0; i < x_collisions.size(); i++)
+			if (x_collisions.get(i) != null)
+				if (x_collisions.get(i).getEntity1() == e)
+					xcollisionList.add(x_collisions.get(i).getEntity2());
+				else if (x_collisions.get(i).getEntity2() == e)
+					xcollisionList.add(x_collisions.get(i).getEntity1());
 		if (xcollisionList.size() > 0) {
 			List<Entity> ycollisionList = new ArrayList<Entity>();
 			for (int i = 0; i < y_collisions.size(); i++) {
-				System.out.println(y_collisions.get(i).toString());
-				if (y_collisions.get(i).getEntity1() == e && xcollisionList.contains(y_collisions.get(i).getEntity2())
-						&& !ycollisionList.contains(y_collisions.get(i).getEntity2()))
-					ycollisionList.add(y_collisions.get(i).getEntity2());
-				if (y_collisions.get(i).getEntity2() == e && xcollisionList.contains(y_collisions.get(i).getEntity1())
-						&& !ycollisionList.contains(y_collisions.get(i).getEntity1()))
-					ycollisionList.add(y_collisions.get(i).getEntity1());
+				if (y_collisions.get(i) != null)
+					if (y_collisions.get(i).getEntity1() == e
+							&& xcollisionList.contains(y_collisions.get(i).getEntity2()))
+						ycollisionList.add(y_collisions.get(i).getEntity2());
+					else if (y_collisions.get(i).getEntity2() == e
+							&& xcollisionList.contains(y_collisions.get(i).getEntity1()))
+						ycollisionList.add(y_collisions.get(i).getEntity1());
 			}
 			if (ycollisionList.size() > 0) {
 				List<Entity> zcollisionList = new ArrayList<Entity>();
 				for (int i = 0; i < z_collisions.size(); i++) {
-					System.out.println(z_collisions.get(i).toString());
-					if (z_collisions.get(i).getEntity1() == e
-							&& ycollisionList.contains(z_collisions.get(i).getEntity2())
-							&& !zcollisionList.contains(z_collisions.get(i).getEntity2()))
-						zcollisionList.add(z_collisions.get(i).getEntity2());
-					if (z_collisions.get(i).getEntity2() == e
-							&& ycollisionList.contains(z_collisions.get(i).getEntity1())
-							&& !zcollisionList.contains(z_collisions.get(i).getEntity1()))
-						zcollisionList.add(z_collisions.get(i).getEntity1());
+					if (z_collisions.get(i) != null)
+						if (z_collisions.get(i).getEntity1() == e
+								&& ycollisionList.contains(z_collisions.get(i).getEntity2()))
+							zcollisionList.add(z_collisions.get(i).getEntity2());
+						else if (z_collisions.get(i).getEntity2() == e
+								&& ycollisionList.contains(z_collisions.get(i).getEntity1()))
+							zcollisionList.add(z_collisions.get(i).getEntity1());
 				}
 				Entity[] toReturn = new Entity[zcollisionList.size()];
 				for (int i = 0; i < toReturn.length; i++)
-					toReturn[i] = zcollisionList.get(i);
+					if (!contains(toReturn, zcollisionList.get(i)))
+						toReturn[i] = zcollisionList.get(i);
 				return toReturn;
 			}
 		}
 		return new Entity[0];
 	}
 
+	public boolean contains(Entity[] arr, Entity e) {
+		for (int i = 0; i < arr.length; i++)
+			if (arr[i] == e)
+				return true;
+		return false;
+	}
+
 	public void deleteAllWith(Entity e) {
 		for (int i = 0; i < x_collisions.size(); i++)
-			if (x_collisions.get(i).contains(e)) {
-				x_collisions.remove(i);
-				i--;
-			}
+			if (x_collisions.get(i) != null)
+				if (x_collisions.get(i).contains(e)) {
+					x_collisions.remove(i);
+					i--;
+				}
 		for (int i = 0; i < y_collisions.size(); i++)
-			if (y_collisions.get(i).contains(e)) {
-				y_collisions.remove(i);
-				i--;
-			}
+			if (y_collisions.get(i) != null)
+				if (y_collisions.get(i).contains(e)) {
+					y_collisions.remove(i);
+					i--;
+				}
 		for (int i = 0; i < z_collisions.size(); i++)
-			if (z_collisions.get(i).contains(e)) {
-				z_collisions.remove(i);
-				i--;
-			}
+			if (z_collisions.get(i) != null)
+				if (z_collisions.get(i).contains(e)) {
+					z_collisions.remove(i);
+					i--;
+				}
 	}
 
 	public void xAddCollision(Entity e1, Entity e2) {
@@ -83,10 +91,11 @@ public class PairManager {
 	public void xDeleteCollision(Entity e1, Entity e2) {
 		EntityPair pair = new EntityPair(e1, e2);
 		for (int i = 0; i < x_collisions.size(); i++)
-			if (pair.equals(x_collisions.get(i))) {
-				x_collisions.remove(i);
-				return;
-			}
+			if (x_collisions.get(i) != null)
+				if (pair.equals(x_collisions.get(i))) {
+					x_collisions.remove(i);
+					return;
+				}
 	}
 
 	public void yAddCollision(Entity e1, Entity e2) {
@@ -96,10 +105,11 @@ public class PairManager {
 	public void yDeleteCollision(Entity e1, Entity e2) {
 		EntityPair pair = new EntityPair(e1, e2);
 		for (int i = 0; i < y_collisions.size(); i++)
-			if (pair.equals(y_collisions.get(i))) {
-				y_collisions.remove(i);
-				return;
-			}
+			if (y_collisions.get(i) != null)
+				if (pair.equals(y_collisions.get(i))) {
+					y_collisions.remove(i);
+					return;
+				}
 	}
 
 	public void zAddCollision(Entity e1, Entity e2) {
@@ -109,10 +119,11 @@ public class PairManager {
 	public void zDeleteCollision(Entity e1, Entity e2) {
 		EntityPair pair = new EntityPair(e1, e2);
 		for (int i = 0; i < z_collisions.size(); i++)
-			if (pair.equals(z_collisions.get(i))) {
-				z_collisions.remove(i);
-				return;
-			}
+			if (z_collisions.get(i) != null)
+				if (pair.equals(z_collisions.get(i))) {
+					z_collisions.remove(i);
+					return;
+				}
 	}
 
 	public String toString() {

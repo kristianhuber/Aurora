@@ -55,12 +55,12 @@ public class Camera extends Entity {
 		this.checkInputs(delta);
 
 		Entity[] playerCollisions = world.getCollisionManager().getBoxCollisions(this);
-//		System.out.println(playerCollisions.length);
-//		for (int i = 0; i < playerCollisions.length; i++)
-//			velocity = DetailedCollisionDetection.getCollision(this, playerCollisions[i],
-//					Math.abs(boundingBox.getEndpointObjects()[0].getValue() - this.getPosition().getX()),
-//					Math.abs(boundingBox.getEndpointObjects()[1].getValue() - this.getPosition().getY()),
-//					Math.abs(boundingBox.getEndpointObjects()[2].getValue() - this.getPosition().getZ()), velocity);
+		for (int i = 0; i < playerCollisions.length; i++)
+			velocity = Vector3f.add(velocity, DetailedCollisionDetection.scaleVector(DetailedCollisionDetection.getCollision(this, playerCollisions[i],
+					Math.abs(boundingBox.getEndpointObjects()[0].getValue() - this.getPosition().getX()),
+					Math.abs(boundingBox.getEndpointObjects()[1].getValue() - this.getPosition().getY()),
+					Math.abs(boundingBox.getEndpointObjects()[2].getValue() - this.getPosition().getZ()), velocity).normalise(null), 1),
+					null);
 
 		if (!flying) {
 			velocity.y = -5;

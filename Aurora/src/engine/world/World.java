@@ -54,16 +54,17 @@ public class World {
 
 		this.testWorld = testWorld;
 
-		seed = new Random().nextInt(10000000); 
+		seed = new Random().nextInt(10000000);
 
 		Entity l = new Entity(this, "stall",
 				new Vector3f(World.WORLD_SIZE * Terrain.SIZE / 2 + 20, 0, World.WORLD_SIZE * Terrain.SIZE / 2 + 10));
 		this.addEntity(l);
 
-//		Entity a = new Entity(this, "betterpine",
-//				new Vector3f(World.WORLD_SIZE * Terrain.SIZE / 2, 10, World.WORLD_SIZE * Terrain.SIZE / 2 + 10));
-//		a.setScale(5);
-//		this.addEntity(a);
+		// Entity a = new Entity(this, "betterpine",
+		// new Vector3f(World.WORLD_SIZE * Terrain.SIZE / 2, 10, World.WORLD_SIZE *
+		// Terrain.SIZE / 2 + 10));
+		// a.setScale(5);
+		// this.addEntity(a);
 
 		time = 19.5f;
 
@@ -82,6 +83,11 @@ public class World {
 
 	public void update() {
 		Engine.getCamera().move();
+
+		// int count = 0;
+		// for (TexturedModel tm : entities.keySet())
+		// count += entities.get(tm).size();
+		// System.out.println(count);
 
 		time += Engine.getDelta() / 20;
 		if (time >= 24) {

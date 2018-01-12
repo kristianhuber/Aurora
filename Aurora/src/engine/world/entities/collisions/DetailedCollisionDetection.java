@@ -52,9 +52,22 @@ public class DetailedCollisionDetection {
 			Vector3f c = getConvertedVector(new Vector3f(vertices[indices[i * 3 + 2]], vertices[indices[i * 3 + 2] + 1],
 					vertices[indices[i * 3 + 2] + 2]), vectorConversionMatrix);
 
+			// Getting the normal vectors for the points.
+			Vector3f aNormal = getConvertedVector(
+					new Vector3f(normals[indices[i * 3]], normals[indices[i * 3] + 1], normals[indices[i * 3] + 2]),
+					vectorConversionMatrix);
+			Vector3f bNormal = getConvertedVector(new Vector3f(normals[indices[i * 3 + 1]],
+					normals[indices[i * 3 + 1] + 1], normals[indices[i * 3 + 1] + 2]), vectorConversionMatrix);
+			Vector3f cNormal = getConvertedVector(new Vector3f(normals[indices[i * 3 + 2]],
+					normals[indices[i * 3 + 2] + 1], normals[indices[i * 3 + 2] + 2]), vectorConversionMatrix);
+
 			// Calculating the plane's normal - MAY WANT TO USE AN AVERAGE OF THE
 			// PRECALCULATED VECTORS INSTEAD.
-			Vector3f planeNormal = Vector3f.cross(Vector3f.sub(a, b, null), Vector3f.sub(c, b, null), null);
+			Vector3f planeNormal = new Vector3f((aNormal.getX() + bNormal.getX() + cNormal.getX()) / 3f,
+					(aNormal.getY() + bNormal.getY() + cNormal.getY()) / 3f,
+					(aNormal.getZ() + bNormal.getZ() + cNormal.getZ()) / 3f);
+			// Vector3f planeNormal = Vector3f.cross(Vector3f.sub(a, b, null),
+			// Vector3f.sub(c, b, null), null);
 
 			// Calculating signed distance of the base point to the triangle's plane.
 			float planeConstant = -Vector3f.dot(planeNormal, a);
@@ -227,8 +240,10 @@ public class DetailedCollisionDetection {
 					null);
 
 			Vector3f newVelocityE3 = Vector3f.sub(newDestinationPoint, intersectionPoint, null);
-			return new Vector3f(newVelocityE3.getX() * x_radius, newVelocityE3.getY() * y_radius,
+			Vector3f toReturn =  new Vector3f(newVelocityE3.getX() * x_radius, newVelocityE3.getY() * y_radius,
 					newVelocityE3.getZ() * z_radius);
+			System.out.println(toReturn.toString());
+			return toReturn;
 		} else
 			return velocityR3;
 	}
