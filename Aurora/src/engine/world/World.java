@@ -56,15 +56,10 @@ public class World {
 
 		seed = new Random().nextInt(10000000);
 
-		Entity l = new Entity(this, "stall",
-				new Vector3f(World.WORLD_SIZE * Terrain.SIZE / 2 + 20, 0, World.WORLD_SIZE * Terrain.SIZE / 2 + 10));
+		Entity l = new Entity(this, "box",
+				new Vector3f(World.WORLD_SIZE * Terrain.SIZE / 2 + 20, 5, World.WORLD_SIZE * Terrain.SIZE / 2 + 10));
+		l.setScale(10);
 		this.addEntity(l);
-
-		// Entity a = new Entity(this, "betterpine",
-		// new Vector3f(World.WORLD_SIZE * Terrain.SIZE / 2, 10, World.WORLD_SIZE *
-		// Terrain.SIZE / 2 + 10));
-		// a.setScale(5);
-		// this.addEntity(a);
 
 		time = 19.5f;
 

@@ -1,11 +1,14 @@
 package engine.world.entities;
 
+import java.util.Vector;
+
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector3f;
 
 import engine.util.Engine;
 import engine.world.World;
+import engine.world.entities.collisions.CollisionPacket;
 import engine.world.entities.collisions.DetailedCollisionDetection;
 import engine.world.terrain.Terrain;
 import javafx.geometry.BoundingBox;
@@ -18,11 +21,18 @@ import javafx.geometry.BoundingBox;
 public class Camera extends Entity {
 
 	private final float MOUSE_TOLERANCE = 3.0F;
-	private final float Y_CAMERA_OFFSET = 5f;
+	private float Y_CAMERA_OFFSET = 5f;
 	private final float SCROLL = 100.0F;
-	private float SPEED = 15.0F;
+	private float SPEED = 100.0f;
+	private static final double SQRT_2 = Math.sqrt(2);
 
+	private Vector3f keyBasedVelocity = new Vector3f(0, 0, 0);
 	private Vector3f velocity = new Vector3f(0, 0, 0);
+	private final Vector3f GRAVITY = new Vector3f(0, -0.25f, 0);
+	private final Vector3f E_RADIUS_VECTOR = new Vector3f(2, 3, 2);
+	protected int collisionRecursionStep = 0;
+	private static final float VERY_CLOSE_DISTANCE = 0.005f;
+	private CollisionPacket collisionPacket;
 
 	private World world;
 
@@ -43,8 +53,15 @@ public class Camera extends Entity {
 		this.position.y = 50;
 		this.position.z = World.WORLD_SIZE * Terrain.SIZE / 2;
 
+		Vector3f middleOfEntity = getMiddleOfEntity();
+		collisionPacket = new CollisionPacket(E_RADIUS_VECTOR, velocity, middleOfEntity);
+
 		updateTransformationMatrix();
 		updateBoundingBox();
+	}
+
+	private Vector3f getMiddleOfEntity() {
+		return new Vector3f(position.getX(), position.getY() + E_RADIUS_VECTOR.getY(), position.getZ());
 	}
 
 	/* Moves the camera around the world */
@@ -54,38 +71,171 @@ public class Camera extends Entity {
 		float delta = Engine.getDelta();
 		this.checkInputs(delta);
 
+		// Now we have to recalculate the velocity vector so it is going in the
+		// direction that the player is looking:
+		float yAngle = -rotation.y;
+		velocity.y = keyBasedVelocity.y;
+		velocity.z = (float) (keyBasedVelocity.z * Math.cos(Math.toRadians(-yAngle))
+				- keyBasedVelocity.x * Math.sin(Math.toRadians(-yAngle)));
+		velocity.x = (float) (keyBasedVelocity.z * Math.sin(Math.toRadians(yAngle))
+				- keyBasedVelocity.x * Math.cos(Math.toRadians(yAngle)));
+
+		// Getting Collisions:
 		Entity[] playerCollisions = world.getCollisionManager().getBoxCollisions(this);
-		for (int i = 0; i < playerCollisions.length; i++)
-			velocity = Vector3f.add(velocity, DetailedCollisionDetection.scaleVector(DetailedCollisionDetection.getCollision(this, playerCollisions[i],
-					Math.abs(boundingBox.getEndpointObjects()[0].getValue() - this.getPosition().getX()),
-					Math.abs(boundingBox.getEndpointObjects()[1].getValue() - this.getPosition().getY()),
-					Math.abs(boundingBox.getEndpointObjects()[2].getValue() - this.getPosition().getZ()), velocity).normalise(null), 1),
-					null);
 
-		if (!flying) {
-			velocity.y = -5;
-		}
-
-		// Calculates the change in position based on the velocity and direction
-		this.position.x += velocity.x * Math.cos(Math.toRadians(rotation.y));
-		this.position.x -= velocity.z * Math.sin(Math.toRadians(rotation.y));
-		this.position.y += velocity.y;
-		this.position.z += velocity.x * Math.sin(Math.toRadians(rotation.y));
-		this.position.z += velocity.z * Math.cos(Math.toRadians(rotation.y));
+		// Actually moving the entity with respect to velocity and gravity vectors as
+		// well as the potential collisions array.
+		this.collideAndSlide(velocity, GRAVITY, playerCollisions);
 
 		updateTransformationMatrix();
 		updateBoundingBox();
-
-		// Updates the velocity
-		velocity.x = this.decelerate(velocity.x, 0.9f);
-		velocity.y = this.decelerate(velocity.y, 0.9f);
-		velocity.z = this.decelerate(velocity.z, 0.9f);
 
 		// Terrain collision detection
 		float height = world.getTerrainHeightAt(position);
 		if (position.y < height) {
 			position.y = height;
 		}
+
+		// Decelerating the key based velocities.
+		keyBasedVelocity.x = this.decelerate(keyBasedVelocity.x, 0.9f);
+		keyBasedVelocity.y = this.decelerate(keyBasedVelocity.y, 0.9f);
+		keyBasedVelocity.z = this.decelerate(keyBasedVelocity.z, 0.9f);
+	}
+
+	protected void collideAndSlide(Vector3f velocity, Vector3f gravity, Entity[] toCollideWith) {
+
+		Vector3f finalPosition = CollisionPacket.getESpaceVector(position, E_RADIUS_VECTOR);
+		// Building the collision packet with the current velocity and position. This
+		// converts the velocity and position into e space automatically.
+		collisionPacket.R3Position = getMiddleOfEntity();
+		collisionPacket.R3Velocity = velocity;
+
+		Vector3f eSpacePosition = CollisionPacket.getESpaceVector(collisionPacket.R3Position, E_RADIUS_VECTOR);
+		Vector3f eSpaceVelocity = CollisionPacket.getESpaceVector(collisionPacket.R3Velocity, E_RADIUS_VECTOR);
+
+		// Calculating the final position in E3:
+		collisionRecursionStep = 0;
+		finalPosition = collideWithWorld(eSpaceVelocity, eSpacePosition, toCollideWith);
+		// System.out.println("Velocity Move: " + eSpacePosition.toString() + " -> " +
+		// finalPosition.toString() + " | At "
+		// + eSpaceVelocity.toString());
+
+		// Updating the R3 Positions:
+		collisionPacket.foundCollision = false;
+		collisionPacket.R3Position = CollisionPacket.getRSpaceVector(finalPosition, E_RADIUS_VECTOR); // CollisionPacket.getRSpaceVector(collisionPacket.basePoint,
+		// E_RADIUS_VECTOR);
+		collisionPacket.R3Velocity = gravity;
+
+		eSpaceVelocity = CollisionPacket.getESpaceVector(gravity, E_RADIUS_VECTOR);
+		eSpacePosition = finalPosition;
+		finalPosition = collideWithWorld(eSpaceVelocity, eSpacePosition, toCollideWith);
+		// System.out.println("Velocity Move: " + collisionPacket.basePoint.toString() +
+		// " -> " + finalPosition.toString() + " | At "
+		// + gravity.toString());
+
+		finalPosition = CollisionPacket.getRSpaceVector(finalPosition, E_RADIUS_VECTOR);
+		finalPosition.setY(finalPosition.getY() - E_RADIUS_VECTOR.getY());
+
+		position.set(finalPosition.getX(), finalPosition.getY(), finalPosition.getZ());
+	}
+
+	/**
+	 * Gets the new position of the entity after all narrow phase collision
+	 * calculations.
+	 * 
+	 * @param collisionPacket
+	 *            - the collision packet to use for collisions
+	 * @param toCollideWith
+	 *            - the array of entities that should be tested for narrow phase
+	 *            collision
+	 * @return the new position of the entity.
+	 */
+	private Vector3f collideWithWorld(Vector3f vel, Vector3f pos, Entity[] toCollideWith) {
+		if (collisionRecursionStep > 5)
+			return pos;
+
+		collisionPacket.velocity = new Vector3f(vel);
+		collisionPacket.normalizedVelocity = new Vector3f(vel);
+		if (collisionPacket.velocity.length() != 0)
+			collisionPacket.normalizedVelocity.normalise();
+		collisionPacket.basePoint = new Vector3f(pos);
+		collisionPacket.foundCollision = false;
+
+		// Actually checking all the triangles for a collision:
+		for (int n = 0; n < toCollideWith.length; n++) {
+			float[] vertices = toCollideWith[n].getModel().getRawModel().getModelData().getVertices();
+			float[] normals = toCollideWith[n].getModel().getRawModel().getModelData().getNormals();
+			int[] indices = toCollideWith[n].getModel().getRawModel().getModelData().getIndices();
+
+			for (int i = 0; i < indices.length / 3; i++) {
+				// Getting the vectors that represent the three points of the triangle in
+				// question.
+				Vector3f a = new Vector3f(vertices[indices[i * 3]], vertices[indices[i * 3] + 1],
+						vertices[indices[i * 3] + 2]);
+				Vector3f b = new Vector3f(vertices[indices[i * 3 + 1]], vertices[indices[i * 3 + 1] + 1],
+						vertices[indices[i * 3 + 1] + 2]);
+				Vector3f c = new Vector3f(vertices[indices[i * 3 + 2]], vertices[indices[i * 3 + 2] + 1],
+						vertices[indices[i * 3 + 2] + 2]);
+
+				// Getting the normal vectors for the points.
+				Vector3f aNormal = new Vector3f(normals[indices[i * 3]], normals[indices[i * 3] + 1],
+						normals[indices[i * 3] + 2]);
+				Vector3f bNormal = new Vector3f(normals[indices[i * 3 + 1]], normals[indices[i * 3 + 1] + 1],
+						normals[indices[i * 3 + 1] + 2]);
+				Vector3f cNormal = new Vector3f(normals[indices[i * 3 + 2]], normals[indices[i * 3 + 2] + 1],
+						normals[indices[i * 3 + 2] + 2]);
+
+				Vector3f planeNormal = new Vector3f((aNormal.getX() + bNormal.getX() + cNormal.getX()) / 3f,
+						(aNormal.getY() + bNormal.getY() + cNormal.getY()) / 3f,
+						(aNormal.getZ() + bNormal.getZ() + cNormal.getZ()) / 3f);
+
+				CollisionPacket.checkTriangle(collisionPacket, a, b, c, planeNormal);
+			}
+		}
+
+		// If there was no collision:
+		if (!collisionPacket.foundCollision) {
+			return Vector3f.add(pos, vel, null);
+		} else {
+			System.out.println("Collision Found! Step: " + collisionRecursionStep);
+		}
+
+		Vector3f destinationPoint = Vector3f.add(pos, vel, null);
+		Vector3f newBasePoint = pos;
+
+		if (collisionPacket.nearestDistance >= VERY_CLOSE_DISTANCE) {
+			Vector3f v = new Vector3f(vel);
+			v.normalise();
+			v = CollisionPacket.scaleVector(v, (float) (collisionPacket.nearestDistance - VERY_CLOSE_DISTANCE));
+			newBasePoint = Vector3f.add(v, collisionPacket.basePoint, null);
+
+			// Adjusting the intersection point to be a very small distance away from the
+			// actual intersection distance:
+			v.normalise();
+			collisionPacket.intersectionPoint = Vector3f.sub(collisionPacket.intersectionPoint,
+					CollisionPacket.scaleVector(v, VERY_CLOSE_DISTANCE), null);
+		}
+
+		// Determining the sliding plane:
+		Vector3f slidePlaneOrigin = collisionPacket.intersectionPoint;
+		Vector3f slidePlaneNormal = Vector3f.sub(newBasePoint, collisionPacket.intersectionPoint, null);
+		slidePlaneNormal.normalise();
+		System.out.println("Sliding plane Normal: " + slidePlaneNormal.toString());
+
+		float slidePlaneConstant = -Vector3f.dot(slidePlaneOrigin, slidePlaneNormal);
+		float distanceToDestinationPoint = Vector3f.dot(destinationPoint, slidePlaneNormal) + slidePlaneConstant;
+		Vector3f newDestinationPoint = Vector3f.sub(destinationPoint,
+				CollisionPacket.scaleVector(slidePlaneNormal, distanceToDestinationPoint), null);
+
+		Vector3f newVelocityVector = Vector3f.sub(newDestinationPoint, collisionPacket.intersectionPoint, null);
+
+		if (newVelocityVector.length() < VERY_CLOSE_DISTANCE)
+			return newBasePoint;
+
+		collisionRecursionStep++;
+		Vector3f solution = collideWithWorld(newBasePoint, newVelocityVector, toCollideWith);
+		System.out.println("Solution: " + solution.toString());
+		return solution;
 	}
 
 	/* Calculates the deceleration rate */
@@ -106,37 +256,51 @@ public class Camera extends Entity {
 
 		// Left and Right Movement
 		if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
-			this.velocity.x = SPEED * delta;
+			this.keyBasedVelocity.x = -SPEED * delta;
 			xDir = true;
 		} else if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
-			this.velocity.x = -SPEED * delta;
+			this.keyBasedVelocity.x = SPEED * delta;
 			xDir = true;
 		}
 
 		// Forward and Back Movement
 		if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
-			this.velocity.z = -SPEED * delta;
+			this.keyBasedVelocity.z = -SPEED * delta;
 			zDir = true;
 		} else if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
-			this.velocity.z = SPEED * delta;
+			this.keyBasedVelocity.z = SPEED * delta;
 			zDir = true;
+		}
+
+		// Making sure the velocity has the same magnitude in all directions.
+		if (zDir && xDir) {
+			keyBasedVelocity.normalise();
+			keyBasedVelocity = CollisionPacket.scaleVector(keyBasedVelocity, SPEED * delta);
 		}
 
 		// Up and Down Movement
 		if (flying) {
-			if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
-				this.velocity.y = SPEED * delta;
+			if (Keyboard.isKeyDown(Keyboard.KEY_1)) {
+				// this.velocity.y = SPEED * delta;
+				this.keyBasedVelocity.y = 0;
+				this.rotation.x = 0;
+				this.Y_CAMERA_OFFSET = 5f;
+			} else if (Keyboard.isKeyDown(Keyboard.KEY_2)) {
+				// this.velocity.y = SPEED * delta;
+				this.keyBasedVelocity.y = 0;
+				this.rotation.x = 90;
+				this.Y_CAMERA_OFFSET = 20f;
 			} else if (Keyboard.isKeyDown(Keyboard.KEY_F)) {
-				this.velocity.y = -SPEED * delta;
+				this.keyBasedVelocity.y = -SPEED * delta;
 			}
 		}
 
 		// Sprinting
 		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
 			if (xDir)
-				this.velocity.x *= 1.5f;
+				this.keyBasedVelocity.x *= 1.5f;
 			if (zDir)
-				this.velocity.z *= 1.5f;
+				this.keyBasedVelocity.z *= 1.5f;
 		}
 
 		// Mouse Movement Left and Right
@@ -154,10 +318,10 @@ public class Camera extends Entity {
 		}
 
 		// Sets the limit on the x rotation so you don't do a flip
-		if (rotation.x < -80)
-			rotation.x = -80;
-		if (rotation.x > 80)
-			rotation.x = 80;
+		if (rotation.x < -90)
+			rotation.x = -90;
+		if (rotation.x > 90)
+			rotation.x = 90;
 
 		// Resets the cursor position
 		Mouse.setCursorPosition(Engine.WIDTH / 2, Engine.HEIGHT / 2);

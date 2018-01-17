@@ -242,10 +242,10 @@ public class EndpointsArray {
 	 */
 	public Entity[] getBoxCollisions(Entity e) {
 		updateAABB(e.getBoundingBox());
-//		System.out.println(Arrays.toString(x_endpoints));
-//		System.out.println(Arrays.toString(y_endpoints));
-//		System.out.println(Arrays.toString(z_endpoints));
-//		System.out.println(pairManager.toString());
+		// System.out.println(Arrays.toString(x_endpoints));
+		// System.out.println(Arrays.toString(y_endpoints));
+		// System.out.println(Arrays.toString(z_endpoints));
+		// System.out.println(pairManager.toString());
 		return pairManager.getCollidingEntities(e);
 	}
 

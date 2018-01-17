@@ -68,12 +68,13 @@ public class ModelData {
 				newBounds[5] = newPoint.getZ();
 		}
 
-		newBounds[0] = position.getX() - newBounds[0];
-		newBounds[1] = position.getY() - newBounds[1];
-		newBounds[2] = position.getZ() - newBounds[2];
-		newBounds[3] = position.getX() - newBounds[3];
-		newBounds[4] = position.getY() - newBounds[4];
-		newBounds[5] = position.getZ() - newBounds[5];
+		float buffer = 0.1f;
+		newBounds[0] = position.getX() - newBounds[0] - buffer;
+		newBounds[1] = newBounds[1] - position.getY() + buffer;
+		newBounds[2] = position.getZ() - newBounds[2] - buffer;
+		newBounds[3] = position.getX() - newBounds[3] + buffer;
+		newBounds[4] = newBounds[4] - position.getY() - buffer;
+		newBounds[5] = position.getZ() - newBounds[5] + buffer;
 
 		return newBounds;
 	}

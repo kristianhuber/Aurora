@@ -26,8 +26,11 @@ public class DetailedCollisionDetection {
 		velocityE3 = getConvertedVector(velocityR3, vectorConversionMatrix);
 
 		// Converting the entity's center to e-space:
-		Vector3f basePointR3 = new Vector3f(baseEntity.getPosition());
-		basePointR3.setY(basePointR3.getY() + y_radius);
+		// Getting the entity's middle y value:
+		float centerYValue = (baseEntity.getBoundingBox().getEndpointObjects()[4].getValue()
+				- baseEntity.getBoundingBox().getEndpointObjects()[1].getValue()) / 2;
+		Vector3f basePointR3 = new Vector3f(baseEntity.getPosition().getX(), centerYValue,
+				baseEntity.getPosition().getZ());
 		basePointE3 = getConvertedVector(basePointR3, vectorConversionMatrix);
 
 		// Getting all the triangle data from the other entity:
@@ -240,9 +243,8 @@ public class DetailedCollisionDetection {
 					null);
 
 			Vector3f newVelocityE3 = Vector3f.sub(newDestinationPoint, intersectionPoint, null);
-			Vector3f toReturn =  new Vector3f(newVelocityE3.getX() * x_radius, newVelocityE3.getY() * y_radius,
+			Vector3f toReturn = new Vector3f(newVelocityE3.getX() * x_radius, newVelocityE3.getY() * y_radius,
 					newVelocityE3.getZ() * z_radius);
-			System.out.println(toReturn.toString());
 			return toReturn;
 		} else
 			return velocityR3;
@@ -278,7 +280,8 @@ public class DetailedCollisionDetection {
 	}
 
 	public static Vector3f getConvertedVector(Vector3f oldVector, Matrix3f vectorConversionMatrix) {
-		return Matrix3f.transform(vectorConversionMatrix, oldVector, null);
+		return new Vector3f(oldVector.getX() / vectorConversionMatrix.m00,
+				oldVector.getY() / vectorConversionMatrix.m11, oldVector.getZ() / vectorConversionMatrix.m22);
 	}
 
 }
