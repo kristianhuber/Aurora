@@ -32,7 +32,7 @@ public class MasterRenderer {
 	public static final float FOG_DIVIDER = 2.5F;
 
 	public static final float NEAR_PLANE = 0.1F;
-	public static final float FAR_PLANE = 1500F;
+	public static final float FAR_PLANE = 1750F;
 	public static final float FOV = 65F;
 
 	private static Matrix4f projectionMatrix;
@@ -128,9 +128,9 @@ public class MasterRenderer {
 				clipPlane);
 
 		if (world.getWorldTime() < 6 || world.getWorldTime() > 20) {
-			MasterRenderer.skyboxRenderer.render(world.getSkyColor(), "day", "night", 1);
-		} else {
 			MasterRenderer.skyboxRenderer.render(world.getSkyColor(), "day", "night", 0);
+		} else {
+			MasterRenderer.skyboxRenderer.render(world.getSkyColor(), "day", "night", 1);
 		}
 	}
 

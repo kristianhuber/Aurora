@@ -2,6 +2,7 @@ package engine.world;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -9,6 +10,7 @@ import java.util.Random;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
+import aurora.main.Aurora;
 import engine.rendering.models.TexturedModel;
 import engine.util.Calculator;
 import engine.util.Engine;
@@ -40,7 +42,9 @@ public class World {
 	private Light sun;
 	private int seed;
 	private Vector3f skyColor = new Vector3f(154 / 255F, 160 / 255F, 181 / 255F);
+	private Vector3f nightColor = new Vector3f(35 / 255f, 41 / 255f, 45 / 255f);
 	private boolean testWorld;
+	private List<Entity> queued;
 
 	public World(Engine engine, boolean testWorld) {
 
@@ -48,6 +52,7 @@ public class World {
 		prelimCollisionManager = new EndpointsArray();
 		terrainMap = new HashMap<Integer, Chunk>();
 		lights = new ArrayList<Light>();
+		queued = new ArrayList<Entity>();
 
 		loader = new ChunkLoader(engine, this);
 		loader.start();
@@ -56,8 +61,8 @@ public class World {
 
 		seed = new Random().nextInt(10000000);
 
-		Entity l = new Entity(this, "stall", World.WORLD_SIZE * Terrain.SIZE / 2 + 20,
-				World.WORLD_SIZE * Terrain.SIZE / 2 + 10);
+		Entity l = new Entity(this, "stall",
+				new Vector3f(World.WORLD_SIZE * Terrain.SIZE / 2, 400, World.WORLD_SIZE * Terrain.SIZE / 2));
 		this.addEntity(l);
 
 		Entity a = new Entity(this, "betterpine", World.WORLD_SIZE * Terrain.SIZE / 2,
@@ -65,7 +70,7 @@ public class World {
 		a.setScale(5);
 		this.addEntity(a);
 
-		time = 19.5f;
+		time = 5f;
 
 		if (testWorld)
 			seaLevel = -999;
@@ -86,7 +91,19 @@ public class World {
 		// Updating the collision determiner arrays.
 		prelimCollisionManager.updateArrays();
 
-		time += Engine.getDelta() / 20;
+		// queued code
+		long atime = System.nanoTime();
+		long current = System.nanoTime();
+		Iterator<Entity> it = queued.iterator();
+		synchronized (queued) {
+			while (current - atime < 10000000 && it.hasNext()) {
+				this.processEntity(it.next());
+				it.remove();
+				current = System.nanoTime();
+			}
+		}
+
+		time += Aurora.getDelta() / 20;
 		if (time >= 24) {
 			time = 0;
 		}
@@ -213,19 +230,23 @@ public class World {
 	}
 
 	public void addEntity(Entity entity) {
-		synchronized (entities) {
-			TexturedModel entityModel = entity.getModel();
-			for (TexturedModel tm : entities.keySet())
-				if (tm.equals(entityModel)) {
-					entities.get(tm).add(entity);
-					prelimCollisionManager.addAABB(entity.getBoundingBox());
-					return;
-				}
-			List<Entity> newBatch = new ArrayList<Entity>();
-			newBatch.add(entity);
-			entities.put(entityModel, newBatch);
-			prelimCollisionManager.addAABB(entity.getBoundingBox());
+		synchronized (queued) {
+			queued.add(entity);
 		}
+	}
+
+	private void processEntity(Entity entity) {
+		TexturedModel entityModel = entity.getModel();
+		for (TexturedModel tm : entities.keySet())
+			if (tm.equals(entityModel)) {
+				entities.get(tm).add(entity);
+				prelimCollisionManager.addAABB(entity.getBoundingBox());
+				return;
+			}
+		List<Entity> newBatch = new ArrayList<Entity>();
+		newBatch.add(entity);
+		entities.put(entityModel, newBatch);
+		prelimCollisionManager.addAABB(entity.getBoundingBox());
 	}
 
 	public EndpointsArray getCollisionManager() {
@@ -233,7 +254,11 @@ public class World {
 	}
 
 	public Vector3f getSkyColor() {
-		return skyColor;
+		if (time < 6 || time > 20) {
+			return skyColor;
+		} else {
+			return nightColor;
+		}
 	}
 
 	public float getWorldTime() {

@@ -3,34 +3,25 @@ package engine.postprocessing.bloom;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 
-import engine.postprocessing.ImageRenderer;
+import engine.postprocessing.Effect;
 
-public class CombineFilter {
-	
-	private ImageRenderer renderer;
-	private CombineShader shader;
+public class CombineFilter extends Effect{
 	
 	public CombineFilter(){
-		shader = new CombineShader();
+		super(new CombineShader());
+		
 		shader.start();
-		shader.connectTextureUnits();
+		((CombineShader) shader).connectTextureUnits();
 		shader.stop();
-		renderer = new ImageRenderer();
 	}
 	
-	public void render(int colourTexture, int highlightTexture){
+	public void render(int colorTexture, int highlightTexture){
 		shader.start();
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, colourTexture);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, colorTexture);
 		GL13.glActiveTexture(GL13.GL_TEXTURE1);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, highlightTexture);
 		renderer.renderQuad();
 		shader.stop();
 	}
-	
-	public void cleanUp(){
-		renderer.cleanUp();
-		shader.cleanUp();
-	}
-
 }

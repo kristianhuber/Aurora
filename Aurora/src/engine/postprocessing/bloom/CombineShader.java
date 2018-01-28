@@ -4,7 +4,7 @@ import engine.rendering.ShaderProgram;
 
 public class CombineShader extends ShaderProgram {
 
-	private static final String VERTEX_FILE = "/engine/postprocessing/bloom/simpleVertex.txt";
+	private static final String VERTEX_FILE = "/engine/postprocessing/BasicVertexShader.txt";
 	private static final String FRAGMENT_FILE = "/engine/postprocessing/bloom/combineFragment.txt";
 	
 	private int location_colourTexture;

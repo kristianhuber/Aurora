@@ -26,6 +26,7 @@ uniform vec4 plane;
 uniform float density;
 uniform float gradient;
 uniform float divider;
+uniform float selected;
 
 void main(void){
 	
@@ -39,6 +40,7 @@ void main(void){
 	vec4 positionRelativeToCam = viewMatrix * worldPosition;
 	
 	gl_Position = projectionMatrix * positionRelativeToCam;
+	
 	pass_textureCoords = (textureCoords/numberOfRows) + offset;
 	
 	// Decides where or not to use fake lighting

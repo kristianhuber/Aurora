@@ -1,38 +1,14 @@
 package engine.postprocessing.gaussian;
 
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL13;
+import engine.postprocessing.Effect;
 
-import engine.postprocessing.ImageRenderer;
-
-public class VerticalBlur {
-	
-	private ImageRenderer renderer;
-	private VerticalBlurShader shader;
+public class VerticalBlur extends Effect{
 	
 	public VerticalBlur(int targetFboWidth, int targetFboHeight){
-		shader = new VerticalBlurShader();
-		renderer = new ImageRenderer(targetFboWidth, targetFboHeight);
+		super(new VerticalBlurShader(), targetFboWidth, targetFboHeight);
+		
 		shader.start();
-		shader.loadTargetHeight(targetFboHeight);
+		((VerticalBlurShader) shader).loadTargetHeight(targetFboHeight);
 		shader.stop();
-	}
-
-	
-	public void render(int texture){
-		shader.start();
-		GL13.glActiveTexture(GL13.GL_TEXTURE0);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture);
-		renderer.renderQuad();
-		shader.stop();
-	}
-	
-	public int getOutputTexture(){
-		return renderer.getOutputTexture();
-	}
-	
-	public void cleanUp(){
-		renderer.cleanUp();
-		shader.cleanUp();
 	}
 }

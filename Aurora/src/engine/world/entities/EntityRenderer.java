@@ -146,7 +146,21 @@ public class EntityRenderer {
 	/* Loads settings to the shader per entity instance */
 	private void prepareInstance(Entity entity) {
 		Matrix4f transformationMatrix = entity.getTransformationMatrix();// Calculator.createTransformationMatrix(entity.getPosition(),
-																			// entity.getRotation(), entity.getScale());
+		// entity.getRotation(), entity.getScale());
+		Matrix4f viewMatrix = Engine.getCamera().getTransformationMatrix();
+
+		if (entity.isSelected()) {
+			transformationMatrix.m00 = viewMatrix.m00;
+			transformationMatrix.m01 = viewMatrix.m10;
+			transformationMatrix.m02 = viewMatrix.m20;
+			transformationMatrix.m10 = viewMatrix.m01;
+			transformationMatrix.m11 = viewMatrix.m11;
+			transformationMatrix.m12 = viewMatrix.m21;
+			transformationMatrix.m20 = viewMatrix.m02;
+			transformationMatrix.m21 = viewMatrix.m12;
+			transformationMatrix.m22 = viewMatrix.m22;
+		}
+
 		shader.loadTransformationMatrix(transformationMatrix);
 		shader.loadOffset(entity.getTextureXOffset(), entity.getTextureYOffset());
 		shader.loadIsSelected(entity.isSelected());

@@ -62,7 +62,7 @@ public class Aurora extends Engine {
 
 		// Load Particle Textures:
 		TextureManager.loadTexture("cosmic", "textures\\particles");
-
+		
 		// Load Cube Maps:
 		TextureManager.loadCubeMap("day");
 		TextureManager.loadCubeMap("night");

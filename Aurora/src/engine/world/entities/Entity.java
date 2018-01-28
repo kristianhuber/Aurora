@@ -3,6 +3,7 @@ package engine.world.entities;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
+import engine.rendering.models.ModelData;
 import engine.rendering.models.TexturedModel;
 import engine.util.Calculator;
 import engine.world.World;

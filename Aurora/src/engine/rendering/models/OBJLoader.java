@@ -108,6 +108,7 @@ public class OBJLoader {
 		// Create an object with all the data in it and return it
 		ModelData data = new ModelData(verticesArray, texturesArray, normalsArray, indicesArray, furthest);
 
+		System.err.println("Loaded Plane");
 		return data;
 	}
 
