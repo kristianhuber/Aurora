@@ -70,7 +70,7 @@ public class World {
 		a.setScale(5);
 		this.addEntity(a);
 
-		time = 5f;
+		time = 6f;
 
 		if (testWorld)
 			seaLevel = -999;
@@ -255,9 +255,9 @@ public class World {
 
 	public Vector3f getSkyColor() {
 		if (time < 6 || time > 20) {
-			return skyColor;
-		} else {
 			return nightColor;
+		} else {
+			return skyColor;
 		}
 	}
 

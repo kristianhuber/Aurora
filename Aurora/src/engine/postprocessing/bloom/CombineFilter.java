@@ -15,13 +15,13 @@ public class CombineFilter extends Effect{
 		shader.stop();
 	}
 	
-	public void render(int colorTexture, int highlightTexture){
+	public void render(int colorTexture, int highlightTexture, boolean render){
 		shader.start();
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, colorTexture);
 		GL13.glActiveTexture(GL13.GL_TEXTURE1);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, highlightTexture);
-		renderer.renderQuad();
+		renderer.renderQuad(render);
 		shader.stop();
 	}
 }

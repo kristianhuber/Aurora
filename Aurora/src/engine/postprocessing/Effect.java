@@ -20,11 +20,11 @@ public class Effect {
 		shader = program;
 	}
 	
-	public void render(int texture){
+	public void render(int texture, boolean render){
 		shader.start();
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture);
-		renderer.renderQuad();
+		renderer.renderQuad(render);
 		shader.stop();
 	}
 	

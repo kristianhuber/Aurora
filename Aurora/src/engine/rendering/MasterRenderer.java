@@ -128,9 +128,9 @@ public class MasterRenderer {
 				clipPlane);
 
 		if (world.getWorldTime() < 6 || world.getWorldTime() > 20) {
-			MasterRenderer.skyboxRenderer.render(world.getSkyColor(), "day", "night", 0);
-		} else {
 			MasterRenderer.skyboxRenderer.render(world.getSkyColor(), "day", "night", 1);
+		} else {
+			MasterRenderer.skyboxRenderer.render(world.getSkyColor(), "day", "night", 0);
 		}
 	}
 
