@@ -3,16 +3,19 @@ package engine.animation.renderer;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
+import engine.rendering.MasterRenderer;
 import engine.rendering.ShaderProgram;
 
 public class AnimatedModelShader extends ShaderProgram {
 
 	private static final int MAX_JOINTS = 50;// max number of joints in a skeleton
 
-	private static final String VERTEX_SHADER = "engine/animation/renderer/animatedEntityVertex.glsl";
-	private static final String FRAGMENT_SHADER = "engine/animation/renderer/animatedEntityFragment.glsl";
+	private static final String VERTEX_SHADER = "/engine/animation/renderer/animatedEntityVertex.txt";
+	private static final String FRAGMENT_SHADER = "/engine/animation/renderer/animatedEntityFragment.txt";
 	
-	private int location_projectionViewMatrix;
+	private int location_transformationMatrix;
+	private int location_projectionMatrix;
+	private int location_viewMatrix;
 	private int location_lightDirection;
 	private int location_jointTransforms[];
 	private int location_diffuseMap;
@@ -43,9 +46,11 @@ public class AnimatedModelShader extends ShaderProgram {
 	
 	@Override
 	protected void getAllUniformLocations() {
-		location_projectionViewMatrix = super.getUniformLocation("projectionViewMatrix");
+		location_projectionMatrix = super.getUniformLocation("projectionMatrix");
+		location_viewMatrix = super.getUniformLocation("viewMatrix");
 		location_lightDirection = super.getUniformLocation("lightDirection");
 		location_diffuseMap = super.getUniformLocation("diffuseMap");
+		location_transformationMatrix = super.getUniformLocation("transformationMatrix");
 		
 		location_jointTransforms = new int[MAX_JOINTS];
 		for (int i = 0; i < MAX_JOINTS; i++) {
@@ -68,9 +73,14 @@ public class AnimatedModelShader extends ShaderProgram {
 			}
 		}
 	}
+	
+	public void loadTransformationMatrix(Matrix4f matrix) {
+		super.loadMatrix(location_transformationMatrix, matrix);
+	}
 
-	public void loadProjectionViewMatrix(Matrix4f mat) {
-		super.loadMatrix(location_projectionViewMatrix, mat);
+	public void loadProjectionViewMatrix(Matrix4f view) {
+		super.loadMatrix(location_viewMatrix, view);
+		super.loadMatrix(location_projectionMatrix, MasterRenderer.getProjectionMatrix());
 	}
 	
 	public void loadLightDirection(Vector3f light) {

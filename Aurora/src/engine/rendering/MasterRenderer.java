@@ -8,6 +8,7 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
+import engine.animation.renderer.AnimatedModelRenderer;
 import engine.postprocessing.FBO;
 import engine.postprocessing.PostProcessing;
 import engine.util.Engine;
@@ -48,6 +49,8 @@ public class MasterRenderer {
 	private static WaterRenderer waterRenderer;
 	private static EntityRenderer renderer;
 
+	private static AnimatedModelRenderer animatedRenderer;
+	
 	/* Initializes all of the variables */
 	public static void initialize(boolean wireframes) {
 
@@ -65,6 +68,8 @@ public class MasterRenderer {
 		MasterRenderer.skyboxRenderer = new SkyboxRenderer();
 		MasterRenderer.waterRenderer = new WaterRenderer();
 		MasterRenderer.renderer = new EntityRenderer();
+		
+		MasterRenderer.animatedRenderer = new AnimatedModelRenderer();
 
 		ParticleMaster.initialize();
 		PostProcessing.initialize();
@@ -126,6 +131,12 @@ public class MasterRenderer {
 
 		MasterRenderer.terrainRenderer.render(world, MasterRenderer.shadowMapRenderer.getToShadowMapSpaceMatrix(),
 				clipPlane);
+		
+		
+		
+		MasterRenderer.animatedRenderer.render(world.entity, new Vector3f(0, 1, 0));
+		
+		
 
 		if (world.getWorldTime() < 6 || world.getWorldTime() > 20) {
 			MasterRenderer.skyboxRenderer.render(world.getSkyColor(), "day", "night", 1);
@@ -181,6 +192,8 @@ public class MasterRenderer {
 		MasterRenderer.waterRenderer.cleanUp();
 		MasterRenderer.renderer.cleanUp();
 
+		MasterRenderer.animatedRenderer.cleanUp();
+		
 		MasterRenderer.multisampledFBO.cleanUp();
 		MasterRenderer.outputFBO.cleanUp();
 

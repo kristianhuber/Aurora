@@ -1,11 +1,10 @@
 package engine.animation.parser.xmlParser;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import engine.rendering.models.OBJLoader;
 
 /**
  * Reads an XML file and stores all the data in {@link XmlNode} objects,
@@ -33,8 +32,8 @@ public class XmlParser {
 	public static XmlNode loadXmlFile(String file) {
 		BufferedReader reader = null;
 		try {
-			reader = new BufferedReader(
-					new InputStreamReader(OBJLoader.class.getResourceAsStream("/aurora/assets/animation/" + file + ".xml")));
+			FileInputStream stream = new FileInputStream("res\\animation\\" + file + ".dae");
+			reader = new BufferedReader(new InputStreamReader(stream));
 			;
 		} catch (Exception e) {
 			e.printStackTrace();

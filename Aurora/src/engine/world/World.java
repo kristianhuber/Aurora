@@ -11,6 +11,10 @@ import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import aurora.main.Aurora;
+import engine.animation.animatedModel.AnimatedModel;
+import engine.animation.animation.Animation;
+import engine.animation.loaders.AnimatedModelLoader;
+import engine.animation.loaders.AnimationLoader;
 import engine.rendering.models.TexturedModel;
 import engine.util.Calculator;
 import engine.util.Engine;
@@ -46,6 +50,9 @@ public class World {
 	private boolean testWorld;
 	private List<Entity> queued;
 
+	public AnimatedModel entity;
+	private Animation animation;
+	
 	public World(Engine engine, boolean testWorld) {
 
 		entities = new HashMap<TexturedModel, List<Entity>>();
@@ -70,6 +77,10 @@ public class World {
 		a.setScale(5);
 		this.addEntity(a);
 
+		entity = AnimatedModelLoader.loadEntity("model", "diffuse");
+		animation = AnimationLoader.loadAnimation("model");
+		entity.doAnimation(animation);
+		
 		time = 6f;
 
 		if (testWorld)
@@ -88,6 +99,8 @@ public class World {
 	public void update() {
 		Engine.getCamera().move();
 
+		entity.update();
+		
 		// Updating the collision determiner arrays.
 		prelimCollisionManager.updateArrays();
 

@@ -1,5 +1,6 @@
 package engine.animation.textures;
 
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 
@@ -21,7 +22,7 @@ public class TextureUtils {
 		int height = 0;
 		ByteBuffer buffer = null;
 		try {
-			InputStream in = TextureUtils.class.getResourceAsStream("/aurora/assets/animation/" + file + ".png");
+			FileInputStream in = new FileInputStream("res\\animation\\" + file + ".png");
 			PNGDecoder decoder = new PNGDecoder(in);
 			width = decoder.getWidth();
 			height = decoder.getHeight();
