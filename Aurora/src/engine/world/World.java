@@ -212,7 +212,7 @@ public class World {
 			float y = this.getTerrainHeightAt(x, z);
 			if (y > seaLevel + 5) {
 				Entity e = new Entity(this, "betterpine", new Vector3f(x, y, z));
-				e.setScale(7.5f);
+				e.setScale((float) (20 * Math.random() + 5));
 				e.setSelection(false);
 				this.addEntity(e);
 			}
