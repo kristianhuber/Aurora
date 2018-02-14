@@ -1,11 +1,12 @@
 package engine.animation.animatedModel;
 
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector3f;
 
 import engine.animation.animation.Animation;
 import engine.animation.animation.Animator;
-import engine.animation.openglObjects.Vao;
-import engine.animation.textures.Texture;
+import engine.rendering.models.TexturedModel;
+import engine.world.World;
 
 /**
  * 
@@ -21,16 +22,16 @@ import engine.animation.textures.Texture;
  */
 public class AnimatedModel {
 
-	// skin
-	private final Vao model;
-	private final Texture texture;
-
 	// skeleton
 	private final Joint rootJoint;
 	private final int jointCount;
 
 	private final Animator animator;
 
+	private Vector3f position, rotation;
+	private String texture;
+	private int vao, vert;
+	
 	/**
 	 * Creates a new entity capable of animation. The inverse bind transform for
 	 * all joints is calculated in this constructor. The bind transform is
@@ -53,26 +54,58 @@ public class AnimatedModel {
 	 *            this entity.
 	 * 
 	 */
-	public AnimatedModel(Vao model, Texture texture, Joint rootJoint, int jointCount) {
-		this.model = model;
+	public AnimatedModel(int vao, int vertexCount, String texture, Joint rootJoint, int jointCount) {
+		this.vao = vao;
 		this.texture = texture;
+		this.vert = vertexCount;
 		this.rootJoint = rootJoint;
 		this.jointCount = jointCount;
 		this.animator = new Animator(this);
 		rootJoint.calcInverseBindTransform(new Matrix4f());
+		this.rotation = new Vector3f(0, 0, 0);
+		this.position = new Vector3f(0, 0, 0);
+	}
+	
+	public void increasePosition(float dx, float dy, float dz) {
+		this.position.x += dx;
+		this.position.y += dy;
+		this.position.z += dz;
+	}
+	
+	public void increaseRotation(float dx, float dy, float dz) {
+		this.rotation.x += dx;
+		this.rotation.y += dy;
+		this.rotation.z += dz;
+	}
+	
+	public Vector3f getPosition() {
+		return position;
+	}
+
+	public void setPosition(Vector3f position) {
+		this.position = position;
+	}
+
+	public Vector3f getRotation() {
+		return rotation;
+	}
+	
+	public int getVertexCount() {
+		return vert;
+	}
+
+	public void setRotation(Vector3f rotation) {
+		this.rotation = rotation;
 	}
 
 	/**
 	 * @return The VAO containing all the mesh data for this entity.
 	 */
-	public Vao getModel() {
-		return model;
+	public int getModel() {
+		return vao;
 	}
-
-	/**
-	 * @return The diffuse texture for this entity.
-	 */
-	public Texture getTexture() {
+	
+	public String getTexture() {
 		return texture;
 	}
 
@@ -83,15 +116,6 @@ public class AnimatedModel {
 	 */
 	public Joint getRootJoint() {
 		return rootJoint;
-	}
-
-	/**
-	 * Deletes the OpenGL objects associated with this entity, namely the model
-	 * (VAO) and texture.
-	 */
-	public void delete() {
-		model.delete();
-		texture.delete();
 	}
 
 	/**
@@ -110,7 +134,9 @@ public class AnimatedModel {
 	 * Updates the animator for this entity, basically updating the animated
 	 * pose of the entity. Must be called every frame.
 	 */
-	public void update() {
+	public void update(World w) {
+		this.position.y = w.getTerrainHeightAt(position.x, position.z);
+		this.position.y -= 0.5f;
 		animator.update();
 	}
 

@@ -2,64 +2,32 @@ package engine.animation.renderer;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
-import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Vector3f;
 
 import engine.animation.animatedModel.AnimatedModel;
-import engine.rendering.MasterRenderer;
+import engine.rendering.models.TexturedModel;
+import engine.rendering.textures.TextureManager;
 import engine.util.Calculator;
 import engine.util.Engine;
 
-/**
- * 
- * This class deals with rendering an animated entity. Nothing particularly new
- * here. The only exciting part is that the joint transforms get loaded up to
- * the shader in a uniform array.
- * 
- * @author Karl
- *
- */
 public class AnimatedModelRenderer {
 
 	private AnimatedModelShader shader;
 
-	/**
-	 * Initializes the shader program used for rendering animated models.
-	 */
 	public AnimatedModelRenderer() {
 		this.shader = new AnimatedModelShader();
 	}
 
-	/**
-	 * Renders an animated entity. The main thing to note here is that all the joint
-	 * transforms are loaded up to the shader to a uniform array. Also 5 attributes
-	 * of the VAO are enabled before rendering, to include joint indices and
-	 * weights.
-	 * 
-	 * @param entity
-	 *            - the animated entity to be rendered.
-	 * @param camera
-	 *            - the camera used to render the entity.
-	 * @param lightDir
-	 *            - the direction of the light in the scene.
-	 */
 	public void render(AnimatedModel entity, Vector3f lightDir) {
-		prepare(lightDir);
-		entity.getTexture().bindToUnit(0);
-		entity.getModel().bind(0, 1, 2, 3, 4);
+		prepare(entity, lightDir);
 		shader.loadJointTransforms(entity.getJointTransforms());
 		shader.loadTransformationMatrix(
-				Calculator.createTransformationMatrix(new Vector3f(2048, 500, 2048), new Vector3f(0, 0, 0), 1));
-		GL11.glDrawElements(GL11.GL_TRIANGLES, entity.getModel().getIndexCount(), GL11.GL_UNSIGNED_INT, 0);
-		entity.getModel().unbind(0, 1, 2, 3, 4);
+				Calculator.createTransformationMatrix(entity.getPosition(), entity.getRotation(), 1));
+		GL11.glDrawElements(GL11.GL_TRIANGLES, entity.getVertexCount(), GL11.GL_UNSIGNED_INT,
+				0);
 		finish();
-	}
-
-	/**
-	 * Deletes the shader program when the game closes.
-	 */
-	public void cleanUp() {
-		shader.cleanUp();
 	}
 
 	/**
@@ -72,20 +40,39 @@ public class AnimatedModelRenderer {
 	 * @param lightDir
 	 *            - the direction of the light in the scene.
 	 */
-	private void prepare(Vector3f lightDir) {
+	private void prepare(AnimatedModel model, Vector3f lightDir) {
 		shader.start();
 		shader.loadProjectionViewMatrix(Calculator.createViewMatrix(Engine.getCamera()));
 		shader.loadLightDirection(lightDir);
 		GL11.glEnable(GL13.GL_MULTISAMPLE);
 		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
+
+		GL13.glActiveTexture(GL13.GL_TEXTURE0);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, TextureManager.getTexture(model.getTexture()).getID());
+		
+		// Entity Stuff
+		GL30.glBindVertexArray(model.getModel());
+		GL20.glEnableVertexAttribArray(0);
+		GL20.glEnableVertexAttribArray(1);
+		GL20.glEnableVertexAttribArray(2);
+		GL20.glEnableVertexAttribArray(3);
+		GL20.glEnableVertexAttribArray(4);
 	}
 
-	/**
-	 * Stops the shader program after rendering the entity.
-	 */
 	private void finish() {
+		GL20.glDisableVertexAttribArray(4);
+		GL20.glDisableVertexAttribArray(3);
+		GL20.glDisableVertexAttribArray(2);
+		GL20.glDisableVertexAttribArray(1);
+		GL20.glDisableVertexAttribArray(0);
+		GL30.glBindVertexArray(0);
+
 		shader.stop();
+	}
+	
+	public void cleanUp() {
+		shader.cleanUp();
 	}
 
 }

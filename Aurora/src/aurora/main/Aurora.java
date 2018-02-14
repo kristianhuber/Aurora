@@ -45,6 +45,7 @@ public class Aurora extends Engine {
 		// Load GUI Textures:
 		TextureManager.loadTexture("backgroundImage", "guis");
 		TextureManager.loadTexture("backgroundImage2", "guis");
+		TextureManager.loadTexture("backgroundImage_alternate", "guis");
 		TextureManager.loadTexture("Birch2", "guis");
 		TextureManager.loadTexture("Birch2_hover", "guis");
 		TextureManager.loadTexture("progressbar", "guis");

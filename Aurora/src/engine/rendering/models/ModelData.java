@@ -4,8 +4,6 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
-import engine.util.Calculator;
-
 /**
  * @Description: Holds VAO data for a model
  * 

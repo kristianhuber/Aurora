@@ -17,16 +17,16 @@ public class RenderMainMenu extends RenderMode {
 
 	private Vector3f foregroundColor = new Vector3f(255 / 255f, 255 / 255f, 255 / 255f);
 
-	private int buttonWidth = 450;
+	private int buttonWidth = 325;
 	private int buttonHeight = 90;
-	private int buttonX = 550;
+	private int buttonX = 675;
 	
 	public RenderMainMenu(Aurora aurora) {
 
-		backgroundImage = new Gui("backgroundImage", 0, 0, 1000, 750);
+		backgroundImage = new Gui("backgroundImage_alternate", 0, 0, 1000, 750);
 		this.guis.add(0, backgroundImage);
 
-		title = new GUIText("Aurora", 40, FontManager.font("cherokee"), 675, 25, false);
+		title = new GUIText("Aurora", 40, FontManager.font("cherokee"), 715, 25, false);
 		title.setColor(34, 139, 34);
 		title.setMode(GUIText.MODE_GLOWING);
 		title.setSecondaryColor(new Vector3f(155 / 255f, 1, 155 / 255f));

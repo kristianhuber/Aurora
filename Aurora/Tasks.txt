@@ -26,8 +26,6 @@ To Do :
 			•	There needs to be an easy way to add HUDs to the game. These will always be on the in-game screen
 			•	There needs to be a mechanic for GUIs that pop up, like inventory
 			•	There needs to be a way to implement interactables, such as a forge
-		Post Processing:
-			•	Need to be able to have any amount of post processing effects. Do this with a linked list?
 		Text:
 			•	This code is awful right now. It needs to be cleaned up significantly.
 			•	 Need to be able to find the length of a text
@@ -38,7 +36,6 @@ To Do :
 			•	Possibly fix multithreading, but I don't think that's an issue
 		Entities:
 			•	Implement Collision Detection
-			•	Implement Level of Detail
 		Particles:
 			•	Singular particles that represent explosions?
 			•	Spawn in different shapes
@@ -47,7 +44,6 @@ To Do :
 			•	Fix shadows not being connected
 			•	Make it so light can cancel out shadows
 		Skybox:
-			•	Make it bigger
 			•	Make it transition and have weather
 			•	Make a lens flare and sun. Do this with sampling
 		Terrain:
@@ -63,5 +59,4 @@ To Do :
 			
 	Future Features:
 		AIs
-		Animation
 		Multiplayer

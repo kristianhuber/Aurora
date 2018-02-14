@@ -44,12 +44,11 @@ public class MasterRenderer {
 	private static FBO outputFBO;
 
 	private static ShadowMapMasterRenderer shadowMapRenderer;
+	private static AnimatedModelRenderer animatedRenderer;
 	private static TerrainRenderer terrainRenderer;
 	private static SkyboxRenderer skyboxRenderer;
 	private static WaterRenderer waterRenderer;
 	private static EntityRenderer renderer;
-
-	private static AnimatedModelRenderer animatedRenderer;
 	
 	/* Initializes all of the variables */
 	public static void initialize(boolean wireframes) {
@@ -64,12 +63,11 @@ public class MasterRenderer {
 
 		// Initialize the Renderers
 		MasterRenderer.shadowMapRenderer = new ShadowMapMasterRenderer();
+		MasterRenderer.animatedRenderer = new AnimatedModelRenderer();
 		MasterRenderer.terrainRenderer = new TerrainRenderer();
 		MasterRenderer.skyboxRenderer = new SkyboxRenderer();
 		MasterRenderer.waterRenderer = new WaterRenderer();
 		MasterRenderer.renderer = new EntityRenderer();
-		
-		MasterRenderer.animatedRenderer = new AnimatedModelRenderer();
 
 		ParticleMaster.initialize();
 		PostProcessing.initialize();
@@ -135,7 +133,6 @@ public class MasterRenderer {
 		
 		
 		MasterRenderer.animatedRenderer.render(world.entity, new Vector3f(0, 1, 0));
-		
 		
 
 		if (world.getWorldTime() < 6 || world.getWorldTime() > 20) {

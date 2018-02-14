@@ -147,9 +147,9 @@ public class EntityRenderer {
 	private void prepareInstance(Entity entity) {
 		Matrix4f transformationMatrix = entity.getTransformationMatrix();// Calculator.createTransformationMatrix(entity.getPosition(),
 		// entity.getRotation(), entity.getScale());
-		Matrix4f viewMatrix = Engine.getCamera().getTransformationMatrix();
 
 		if (entity.isSelected()) {
+			Matrix4f viewMatrix = new Matrix4f();
 			transformationMatrix.m00 = viewMatrix.m00;
 			transformationMatrix.m01 = viewMatrix.m10;
 			transformationMatrix.m02 = viewMatrix.m20;

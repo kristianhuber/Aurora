@@ -7,14 +7,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import aurora.main.Aurora;
 import engine.animation.animatedModel.AnimatedModel;
 import engine.animation.animation.Animation;
-import engine.animation.loaders.AnimatedModelLoader;
 import engine.animation.loaders.AnimationLoader;
+import engine.rendering.models.ModelManager;
 import engine.rendering.models.TexturedModel;
 import engine.util.Calculator;
 import engine.util.Engine;
@@ -50,7 +51,7 @@ public class World {
 	private boolean testWorld;
 	private List<Entity> queued;
 
-	public AnimatedModel entity;
+	public AnimatedModel entity, entity2, entity3, entity4;
 	private Animation animation;
 	
 	public World(Engine engine, boolean testWorld) {
@@ -72,14 +73,10 @@ public class World {
 				new Vector3f(World.WORLD_SIZE * Terrain.SIZE / 2, 400, World.WORLD_SIZE * Terrain.SIZE / 2));
 		this.addEntity(l);
 
-		Entity a = new Entity(this, "betterpine", World.WORLD_SIZE * Terrain.SIZE / 2,
-				World.WORLD_SIZE * Terrain.SIZE / 2 + 10);
-		a.setScale(5);
-		this.addEntity(a);
-
-		entity = AnimatedModelLoader.loadEntity("model", "diffuse");
-		animation = AnimationLoader.loadAnimation("model");
+		entity = ModelManager.loadToVAO("diffuse");
+		animation = AnimationLoader.loadAnimation("diffuse");
 		entity.doAnimation(animation);
+		entity.setPosition(new Vector3f(2000, 200, 2000));
 		
 		time = 6f;
 
@@ -99,7 +96,27 @@ public class World {
 	public void update() {
 		Engine.getCamera().move();
 
-		entity.update();
+		entity.update(this);
+		
+		float rot = (float)(Math.toRadians(entity.getRotation().y));
+		float mov = 1f;
+		float dx = mov * (float)Math.sin(rot);
+		float dz = mov * (float)Math.cos(rot);
+		
+		if(Keyboard.isKeyDown(Keyboard.KEY_UP)) {
+			entity.increasePosition(dx, 0, dz);
+			Aurora.getCamera().setPosition(entity.getPosition(), 10);
+			
+		}else if(Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
+			entity.increasePosition(-dx, 0, -dz);
+			Aurora.getCamera().setPosition(entity.getPosition(), 10);
+		}
+		
+		if(Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) {
+			entity.increaseRotation(0, -5, 0);
+		}else if(Keyboard.isKeyDown(Keyboard.KEY_LEFT)) {
+			entity.increaseRotation(0, 5, 0);
+		}
 		
 		// Updating the collision determiner arrays.
 		prelimCollisionManager.updateArrays();
@@ -219,7 +236,7 @@ public class World {
 	}
 
 	public void decorate(int chunkX, int chunkZ) {
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 25; i++) {
 			int x = (int) (Math.random() * Terrain.SIZE + chunkX * Terrain.SIZE);
 			int z = (int) (Math.random() * Terrain.SIZE + chunkZ * Terrain.SIZE);
 			float y = this.getTerrainHeightAt(x, z);
