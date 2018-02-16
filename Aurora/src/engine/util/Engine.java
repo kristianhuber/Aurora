@@ -11,6 +11,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.PixelFormat;
 
+import engine.audio.AudioManager;
 import engine.guis.GuiRenderer;
 import engine.guis.font.FontManager;
 import engine.rendering.MasterRenderer;
@@ -91,10 +92,12 @@ public abstract class Engine {
 		} catch (LWJGLException e) {
 			e.printStackTrace();
 		}
+		
+		AudioManager.initialize();
 	}
 
 	/* Start Rendering */
-	private void startRendering(boolean wireframes) {		
+	private void startRendering(boolean wireframes) {
 		MasterRenderer.initialize(wireframes);
 		FontManager.initialize();
 		GuiRenderer.initalize();
@@ -138,6 +141,7 @@ public abstract class Engine {
 	private void cleanUp() {
 		MasterRenderer.cleanUp();
 		TextureManager.cleanUp();
+		AudioManager.cleanUp();
 		ModelManager.cleanUp();
 		GuiRenderer.cleanUp();
 		FontManager.cleanUp();
@@ -165,6 +169,7 @@ public abstract class Engine {
 		if(renderWorld == null) {
 			world = new World(this, testWorld);
 			camera = new Camera(world);	
+			camera.followEntity(world.entity);
 			renderWorld = new RenderWorld(world);
 		}
 		this.setRenderMode(renderWorld);

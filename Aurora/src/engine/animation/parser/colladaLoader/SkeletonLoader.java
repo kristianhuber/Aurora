@@ -9,7 +9,6 @@ import org.lwjgl.util.vector.Vector3f;
 
 import engine.animation.parser.dataStructures.JointData;
 import engine.animation.parser.dataStructures.SkeletonData;
-import engine.animation.parser.xmlParser.XmlNode;
 
 public class SkeletonLoader {
 

@@ -52,7 +52,7 @@ public class ChunkLoader extends Thread {
 		// Runs until the window is closed (keep in mind even running in the background)
 		while (engine.isRunning()) {
 			try {
-				Thread.sleep(10);
+				Thread.sleep(1);
 			}catch(Exception e) {
 				System.err.println("[Console]: Thread Sleep Error");
 			}

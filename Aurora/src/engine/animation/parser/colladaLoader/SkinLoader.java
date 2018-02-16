@@ -5,7 +5,6 @@ import java.util.List;
 
 import engine.animation.parser.dataStructures.SkinningData;
 import engine.animation.parser.dataStructures.VertexSkinData;
-import engine.animation.parser.xmlParser.XmlNode;
 
 public class SkinLoader {
 

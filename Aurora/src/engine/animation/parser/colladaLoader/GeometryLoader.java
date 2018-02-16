@@ -11,7 +11,6 @@ import org.lwjgl.util.vector.Vector4f;
 import engine.animation.parser.dataStructures.MeshData;
 import engine.animation.parser.dataStructures.Vertex;
 import engine.animation.parser.dataStructures.VertexSkinData;
-import engine.animation.parser.xmlParser.XmlNode;
 
 /**
  * Loads the mesh data for a model from a collada XML file.

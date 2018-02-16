@@ -3,9 +3,8 @@ package engine.animation.animatedModel;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
-import engine.animation.animation.Animation;
 import engine.animation.animation.Animator;
-import engine.rendering.models.TexturedModel;
+import engine.rendering.models.AnimationManager;
 import engine.world.World;
 
 /**
@@ -126,8 +125,8 @@ public class AnimatedModel {
 	 * @param animation
 	 *            - the animation to be carried out.
 	 */
-	public void doAnimation(Animation animation) {
-		animator.doAnimation(animation);
+	public void doAnimation(String animationName) {
+		animator.doAnimation(AnimationManager.getAnimation(animationName));
 	}
 
 	/**

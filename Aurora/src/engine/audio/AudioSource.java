@@ -18,6 +18,8 @@ public class AudioSource {
 		
 		//Sound isn't played after this distance
 		AL10.alSourcef(sourceID, AL10.AL_MAX_DISTANCE, 15);
+		
+		AudioManager.registerSource(this, sourceID);
 	}
 
 	public void play(int buffer) {
@@ -27,8 +29,7 @@ public class AudioSource {
 	}
 
 	public void delete() {
-		stop();
-		AL10.alDeleteSources(sourceID);
+		AudioManager.deleteSource(this, sourceID);
 	}
 
 	public void pause() {

@@ -19,15 +19,18 @@ public class Terrain {
 	private float x;
 	private float y;
 	private float z;
-	private ModelData data;
+
+	private int VERTEX_COUNT = 32;
+	private ModelData[] data;
 
 	private float seaLevel;
 
 	private float[][] heights;
-	
+
 	private float lowestHeight;
 
 	public Terrain(int gridX, float y, int gridZ, String texturePack, int seed, float seaLevel) {
+		data = new ModelData[(int) (Math.log(VERTEX_COUNT) / Math.log(2)) - 1];
 		this.texturePack = TextureManager.getTerrainTexturePack(texturePack);
 		this.x = gridX * SIZE;
 		this.y = y;
@@ -37,6 +40,7 @@ public class Terrain {
 	}
 
 	public Terrain(int gridX, float y, int gridZ, String texturePack) {
+		data = new ModelData[1];
 		this.texturePack = TextureManager.getTerrainTexturePack(texturePack);
 		this.x = gridX * SIZE;
 		this.y = y;
@@ -85,15 +89,12 @@ public class Terrain {
 				indices[pointer++] = bottomRight;
 			}
 		}
-		
-		this.data = new ModelData(vertices, textureCoords, normals, indices, 0);
+
+		this.data[0] = new ModelData(vertices, textureCoords, normals, indices, 0);
 	}
 
 	private void generateTerrain(int seed) {
-		lowestHeight = -999;
-		
-		// Test Comment
-		int VERTEX_COUNT = 32;
+
 		HeightsGenerator generator = new HeightsGenerator((int) (x / SIZE), (int) (z / SIZE), VERTEX_COUNT, seed,
 				AMPLITUDE);
 		heights = new float[VERTEX_COUNT][VERTEX_COUNT];
@@ -104,26 +105,49 @@ public class Terrain {
 		float[] textureCoords = new float[count * 2];
 		int[] indices = new int[6 * (VERTEX_COUNT - 1) * (VERTEX_COUNT - 1)];
 
+		float[] v16 = new float[count * 3 / 2];
+		float[] n16 = new float[count * 3 / 2];
+		float[] t16 = new float[count * 2 / 2];
+		int[] i16 = new int[3 * (VERTEX_COUNT - 1) * (VERTEX_COUNT - 1)];
+
 		int vertexPointer = 0;
+		int pointer16 = 0;
 		for (int i = 0; i < VERTEX_COUNT; i++) {
 			for (int j = 0; j < VERTEX_COUNT; j++) {
+
 				vertices[vertexPointer * 3] = (float) j / ((float) VERTEX_COUNT - 1) * SIZE;
 				float height = getHeight(j, i, generator);
 				heights[j][i] = height;
-				if(lowestHeight == -999 || height < lowestHeight) {
-					lowestHeight = height;
-				}
 				vertices[vertexPointer * 3 + 1] = height;
 				vertices[vertexPointer * 3 + 2] = (float) i / ((float) VERTEX_COUNT - 1) * SIZE;
+
 				Vector3f normal = calculateNormal(j, i, generator);
 				normals[vertexPointer * 3] = normal.x;
 				normals[vertexPointer * 3 + 1] = normal.y;
 				normals[vertexPointer * 3 + 2] = normal.z;
+
 				textureCoords[vertexPointer * 2] = (float) j / ((float) VERTEX_COUNT - 1);
 				textureCoords[vertexPointer * 2 + 1] = (float) i / ((float) VERTEX_COUNT - 1);
+
+				if (vertexPointer % 2 == 0) {
+					v16[pointer16 * 3] = vertices[vertexPointer * 3];
+					v16[pointer16 * 3 + 1] = vertices[vertexPointer * 3 + 1];
+					v16[pointer16 * 3 + 2] = vertices[vertexPointer * 3 + 2];
+
+					n16[pointer16 * 3] = normals[vertexPointer * 3];
+					n16[pointer16 * 3 + 1] = normals[vertexPointer * 3 + 1];
+					n16[pointer16 * 3 + 2] = normals[vertexPointer * 3 + 2];
+
+					t16[pointer16 * 2] = textureCoords[vertexPointer * 2];
+					t16[pointer16 * 2 + 1] = textureCoords[vertexPointer * 2 + 1];
+
+					pointer16++;
+				}
+
 				vertexPointer++;
 			}
 		}
+
 		int pointer = 0;
 		for (int gz = 0; gz < VERTEX_COUNT - 1; gz++) {
 			for (int gx = 0; gx < VERTEX_COUNT - 1; gx++) {
@@ -139,8 +163,27 @@ public class Terrain {
 				indices[pointer++] = bottomRight;
 			}
 		}
-		
-		this.data = new ModelData(vertices, textureCoords, normals, indices, 0);
+
+		pointer = 0;
+		for (int gz = 0; gz < VERTEX_COUNT - 1; gz += 2) {
+			for (int gx = 0; gx < VERTEX_COUNT - 1; gx += 2) {
+				
+				int topLeft = (gz * VERTEX_COUNT) + gx;
+				int topRight = topLeft + 2;
+				int bottomLeft = ((gz + 2) * VERTEX_COUNT) + gx;
+				int bottomRight = bottomLeft + 2;
+
+				i16[pointer++] = topLeft;
+				i16[pointer++] = bottomLeft;
+				i16[pointer++] = topRight;
+				i16[pointer++] = topRight;
+				i16[pointer++] = bottomLeft;
+				i16[pointer++] = bottomRight;
+			}
+		}
+
+		this.data[0] = new ModelData(vertices, textureCoords, normals, indices, 0);
+		this.data[1] = new ModelData(v16, t16, n16, i16, 0);
 	}
 
 	private Vector3f calculateNormal(int x, int z, HeightsGenerator generator) {
@@ -150,7 +193,7 @@ public class Terrain {
 		float heightU = getHeight(x, z + 1, generator);
 		Vector3f normal = new Vector3f(heightL - heightR, 2f, heightD - heightU);
 		normal.normalise();
-		
+
 		return normal;
 	}
 
@@ -186,15 +229,15 @@ public class Terrain {
 		}
 		return answer + y;
 	}
-	
+
 	public ModelData getData() {
-		return data;
+		return data[0];
 	}
-	
+
 	public void setModel(RawModel model) {
 		this.model = model;
 	}
-	
+
 	public float getLowestHeight() {
 		return lowestHeight;
 	}

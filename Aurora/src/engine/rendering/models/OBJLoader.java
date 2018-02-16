@@ -18,6 +18,7 @@ import org.lwjgl.util.vector.Vector3f;
  */
 
 public class OBJLoader {
+	
 	/* Loads an OBJ model given the file name */
 	public static ModelData loadOBJ(String ID) {
 

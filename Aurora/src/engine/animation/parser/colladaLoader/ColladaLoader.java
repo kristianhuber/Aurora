@@ -5,8 +5,6 @@ import engine.animation.parser.dataStructures.AnimationData;
 import engine.animation.parser.dataStructures.MeshData;
 import engine.animation.parser.dataStructures.SkeletonData;
 import engine.animation.parser.dataStructures.SkinningData;
-import engine.animation.parser.xmlParser.XmlNode;
-import engine.animation.parser.xmlParser.XmlParser;
 
 public class ColladaLoader {
 

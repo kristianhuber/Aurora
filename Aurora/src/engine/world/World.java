@@ -13,9 +13,9 @@ import org.lwjgl.util.vector.Vector3f;
 
 import aurora.main.Aurora;
 import engine.animation.animatedModel.AnimatedModel;
-import engine.animation.animation.Animation;
-import engine.animation.loaders.AnimationLoader;
-import engine.rendering.models.ModelManager;
+import engine.audio.AudioManager;
+import engine.audio.AudioSource;
+import engine.rendering.models.AnimationManager;
 import engine.rendering.models.TexturedModel;
 import engine.util.Calculator;
 import engine.util.Engine;
@@ -34,7 +34,7 @@ public class World {
 	public static final float SUN_DISTANCE = 10000;
 	public static final int WORLD_SIZE = 32;
 
-	public static final int RENDER_DISTANCE = 5;
+	public static final int RENDER_DISTANCE = 4;
 
 	private ChunkLoader loader;
 
@@ -51,8 +51,8 @@ public class World {
 	private boolean testWorld;
 	private List<Entity> queued;
 
-	public AnimatedModel entity, entity2, entity3, entity4;
-	private Animation animation;
+	public AnimatedModel entity;
+	private AudioSource birds;
 	
 	public World(Engine engine, boolean testWorld) {
 
@@ -73,10 +73,14 @@ public class World {
 				new Vector3f(World.WORLD_SIZE * Terrain.SIZE / 2, 400, World.WORLD_SIZE * Terrain.SIZE / 2));
 		this.addEntity(l);
 
-		entity = ModelManager.loadToVAO("diffuse");
-		animation = AnimationLoader.loadAnimation("diffuse");
-		entity.doAnimation(animation);
+		entity = AnimationManager.getAnimatedModel("diffuse");
+		entity.doAnimation("diffuse");
 		entity.setPosition(new Vector3f(2000, 200, 2000));
+		
+		birds = new AudioSource();
+		birds.setLooping(true);
+		//birds.play(AudioManager.getSound("birds006"));
+		birds.setPosition(WORLD_SIZE  * Terrain.SIZE / 2, 400, World.WORLD_SIZE * Terrain.SIZE / 2);
 		
 		time = 6f;
 
@@ -95,26 +99,29 @@ public class World {
 
 	public void update() {
 		Engine.getCamera().move();
+		AudioManager.setListenerData(Engine.getCamera().getPosition());
 
 		entity.update(this);
 		
 		float rot = (float)(Math.toRadians(entity.getRotation().y));
 		float mov = 1f;
+		
+		if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+			mov *= 1.5f;
+		}
+		
 		float dx = mov * (float)Math.sin(rot);
 		float dz = mov * (float)Math.cos(rot);
 		
-		if(Keyboard.isKeyDown(Keyboard.KEY_UP)) {
+		if(Keyboard.isKeyDown(Keyboard.KEY_W)) {
 			entity.increasePosition(dx, 0, dz);
-			Aurora.getCamera().setPosition(entity.getPosition(), 10);
-			
-		}else if(Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
+		}else if(Keyboard.isKeyDown(Keyboard.KEY_S)) {
 			entity.increasePosition(-dx, 0, -dz);
-			Aurora.getCamera().setPosition(entity.getPosition(), 10);
 		}
 		
-		if(Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) {
+		if(Keyboard.isKeyDown(Keyboard.KEY_D)) {
 			entity.increaseRotation(0, -5, 0);
-		}else if(Keyboard.isKeyDown(Keyboard.KEY_LEFT)) {
+		}else if(Keyboard.isKeyDown(Keyboard.KEY_A)) {
 			entity.increaseRotation(0, 5, 0);
 		}
 		

@@ -14,32 +14,25 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL33;
 
-import engine.animation.animatedModel.AnimatedModel;
-import engine.animation.animatedModel.Joint;
-import engine.animation.parser.colladaLoader.ColladaLoader;
-import engine.animation.parser.dataStructures.AnimatedModelData;
-import engine.animation.parser.dataStructures.JointData;
-import engine.animation.parser.dataStructures.MeshData;
-import engine.animation.parser.dataStructures.SkeletonData;
 import engine.rendering.textures.TextureManager;
 
 /**
- * @Description: Holds all of the models and their data
+ * @Description: Holds all of the staticModels and their data
  * 
  */
 
 public class ModelManager {
-	private static HashMap<String, RawModel> models = new HashMap<String, RawModel>();
-	private static List<Integer> VAOs = new ArrayList<Integer>();
-	private static List<Integer> VBOs = new ArrayList<Integer>();
+	protected static HashMap<String, RawModel> staticModels = new HashMap<String, RawModel>();
+	protected static List<Integer> VAOs = new ArrayList<Integer>();
+	protected static List<Integer> VBOs = new ArrayList<Integer>();
 
 	/* Returns a model in the engine */
 	public static RawModel getModel(String ID) {
-		return ModelManager.models.get(ID);
+		return ModelManager.staticModels.get(ID);
 	}
 
 	/**
-	 * Loads a texture and raw model with the given id from res/texturedModels
+	 * Loads a texture and raw model with the given id from res/texturedstaticModels
 	 * 
 	 * @param ID
 	 *            - the ID of the model and texture to load.
@@ -53,7 +46,7 @@ public class ModelManager {
 	public static void loadEntity(String ID) {
 		try {
 			RawModel model = OBJLoader.loadRawModel(ID);
-			ModelManager.models.put(ID, model);
+			ModelManager.staticModels.put(ID, model);
 		} catch (FileNotFoundException e) {
 			System.err.println("[Console]: Error reading model '" + ID + "'");
 		}
@@ -61,9 +54,36 @@ public class ModelManager {
 
 	/* Loads a model given a string and vertices */
 	public static void loadModel(String ID, float[] verts) {
-		ModelManager.models.put(ID, loadToVAO(verts, 2));
+		ModelManager.staticModels.put(ID, loadToVAO(verts, 2));
 	}
+	
+	/* Loads a simple VAO with a certain number of dimensions */
+	public static RawModel loadToVAO(float[] positions, int dimensions) {
 
+		// Creates a VAO, loads the data, then unbinds
+		int vaoID = createVAO();
+		
+		ModelManager.storeDataInAttributeList(0, dimensions, positions);
+		
+		GL30.glBindVertexArray(0);
+
+		return new RawModel(vaoID, positions.length / dimensions);
+	}
+	
+	/* Loads a VAO and returns the ID for it, used in GUIs */
+	public static int loadToVAO(float[] positions, float[] textureCoords) {
+
+		// Creates a VAO, stores data in it, and then unbinds
+		int vaoID = createVAO();
+		
+		ModelManager.storeDataInAttributeList(0, 2, positions);
+		ModelManager.storeDataInAttributeList(1, 2, textureCoords);
+		
+		GL30.glBindVertexArray(0);
+
+		return vaoID;
+	}
+	
 	/* Loads a VAO and returns the rawmodel with the data in it */
 	public static RawModel loadToVAO(float[] positions, float[] textureCoords, float[] normals, int[] indices) {
 
@@ -79,37 +99,6 @@ public class ModelManager {
 		GL30.glBindVertexArray(0);
 
 		return new RawModel(vaoID, indices.length);
-	}
-
-	public static AnimatedModel loadToVAO(String ID) {
-		AnimatedModelData eData = ColladaLoader.loadColladaModel(ID, 3);
-		TextureManager.loadTexture(ID, "animation");
-		
-		MeshData data = eData.getMeshData();
-		
-		int vaoID = createVAO();
-		ModelManager.bindIndicesBuffer(data.getIndices());
-		
-		ModelManager.storeDataInAttributeList(0, 3, data.getVertices());
-		ModelManager.storeDataInAttributeList(1, 2, data.getTextureCoords());
-		ModelManager.storeDataInAttributeList(2, 3, data.getNormals());
-		ModelManager.storeIntDataInAttributeList(3, 3, data.getJointIds());
-		ModelManager.storeDataInAttributeList(4, 3, data.getVertexWeights());
-		
-		GL30.glBindVertexArray(0);
-		
-		SkeletonData skeletonData = eData.getJointsData();
-		Joint headJoint = createJoints(skeletonData.headJoint);
-		
-		return new AnimatedModel(vaoID, eData.getMeshData().getIndices().length, ID, headJoint, skeletonData.jointCount);
-	}
-	
-	private static Joint createJoints(JointData data) {
-		Joint joint = new Joint(data.index, data.nameId, data.bindLocalTransform);
-		for (JointData child : data.children) {
-			joint.addChild(createJoints(child));
-		}
-		return joint;
 	}
 
 	public static RawModel loadToVAO(float[] vertices, float[] normals, float[] textures, int[] indices,
@@ -129,31 +118,8 @@ public class ModelManager {
 		return model;
 	}
 
-	/* Loads a VAO and returns the ID for it, used in GUIs */
-	public static int loadToVAO(float[] positions, float[] textureCoords) {
-
-		// Creates a VAO, stores data in it, and then unbinds
-		int vaoID = createVAO();
-		ModelManager.storeDataInAttributeList(0, 2, positions);
-		ModelManager.storeDataInAttributeList(1, 2, textureCoords);
-		GL30.glBindVertexArray(0);
-
-		return vaoID;
-	}
-
-	/* Loads a simple VAO with a certain number of dimensions */
-	public static RawModel loadToVAO(float[] positions, int dimensions) {
-
-		// Creates a VAO, loads the data, then unbinds
-		int vaoID = createVAO();
-		ModelManager.storeDataInAttributeList(0, dimensions, positions);
-		GL30.glBindVertexArray(0);
-
-		return new RawModel(vaoID, positions.length / dimensions);
-	}
-
 	/* Creates a VAO ID */
-	private static int createVAO() {
+	protected static int createVAO() {
 
 		// Creates a new VAO, registers it, then binds it
 		int vaoID = GL30.glGenVertexArrays();
@@ -170,7 +136,7 @@ public class ModelManager {
 	}
 
 	/* Stores data in a float array buffer */
-	private static void storeDataInAttributeList(int attributeNumber, int coordinateSize, float[] data) {
+	protected static void storeDataInAttributeList(int attributeNumber, int coordinateSize, float[] data) {
 
 		// Creates a VBO and loads it
 		int vboID = GL15.glGenBuffers();
@@ -182,23 +148,6 @@ public class ModelManager {
 		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
 		GL20.glVertexAttribPointer(attributeNumber, coordinateSize, GL11.GL_FLOAT, false, 0, 0);
 
-		// Unbinds the buffer
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-	}
-	
-	/* Stores data in a int array buffer */
-	private static void storeIntDataInAttributeList(int attributeNumber, int coordinateSize, int[] data) {
-
-		// Creates a VBO and loads it
-		int vboID = GL15.glGenBuffers();
-		VBOs.add(vboID);
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboID);
-
-		// Creates the buffer with data in it
-		IntBuffer buffer = storeDataInIntBuffer(data);
-		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
-		GL30.glVertexAttribIPointer(attributeNumber, coordinateSize, GL11.GL_INT, 0, 0);
-		
 		// Unbinds the buffer
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 	}
@@ -215,7 +164,7 @@ public class ModelManager {
 	}
 
 	/* Stores integer data in a VBO */
-	private static void bindIndicesBuffer(int[] indices) {
+	protected static void bindIndicesBuffer(int[] indices) {
 		// Creates a VBO and binds it
 		int vboID = GL15.glGenBuffers();
 		VBOs.add(vboID);
@@ -227,7 +176,7 @@ public class ModelManager {
 	}
 
 	/* Stores integer data in a buffer */
-	private static IntBuffer storeDataInIntBuffer(int[] data) {
+	protected static IntBuffer storeDataInIntBuffer(int[] data) {
 
 		// Creates a buffer and then sets it
 		IntBuffer buffer = BufferUtils.createIntBuffer(data.length);

@@ -10,7 +10,6 @@ import org.lwjgl.util.vector.Vector3f;
 import engine.animation.parser.dataStructures.AnimationData;
 import engine.animation.parser.dataStructures.JointTransformData;
 import engine.animation.parser.dataStructures.KeyFrameData;
-import engine.animation.parser.xmlParser.XmlNode;
 
 public class AnimationLoader {
 	

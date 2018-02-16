@@ -4,29 +4,32 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector3f;
 
+import engine.animation.animatedModel.AnimatedModel;
 import engine.util.Engine;
 import engine.world.World;
-import engine.world.terrain.Terrain;
 
 /**
  * @Description: How the user moves around in the game
  * 
  */
 
-public class Camera{
-
+public class Camera {
 	private final float MOUSE_TOLERANCE = 3.0F;
 	private final float Y_OFFSET = 5F;
 	private final float SCROLL = 100.0F;
 	private float SPEED = 15.0F;
 
 	private Vector3f position = new Vector3f(0, 0, 0);
-	private Vector3f rotation = new Vector3f(0, 0 ,0);
+	private Vector3f rotation = new Vector3f(0, 180, 0);
 	private Vector3f velocity = new Vector3f(0, 0, 0);
 
 	private World world;
 
 	private boolean flying;
+
+	private float distanceFromObject = 25;
+	private float angleAroundObject = 0;
+	private AnimatedModel following = null;
 
 	/* Construction Method */
 	public Camera(World world) {
@@ -34,40 +37,74 @@ public class Camera{
 		this.flying = true;
 		if (flying)
 			SPEED = 15;
-		
-		//this.position.x = World.WORLD_SIZE * Terrain.SIZE / 2;
+
+		// this.position.x = World.WORLD_SIZE * Terrain.SIZE / 2;
 		this.position.x = this.position.z = 2000;
 		this.position.y = 200;
-		//this.position.z = World.WORLD_SIZE * Terrain.SIZE / 2;
+		// this.position.z = World.WORLD_SIZE * Terrain.SIZE / 2;
 	}
 
+	public void followEntity(AnimatedModel e) {
+		this.following = e;
+	}
+	
 	/* Moves the camera around the world */
 	public void move() {
 
 		// Finds out which direction the player wants to move in
-		float delta = Engine.getDelta();
-		this.checkInputs(delta);
+		if (following == null) {
+			float delta = Engine.getDelta();
 
-		if (!flying) {
-			velocity.y = -5;
-		}
+			this.checkInputs(delta);
 
-		// Calculates the change in position based on the velocity and direction
-		this.position.x += velocity.x * Math.cos(Math.toRadians(rotation.y));
-		this.position.x -= velocity.z * Math.sin(Math.toRadians(rotation.y));
-		this.position.y += velocity.y;
-		this.position.z += velocity.x * Math.sin(Math.toRadians(rotation.y));
-		this.position.z += velocity.z * Math.cos(Math.toRadians(rotation.y));
+			if (!flying) {
+				velocity.y = -5;
+			}
 
-		// Updates the velocity
-		velocity.x = this.decelerate(velocity.x, 0.9f);
-		velocity.y = this.decelerate(velocity.y, 0.9f);
-		velocity.z = this.decelerate(velocity.z, 0.9f);
+			// Calculates the change in position based on the velocity and direction
+			this.position.x += velocity.x * Math.cos(Math.toRadians(rotation.y));
+			this.position.x -= velocity.z * Math.sin(Math.toRadians(rotation.y));
+			this.position.y += velocity.y;
+			this.position.z += velocity.x * Math.sin(Math.toRadians(rotation.y));
+			this.position.z += velocity.z * Math.cos(Math.toRadians(rotation.y));
 
-		// Terrain collision detection
-		float height = world.getTerrainHeightAt(position);
-		if (position.y < height + Y_OFFSET) {
-			position.y = height + Y_OFFSET;
+			// Updates the velocity
+			velocity.x = this.decelerate(velocity.x, 0.9f);
+			velocity.y = this.decelerate(velocity.y, 0.9f);
+			velocity.z = this.decelerate(velocity.z, 0.9f);
+
+			// Terrain collision detection
+			float height = world.getTerrainHeightAt(position);
+			if (position.y < height + Y_OFFSET) {
+				position.y = height + Y_OFFSET;
+			}
+		}else {
+			//LOCK ON CODE
+			
+			//Update vars
+			distanceFromObject -= Mouse.getDWheel() * 0.1f;
+			
+			if (Mouse.isButtonDown(1)) {
+				rotation.x -= Mouse.getDY() * 0.1f;
+			}
+			
+			if (Mouse.isButtonDown(0)) {
+				angleAroundObject -= Mouse.getDX() * 0.3f;
+			}
+
+			//Calculate pos
+			float hd = (float) (distanceFromObject * Math.cos(Math.toRadians(rotation.x)));
+			float vd = (float) (distanceFromObject * Math.sin(Math.toRadians(rotation.x)));
+			
+			float theta = following.getRotation().y + angleAroundObject;
+			float xOff = (float) (hd * Math.sin(Math.toRadians(theta)));
+			float zOff = (float) (hd * Math.cos(Math.toRadians(theta)));
+			
+			position.x = following.getPosition().x - xOff;
+			position.y = following.getPosition().y + vd + 10;
+			position.z = following.getPosition().z - zOff;
+			
+			this.rotation.y = 180 - (following.getRotation().y + angleAroundObject);
 		}
 	}
 
@@ -145,11 +182,11 @@ public class Camera{
 		// Resets the cursor position
 		Mouse.setCursorPosition(Engine.WIDTH / 2, Engine.HEIGHT / 2);
 	}
-	
+
 	public void setPosition(Vector3f position, float offset) {
 		this.position.set(position.x - offset, position.y + offset, position.z);
 	}
-	
+
 	public void setPosition(float x, float y, float z) {
 		this.position.set(x, y, z);
 	}
@@ -171,7 +208,7 @@ public class Camera{
 	public Vector3f getPosition() {
 		return position;
 	}
-	
+
 	public Vector3f getRotation() {
 		return rotation;
 	}

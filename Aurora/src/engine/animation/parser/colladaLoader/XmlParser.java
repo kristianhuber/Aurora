@@ -1,4 +1,4 @@
-package engine.animation.parser.xmlParser;
+package engine.animation.parser.colladaLoader;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
