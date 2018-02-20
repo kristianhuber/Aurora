@@ -1,17 +1,16 @@
 package engine.world.entities;
 
-import java.util.Vector;
-
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.Vector4f;
 
+import engine.util.Calculator;
 import engine.util.Engine;
 import engine.world.World;
 import engine.world.entities.collisions.CollisionPacket;
-import engine.world.entities.collisions.DetailedCollisionDetection;
 import engine.world.terrain.Terrain;
-import javafx.geometry.BoundingBox;
 
 /**
  * @Description: How the user moves around in the game
@@ -28,7 +27,7 @@ public class Camera extends Entity {
 
 	private Vector3f keyBasedVelocity = new Vector3f(0, 0, 0);
 	private Vector3f velocity = new Vector3f(0, 0, 0);
-	private final Vector3f GRAVITY = new Vector3f(0, -0.25f, 0);
+	private final Vector3f GRAVITY = new Vector3f(0, -1f, 0);
 	private final Vector3f E_RADIUS_VECTOR = new Vector3f(2, 3, 2);
 	protected int collisionRecursionStep = 0;
 	private static final float VERY_CLOSE_DISTANCE = 0.005f;
@@ -113,12 +112,13 @@ public class Camera extends Entity {
 		Vector3f eSpacePosition = CollisionPacket.getESpaceVector(collisionPacket.R3Position, E_RADIUS_VECTOR);
 		Vector3f eSpaceVelocity = CollisionPacket.getESpaceVector(collisionPacket.R3Velocity, E_RADIUS_VECTOR);
 
-		// Calculating the final position in E3:
-		collisionRecursionStep = 0;
-		finalPosition = collideWithWorld(eSpaceVelocity, eSpacePosition, toCollideWith);
-		// System.out.println("Velocity Move: " + eSpacePosition.toString() + " -> " +
-		// finalPosition.toString() + " | At "
-		// + eSpaceVelocity.toString());
+		if (velocity.lengthSquared() != 0) {
+			// Calculating the final position in E3:
+			System.out.println("Start Velocity");
+			collisionRecursionStep = 0;
+			finalPosition = collideWithWorld(eSpaceVelocity, eSpacePosition, toCollideWith);
+			System.out.println("End Velocity");
+		}
 
 		// Updating the R3 Positions:
 		collisionPacket.foundCollision = false;
@@ -126,12 +126,16 @@ public class Camera extends Entity {
 		// E_RADIUS_VECTOR);
 		collisionPacket.R3Velocity = gravity;
 
+		// System.out.println("Start Gravity");
 		eSpaceVelocity = CollisionPacket.getESpaceVector(gravity, E_RADIUS_VECTOR);
 		eSpacePosition = finalPosition;
-		finalPosition = collideWithWorld(eSpaceVelocity, eSpacePosition, toCollideWith);
+		collisionRecursionStep = 0;
+		// finalPosition = collideWithWorld(eSpaceVelocity, eSpacePosition,
+		// toCollideWith);
 		// System.out.println("Velocity Move: " + collisionPacket.basePoint.toString() +
 		// " -> " + finalPosition.toString() + " | At "
 		// + gravity.toString());
+		// System.out.println("End Gravity");
 
 		finalPosition = CollisionPacket.getRSpaceVector(finalPosition, E_RADIUS_VECTOR);
 		finalPosition.setY(finalPosition.getY() - E_RADIUS_VECTOR.getY());
@@ -151,8 +155,10 @@ public class Camera extends Entity {
 	 * @return the new position of the entity.
 	 */
 	private Vector3f collideWithWorld(Vector3f vel, Vector3f pos, Entity[] toCollideWith) {
-		if (collisionRecursionStep > 5)
+		if (collisionRecursionStep > 5) {
+			System.out.println("Hard Return: " + pos.toString());
 			return pos;
+		}
 
 		collisionPacket.velocity = new Vector3f(vel);
 		collisionPacket.normalizedVelocity = new Vector3f(vel);
@@ -167,6 +173,8 @@ public class Camera extends Entity {
 			float[] normals = toCollideWith[n].getModel().getRawModel().getModelData().getNormals();
 			int[] indices = toCollideWith[n].getModel().getRawModel().getModelData().getIndices();
 
+			Matrix4f transMatrix = toCollideWith[n].getTransformationMatrix();
+
 			for (int i = 0; i < indices.length / 3; i++) {
 				// Getting the vectors that represent the three points of the triangle in
 				// question.
@@ -177,35 +185,75 @@ public class Camera extends Entity {
 				Vector3f c = new Vector3f(vertices[indices[i * 3 + 2]], vertices[indices[i * 3 + 2] + 1],
 						vertices[indices[i * 3 + 2] + 2]);
 
+				Vector4f temp = Matrix4f.transform(transMatrix, new Vector4f(a.getX(), a.getY(), a.getZ(), 1f), null);
+				a = new Vector3f(temp.getX(), temp.getY(), temp.getZ());
+				temp = Matrix4f.transform(transMatrix, new Vector4f(b.getX(), b.getY(), b.getZ(), 1f), null);
+				b = new Vector3f(temp.getX(), temp.getY(), temp.getZ());
+				temp = Matrix4f.transform(transMatrix, new Vector4f(c.getX(), c.getY(), c.getZ(), 1f), null);
+				c = new Vector3f(temp.getX(), temp.getY(), temp.getZ());
+				System.out.println(i + ": " + a.toString() + "; " + b.toString() + "; " + c.toString());
+
 				// Getting the normal vectors for the points.
 				Vector3f aNormal = new Vector3f(normals[indices[i * 3]], normals[indices[i * 3] + 1],
 						normals[indices[i * 3] + 2]);
+				temp = Matrix4f.transform(transMatrix, new Vector4f(aNormal.getX(), aNormal.getY(), aNormal.getZ(), 1f),
+						null);
+				aNormal = new Vector3f(temp.getX(), temp.getY(), temp.getZ());
+
 				Vector3f bNormal = new Vector3f(normals[indices[i * 3 + 1]], normals[indices[i * 3 + 1] + 1],
 						normals[indices[i * 3 + 1] + 2]);
+				temp = Matrix4f.transform(transMatrix, new Vector4f(bNormal.getX(), bNormal.getY(), bNormal.getZ(), 1f),
+						null);
+				bNormal = new Vector3f(temp.getX(), temp.getY(), temp.getZ());
+
 				Vector3f cNormal = new Vector3f(normals[indices[i * 3 + 2]], normals[indices[i * 3 + 2] + 1],
 						normals[indices[i * 3 + 2] + 2]);
+				temp = Matrix4f.transform(transMatrix, new Vector4f(cNormal.getX(), cNormal.getY(), cNormal.getZ(), 1f),
+						null);
+				cNormal = new Vector3f(temp.getX(), temp.getY(), temp.getZ());
+				
+				for (int l = 0; l < 3; l++)
+					System.out.print(normals[indices[i * 3] + l] + ", ");
+				System.out.println();
+				for (int l = 0; l < 3; l++)
+					System.out.print(normals[indices[i * 3 + 1] + l] + ", ");
+				System.out.println();
+				for (int l = 0; l < 3; l++)
+					System.out.print(normals[indices[i * 3 + 2] + l] + ", ");
+				System.out.println();
+				
+				Vector3f rawNormal = new Vector3f(
+						(normals[indices[i * 3]] + normals[indices[i * 3 + 1]] + normals[indices[i * 3 + 2]]) / 3f,
+						(normals[indices[i * 3] + 1] + normals[indices[i * 3 + 1] + 1] + normals[indices[i * 3 + 2] + 1]) / 3f,
+						(normals[indices[i * 3] + 2] + normals[indices[i * 3 + 1] + 2] + normals[indices[i * 3 + 2] + 2]) / 3f);
 
-				Vector3f planeNormal = new Vector3f((aNormal.getX() + bNormal.getX() + cNormal.getX()) / 3f,
+				Vector3f planeNormalSide = new Vector3f((aNormal.getX() + bNormal.getX() + cNormal.getX()) / 3f,
 						(aNormal.getY() + bNormal.getY() + cNormal.getY()) / 3f,
 						(aNormal.getZ() + bNormal.getZ() + cNormal.getZ()) / 3f);
+				Vector3f planeNormal = Vector3f.cross(Vector3f.sub(b, a, null), Vector3f.sub(c, a, null), null);
+				if (Vector3f.dot(planeNormalSide, planeNormal) < 0)
+					planeNormal.negate();
 
-				CollisionPacket.checkTriangle(collisionPacket, a, b, c, planeNormal);
+				if (planeNormal.lengthSquared() != 0) {
+					planeNormal.normalise();
+					System.out.println("Raw Normal: " + rawNormal.toString());
+					CollisionPacket.checkTriangle(collisionPacket, a, b, c, planeNormal);
+				}
 			}
 		}
 
 		// If there was no collision:
 		if (!collisionPacket.foundCollision) {
 			return Vector3f.add(pos, vel, null);
-		} else {
-			System.out.println("Collision Found! Step: " + collisionRecursionStep);
 		}
 
+		System.out.println("COLLISION Found! Step: " + collisionRecursionStep);
+
 		Vector3f destinationPoint = Vector3f.add(pos, vel, null);
-		Vector3f newBasePoint = pos;
+		Vector3f newBasePoint = new Vector3f(pos);
 
 		if (collisionPacket.nearestDistance >= VERY_CLOSE_DISTANCE) {
 			Vector3f v = new Vector3f(vel);
-			v.normalise();
 			v = CollisionPacket.scaleVector(v, (float) (collisionPacket.nearestDistance - VERY_CLOSE_DISTANCE));
 			newBasePoint = Vector3f.add(v, collisionPacket.basePoint, null);
 
@@ -217,8 +265,11 @@ public class Camera extends Entity {
 		}
 
 		// Determining the sliding plane:
-		Vector3f slidePlaneOrigin = collisionPacket.intersectionPoint;
+		System.out.println("Collision Point: " + collisionPacket.intersectionPoint.toString());
+		System.out.println("New Base Point: " + newBasePoint.toString());
+		Vector3f slidePlaneOrigin = new Vector3f(collisionPacket.intersectionPoint);
 		Vector3f slidePlaneNormal = Vector3f.sub(newBasePoint, collisionPacket.intersectionPoint, null);
+		System.out.println("Sliding plane Normal non normalized: " + slidePlaneNormal.toString());
 		slidePlaneNormal.normalise();
 		System.out.println("Sliding plane Normal: " + slidePlaneNormal.toString());
 

@@ -1,10 +1,6 @@
 package engine.world.entities.collisions;
 
-import javax.sql.rowset.spi.TransactionalWriter;
-
 import org.lwjgl.util.vector.Vector3f;
-
-import com.sun.xml.internal.ws.dump.LoggingDumpTube.Position;
 
 public class CollisionPacket {
 
@@ -21,7 +17,7 @@ public class CollisionPacket {
 
 	// Hit information
 	public boolean foundCollision;
-	public double nearestDistance;
+	public double nearestDistance = Double.MAX_VALUE;
 	public Vector3f intersectionPoint;
 
 	public CollisionPacket(Vector3f eRadius, Vector3f r3Velocity, Vector3f r3Position) {
@@ -33,10 +29,14 @@ public class CollisionPacket {
 		this.basePoint = getESpaceVector(R3Position, eRadius);
 	}
 
-	public static void checkTriangle(CollisionPacket packet, Vector3f R3_a, Vector3f R3_b, Vector3f R3_c, Vector3f R3_planeNormal) {
-		
-		TrianglePlane triangle = new TrianglePlane(getESpaceVector(R3_a, packet.eRadius), getESpaceVector(R3_b, packet.eRadius), getESpaceVector(R3_c, packet.eRadius),
+	public static void checkTriangle(CollisionPacket packet, Vector3f R3_a, Vector3f R3_b, Vector3f R3_c,
+			Vector3f R3_planeNormal) {
+
+		TrianglePlane triangle = new TrianglePlane(getESpaceVector(R3_a, packet.eRadius),
+				getESpaceVector(R3_b, packet.eRadius), getESpaceVector(R3_c, packet.eRadius),
 				getESpaceVector(R3_planeNormal, packet.eRadius));
+
+		System.out.println("Triangle Normal: " + R3_planeNormal.toString());
 
 		if (triangle.isFrontFacingTo(packet.normalizedVelocity)) {
 
@@ -53,9 +53,12 @@ public class CollisionPacket {
 				if (Math.abs(signedDistanceToTrianglePlane) >= 1.0) {
 					// Then there can be no collision with this plane because the velocity vector is
 					// parallel to the plane and it is too far away.
+					System.out.println("No collision because plane is parallel to motion and too far away");
 					return;
 				} else {
 					// Then the plane is embedded in the sphere.
+					System.out.println("Embedded in the plane, so only do edge and vertex test");
+					System.out.println(triangle.planeNormal.toString() + " | " + packet.velocity.toString());
 					embeddedInPlane = true;
 					t0 = 0.0;
 					t1 = 1.0;
@@ -75,6 +78,7 @@ public class CollisionPacket {
 				// make sure at lease one result is within 0 and 1:
 				if (t0 > 1.0 || t1 < 0.0) {
 					// No collisions are possible because it won't contact the plane any time soon.
+					System.out.println("No Collision because plane is too far away");
 					return;
 				}
 
@@ -95,16 +99,20 @@ public class CollisionPacket {
 
 			// Checking to see if the sphere collides with the face of the triangle:
 			if (!embeddedInPlane) {
-				Vector3f planeIntersectionPoint = Vector3f.add(Vector3f.sub(packet.basePoint, triangle.planeNormal, null),
+				Vector3f planeIntersectionPoint = Vector3f.add(
+						Vector3f.sub(packet.basePoint, triangle.planeNormal, null),
 						scaleVector(packet.velocity, (float) t0), null);
+				System.out.print("Collision with triangle plane........");
 
 				if (triangle.isInsideTriangle(planeIntersectionPoint)) {
 					// Then there is a collision with the face of the plane because the collision
 					// point is inside the triangle:
+					System.out.print("Collision with triangle face");
 					foundCollision = true;
 					t = (float) t0;
 					collisionPoint = planeIntersectionPoint;
 				}
+				System.out.println();
 			}
 
 			// If there is no collision already, then we have to do the sweep test for the
@@ -230,13 +238,18 @@ public class CollisionPacket {
 			// their proper values.
 			if (foundCollision) {
 				float distToCollision = t * packet.velocity.length();
+				System.out.print("Collision Found, Distance = " + distToCollision);
 				if (!packet.foundCollision || distToCollision < packet.nearestDistance) {
+					System.out.println(" new smallest Distance.");
 					packet.nearestDistance = distToCollision;
 					packet.foundCollision = true;
 					packet.intersectionPoint = collisionPoint;
-				}
-			}
-		}
+				} else
+					System.out.println();
+			} else
+				System.out.println("No Collision");
+		} else
+			System.out.println("Not front facing to: " + packet.normalizedVelocity.toString());
 	}
 
 	public static Double solveGetSmallestQuadraticSolution(double a, double b, double c, double maxSolution) {
@@ -266,14 +279,16 @@ public class CollisionPacket {
 		return new Vector3f(R3Vector.getX() / eRadius.getX(), R3Vector.getY() / eRadius.getY(),
 				R3Vector.getZ() / eRadius.getZ());
 	}
-	
+
 	public static Vector3f getRSpaceVector(Vector3f E3Vector, Vector3f eRadius) {
 		return new Vector3f(E3Vector.getX() * eRadius.getX(), E3Vector.getY() * eRadius.getY(),
 				E3Vector.getZ() * eRadius.getZ());
 	}
 
 	public static Vector3f scaleVector(Vector3f toScale, float scaler) {
-		return new Vector3f(toScale.getX() * scaler, toScale.getY() * scaler, toScale.getZ() * scaler);
+		Vector3f v = new Vector3f(toScale);
+		v.normalise();
+		return new Vector3f(v.getX() * scaler, v.getY() * scaler, v.getZ() * scaler);
 	}
 
 	public boolean foundCollision() {

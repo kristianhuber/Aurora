@@ -40,7 +40,12 @@ public class TrianglePlane {
 		return Vector3f.dot(planeNormal, point) + planeConstant;
 	}
 	
+	public String toString() {
+		return "TrianglePlane=<" + a.toString() + ";"  + b.toString() + ";" + c.toString() + ">";
+	}
+	
 	public boolean isInsideTriangle(Vector3f p) {
+		System.out.println("Point: " + p.toString() + " " + this.toString());
 		return sameSide(p, a, b, c) && sameSide(p, b, a, c) && sameSide(p, c, a, b);
 	}
 
