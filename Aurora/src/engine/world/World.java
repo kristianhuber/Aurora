@@ -56,8 +56,8 @@ public class World {
 
 		seed = new Random().nextInt(10000000);
 
-		Entity l = new Entity(this, "box",
-				new Vector3f(World.WORLD_SIZE * Terrain.SIZE / 2 + 20, 5, World.WORLD_SIZE * Terrain.SIZE / 2 + 10));
+		Entity l = new Entity(this, "cube",
+				new Vector3f(World.WORLD_SIZE * Terrain.SIZE / 2 + 20, 10, World.WORLD_SIZE * Terrain.SIZE / 2 + 10));
 		l.setScale(10);
 		this.addEntity(l);
 
@@ -208,6 +208,13 @@ public class World {
 
 	public void addLight(Light light) {
 		lights.add(light);
+	}
+
+	public List<Entity> getAllEntities(String identifier) {
+		TexturedModel tm = new Entity(this, identifier, new Vector3f()).getModel();
+		synchronized (entities) {
+			return entities.get(tm);
+		}
 	}
 
 	public void addEntity(Entity entity) {

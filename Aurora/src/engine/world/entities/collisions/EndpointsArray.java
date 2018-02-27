@@ -242,11 +242,11 @@ public class EndpointsArray {
 	 */
 	public Entity[] getBoxCollisions(Entity e) {
 		updateAABB(e.getBoundingBox());
-		// System.out.println(Arrays.toString(x_endpoints));
-		// System.out.println(Arrays.toString(y_endpoints));
-		// System.out.println(Arrays.toString(z_endpoints));
-		// System.out.println(pairManager.toString());
-		return pairManager.getCollidingEntities(e);
+		List<Entity> allEntities = new ArrayList<Entity>();
+		for (int i = 0; i < x_endpoints.length; i++)
+			if (e != x_endpoints[i].getParentBox().getParentEntity() && !allEntities.contains(x_endpoints[i]))
+				allEntities.add(x_endpoints[i].getParentBox().getParentEntity());
+		return (Entity[]) allEntities.toArray();
 	}
 
 	private Entity[] getOverlappingEntities(endpointAxis axis, Endpoint e1, Endpoint e2) {
