@@ -13,9 +13,9 @@ import org.lwjgl.util.vector.Vector3f;
 
 import aurora.main.Aurora;
 import engine.animation.animatedModel.AnimatedModel;
+import engine.animation.loaders.AnimationManager;
 import engine.audio.AudioManager;
 import engine.audio.AudioSource;
-import engine.rendering.models.AnimationManager;
 import engine.rendering.models.TexturedModel;
 import engine.util.Calculator;
 import engine.util.Engine;
@@ -73,8 +73,8 @@ public class World {
 				new Vector3f(World.WORLD_SIZE * Terrain.SIZE / 2, 400, World.WORLD_SIZE * Terrain.SIZE / 2));
 		this.addEntity(l);
 
-		entity = AnimationManager.getAnimatedModel("diffuse");
-		entity.doAnimation("diffuse");
+		entity = AnimationManager.getAnimatedModel("player");
+		entity.doAnimation("run");
 		entity.setPosition(new Vector3f(2000, 200, 2000));
 		
 		birds = new AudioSource();

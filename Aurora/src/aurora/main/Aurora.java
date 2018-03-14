@@ -4,10 +4,10 @@ import org.lwjgl.input.Keyboard;
 
 import aurora.menus.RenderMainMenu;
 import aurora.menus.RenderSettingsScreen;
+import engine.animation.loaders.AnimationManager;
 import engine.audio.AudioManager;
 import engine.guis.font.FontManager;
 import engine.rendering.RenderMode;
-import engine.rendering.models.AnimationManager;
 import engine.rendering.models.ModelManager;
 import engine.rendering.textures.TextureManager;
 import engine.util.Engine;
@@ -76,8 +76,8 @@ public class Aurora extends Engine {
 		ModelManager.loadTexturedModel("betterpine");
 
 		TextureManager.loadTexture("diffuse", "animation");
-		AnimationManager.loadAnimatedModel("diffuse");
-		AnimationManager.loadAnimation("diffuse");
+		AnimationManager.loadAnimatedModel("player", "diffuse");
+		AnimationManager.loadAnimation("run");
 		
 		AudioManager.loadSound("birds006");
 		

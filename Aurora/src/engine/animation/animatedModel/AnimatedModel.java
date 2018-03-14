@@ -4,7 +4,7 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
 import engine.animation.animation.Animator;
-import engine.rendering.models.AnimationManager;
+import engine.animation.loaders.AnimationManager;
 import engine.world.World;
 
 /**

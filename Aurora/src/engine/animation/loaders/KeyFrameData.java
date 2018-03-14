@@ -1,4 +1,4 @@
-package engine.animation.parser.dataStructures;
+package engine.animation.loaders;
 
 import java.util.ArrayList;
 import java.util.List;
