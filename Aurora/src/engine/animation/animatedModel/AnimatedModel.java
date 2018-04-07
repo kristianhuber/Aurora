@@ -4,6 +4,7 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
 import engine.animation.animation.Animator;
+import engine.animation.animation.KeyFrame;
 import engine.animation.loaders.AnimationManager;
 import engine.world.World;
 
@@ -25,8 +26,8 @@ public class AnimatedModel {
 	private final Joint rootJoint;
 	private final int jointCount;
 
-	private final Animator animator;
-
+	private final Animator animator;	
+	
 	private Vector3f position, rotation;
 	private String texture;
 	private int vao, vert;
@@ -128,6 +129,7 @@ public class AnimatedModel {
 	public void doAnimation(String animationName) {
 		animator.doAnimation(AnimationManager.getAnimation(animationName));
 	}
+
 
 	/**
 	 * Updates the animator for this entity, basically updating the animated

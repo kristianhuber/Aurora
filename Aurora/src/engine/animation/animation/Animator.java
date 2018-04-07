@@ -37,8 +37,9 @@ public class Animator {
 
 	private Animation currentAnimation;
 	private float animationTime = 0;
-
-	private boolean looping = true;
+	private Map<String, Matrix4f> restPose;
+	
+	private boolean looping = false;
 	private boolean updating = true;
 
 	/**
@@ -47,6 +48,34 @@ public class Animator {
 	 */
 	public Animator(AnimatedModel entity) {
 		this.entity = entity;
+		
+		Matrix4f i = new Matrix4f();
+		i.m00 = 1;
+		i.m01 = 0;
+		i.m02 = 0;
+		i.m03 = 0;
+		i.m10 = 0;
+		i.m11 = 1;
+		i.m12 = 0;
+		i.m13 = 0;
+		i.m20 = 0;
+		i.m21 = 0;
+		i.m22 = 1;
+		i.m23 = 0;
+		i.m30 = 0;
+		i.m31 = 0;
+		i.m32 = 0;
+		i.m33 = 1;
+		
+		restPose = new HashMap<String, Matrix4f>();
+		populateResting(entity.getRootJoint(), i);
+	}
+	
+	private void populateResting(Joint j, Matrix4f i){
+		restPose.put(j.name, i);
+		for(Joint child : j.children){
+			populateResting(child, i);
+		}
 	}
 
 	/**
@@ -74,9 +103,11 @@ public class Animator {
 		}
 		if (updating) {
 			increaseAnimationTime();
+			Map<String, Matrix4f> currentPose = calculateCurrentAnimationPose();
+			applyPoseToJoints(currentPose, entity.getRootJoint(), new Matrix4f());
+		}else{
+			applyPoseToJoints(restPose, entity.getRootJoint(), new Matrix4f());
 		}
-		Map<String, Matrix4f> currentPose = calculateCurrentAnimationPose();
-		applyPoseToJoints(currentPose, entity.getRootJoint(), new Matrix4f());
 	}
 
 	/**

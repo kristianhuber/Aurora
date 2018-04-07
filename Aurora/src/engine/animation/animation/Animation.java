@@ -16,7 +16,7 @@ public class Animation {
 
 	private final float length;//in seconds
 	private final KeyFrame[] keyFrames;
-
+	
 	/**
 	 * @param lengthInSeconds
 	 *            - the total length of the animation in seconds.
