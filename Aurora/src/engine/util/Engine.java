@@ -169,7 +169,7 @@ public abstract class Engine {
 		if(renderWorld == null) {
 			world = new World(this, testWorld);
 			camera = new Camera(world);	
-			camera.followEntity(world.entity);
+			//camera.followEntity(world.entity);
 			renderWorld = new RenderWorld(world);
 		}
 		this.setRenderMode(renderWorld);

@@ -1,5 +1,11 @@
 Weekly Tasks:
 
+Greg: Narrow Phase, Entities in chunk
+Kristian: - Redo animation and entities
+              - Collada Files
+              - Terrain LOD (ROAM)
+              - Erode Perlin Nose
+
 To Do :
 
 	Notes:
@@ -15,8 +21,6 @@ To Do :
 			•	Load resources from a res folder now. Need to be able to read from a different folder on the computer. The reason for res right now is to share resources on GitHub
 			•	Need to be able to load settings
 			•	Need to be able to save and load worlds
-		Rendering:
-			•	This should not require any updates right now. Just clean code
 			
 	Screen:
 		GUIs:
@@ -26,9 +30,10 @@ To Do :
 			•	There needs to be an easy way to add HUDs to the game. These will always be on the in-game screen
 			•	There needs to be a mechanic for GUIs that pop up, like inventory
 			•	There needs to be a way to implement interactables, such as a forge
+			•	God Rays 
 		Text:
 			•	This code is awful right now. It needs to be cleaned up significantly.
-			•	 Need to be able to find the length of a text
+			•	Need to be able to find the length of a text
 			
 	World:
 		Chunks:
@@ -43,6 +48,7 @@ To Do :
 		Shadows:
 			•	Fix shadows not being connected
 			•	Make it so light can cancel out shadows
+			•	Animated Model Shadows
 		Skybox:
 			•	Make it transition and have weather
 			•	Make a lens flare and sun. Do this with sampling
@@ -55,8 +61,5 @@ To Do :
 			•	Directional flow ^^^
 		World:
 			•	Generate the terrain better
-			•	Once the terrain generates properly, add biomes
+			•	Once the terrain generates properly
 			
-	Future Features:
-		AIs
-		Multiplayer

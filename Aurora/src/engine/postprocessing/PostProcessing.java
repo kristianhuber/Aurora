@@ -3,7 +3,6 @@ package engine.postprocessing;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
@@ -14,7 +13,6 @@ import engine.postprocessing.bloom.CombineFilter;
 import engine.postprocessing.contrast.ContrastChanger;
 import engine.postprocessing.gaussian.HorizontalBlur;
 import engine.postprocessing.gaussian.VerticalBlur;
-import engine.postprocessing.grayscale.GrayScaleFilter;
 import engine.rendering.models.ModelManager;
 import engine.rendering.models.RawModel;
 
@@ -35,8 +33,6 @@ public class PostProcessing {
 	private static HorizontalBlur hBloom;
 	private static VerticalBlur vBloom;
 	private static CombineFilter combineFilter;
-	
-	private static GrayScaleFilter testing;
 
 	public static void initialize() {
 		quad = ModelManager.loadToVAO(POSITIONS, 2);
@@ -64,8 +60,6 @@ public class PostProcessing {
 		
 		//This does not contain an FBO because it will render something
 		combineFilter = new CombineFilter();
-
-		testing = new GrayScaleFilter();
 		
 		effects.add(brightFilter);
 		effects.add(hBloom);

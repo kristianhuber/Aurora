@@ -94,10 +94,16 @@ public class Terrain {
 	}
 
 	private void generateTerrain(int seed) {
-
 		HeightsGenerator generator = new HeightsGenerator((int) (x / SIZE), (int) (z / SIZE), VERTEX_COUNT, seed,
 				AMPLITUDE);
-		heights = new float[VERTEX_COUNT][VERTEX_COUNT];
+		
+		generateHeights(generator);
+		
+		int iterations = 15;
+		float delta = 5;
+		for (int i = 0; i < iterations; i++) {
+			thermalErode(delta);
+		}
 
 		int count = VERTEX_COUNT * VERTEX_COUNT;
 		float[] vertices = new float[count * 3];
@@ -105,20 +111,12 @@ public class Terrain {
 		float[] textureCoords = new float[count * 2];
 		int[] indices = new int[6 * (VERTEX_COUNT - 1) * (VERTEX_COUNT - 1)];
 
-		float[] v16 = new float[count * 3 / 2];
-		float[] n16 = new float[count * 3 / 2];
-		float[] t16 = new float[count * 2 / 2];
-		int[] i16 = new int[3 * (VERTEX_COUNT - 1) * (VERTEX_COUNT - 1)];
-
 		int vertexPointer = 0;
-		int pointer16 = 0;
 		for (int i = 0; i < VERTEX_COUNT; i++) {
 			for (int j = 0; j < VERTEX_COUNT; j++) {
 
 				vertices[vertexPointer * 3] = (float) j / ((float) VERTEX_COUNT - 1) * SIZE;
-				float height = getHeight(j, i, generator);
-				heights[j][i] = height;
-				vertices[vertexPointer * 3 + 1] = height;
+				vertices[vertexPointer * 3 + 1] = heights[j][i];
 				vertices[vertexPointer * 3 + 2] = (float) i / ((float) VERTEX_COUNT - 1) * SIZE;
 
 				Vector3f normal = calculateNormal(j, i, generator);
@@ -129,20 +127,6 @@ public class Terrain {
 				textureCoords[vertexPointer * 2] = (float) j / ((float) VERTEX_COUNT - 1);
 				textureCoords[vertexPointer * 2 + 1] = (float) i / ((float) VERTEX_COUNT - 1);
 
-				if (vertexPointer % 2 == 0) {
-					v16[pointer16 * 3] = vertices[vertexPointer * 3];
-					v16[pointer16 * 3 + 1] = vertices[vertexPointer * 3 + 1];
-					v16[pointer16 * 3 + 2] = vertices[vertexPointer * 3 + 2];
-
-					n16[pointer16 * 3] = normals[vertexPointer * 3];
-					n16[pointer16 * 3 + 1] = normals[vertexPointer * 3 + 1];
-					n16[pointer16 * 3 + 2] = normals[vertexPointer * 3 + 2];
-
-					t16[pointer16 * 2] = textureCoords[vertexPointer * 2];
-					t16[pointer16 * 2 + 1] = textureCoords[vertexPointer * 2 + 1];
-
-					pointer16++;
-				}
 
 				vertexPointer++;
 			}
@@ -164,26 +148,76 @@ public class Terrain {
 			}
 		}
 
-		pointer = 0;
-		for (int gz = 0; gz < VERTEX_COUNT - 1; gz += 2) {
-			for (int gx = 0; gx < VERTEX_COUNT - 1; gx += 2) {
-				
-				int topLeft = (gz * VERTEX_COUNT) + gx;
-				int topRight = topLeft + 2;
-				int bottomLeft = ((gz + 2) * VERTEX_COUNT) + gx;
-				int bottomRight = bottomLeft + 2;
+		this.data[0] = new ModelData(vertices, textureCoords, normals, indices, 0);
+	}
 
-				i16[pointer++] = topLeft;
-				i16[pointer++] = bottomLeft;
-				i16[pointer++] = topRight;
-				i16[pointer++] = topRight;
-				i16[pointer++] = bottomLeft;
-				i16[pointer++] = bottomRight;
+	public void generateHeights(HeightsGenerator generator) {
+
+		heights = new float[VERTEX_COUNT][VERTEX_COUNT];
+		for (int i = 0; i < VERTEX_COUNT; i++) {
+			for (int j = 0; j < VERTEX_COUNT; j++) {
+				heights[j][i] = getHeight(j, i, generator);
 			}
 		}
+	}
 
-		this.data[0] = new ModelData(vertices, textureCoords, normals, indices, 0);
-		this.data[1] = new ModelData(v16, t16, n16, i16, 0);
+	public void thermalErode(float dh) {
+		for (int i = 0; i < VERTEX_COUNT; i++) {
+			for (int j = 0; j < VERTEX_COUNT; j++) {
+
+				float highestDelta = 0;
+				int neighborI = 999;
+				int neighborJ = 999;
+				float delta;
+
+				if (i > 0) {
+					delta = heights[i][j] - heights[i - 1][j];
+					if (delta > highestDelta) {
+						highestDelta = delta;
+						neighborI = -1;
+						neighborJ = 0;
+					}
+				}
+
+				if (j > 0) {
+					delta = heights[i][j] - heights[i][j - 1];
+					if (delta > highestDelta) {
+						highestDelta = delta;
+						neighborI = 0;
+						neighborJ = -1;
+					}
+				}
+
+				if (i < VERTEX_COUNT - 1) {
+					delta = heights[i][j] - heights[i + 1][j];
+					if (delta > highestDelta) {
+						highestDelta = delta;
+						neighborI = 1;
+						neighborJ = 0;
+					}
+				}
+
+				if (j < VERTEX_COUNT - 1) {
+					delta = heights[i][j] - heights[i][j + 1];
+					if (delta > highestDelta) {
+						highestDelta = delta;
+						neighborI = 0;
+						neighborJ = 1;
+					}
+				}
+
+				if (neighborI != 999 && neighborJ != 999)
+					erodeTiles(i, j, neighborI, neighborJ, dh);
+			}
+		}
+	}
+
+	private void erodeTiles(int x, int y, int dx, int dy, float dh) {
+		float delta = heights[x][y] - heights[x + dx][y + dy];
+		float sediment = delta - dh;
+		if (delta > dh) {
+			heights[x + dx][y + dy] += sediment;
+		}
 	}
 
 	private Vector3f calculateNormal(int x, int z, HeightsGenerator generator) {

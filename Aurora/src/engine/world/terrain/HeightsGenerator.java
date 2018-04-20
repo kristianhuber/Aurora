@@ -13,7 +13,7 @@ public class HeightsGenerator {
 	// Octaves is how many passes to go through
 	private int OCTAVES = 8;
 	// Roughness is how bumpy the terrain should be. Lower values are smoother
-	private float ROUGHNESS = 0.25f;
+	private float ROUGHNESS = 0.4f;
 
 	// We change this anyway
 	private float AMPLITUDE;
@@ -55,6 +55,8 @@ public class HeightsGenerator {
 
 		total += AMPLITUDE / 2;
 
+		//Modifying the regular noise
+		
 		float xDist = (Math.abs((xOffset + x) - CENTER_OF_MAP) / CENTER_OF_MAP);
 		float zDist = (Math.abs((zOffset + z) - CENTER_OF_MAP) / CENTER_OF_MAP);
 		float distance = (float) Math.sqrt(xDist * xDist + zDist * zDist);

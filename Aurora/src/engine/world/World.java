@@ -272,7 +272,7 @@ public class World {
 		}
 	}
 
-	private void processEntity(Entity entity) {
+	protected void processEntity(Entity entity) {
 		TexturedModel entityModel = entity.getModel();
 		for (TexturedModel tm : entities.keySet())
 			if (tm.equals(entityModel)) {
